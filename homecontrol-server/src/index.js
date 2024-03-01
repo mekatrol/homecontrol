@@ -1,11 +1,17 @@
-console.log(__dirname);
+const express = require("express");
+const path = require("path");
+const hostname = "localhost";
+const port = process.env.PORT || 80;
+const app = express();
 
-var express = require("express");
-var serveStatic = require("serve-static");
-app = express();
-app.use(serveStatic(__dirname + "/dist"));
-var port = process.env.PORT || 80;
-var hostname = "127.0.0.1";
+// serve static assets normally
+app.use(express.static(__dirname + "/dist"));
+
+// handle every other route with index.html, which will contain
+// a script tag to your application's JavaScript file(s).
+app.get("*", function (_ /* request */, response) {
+  response.sendFile(path.resolve(__dirname, "./dist/index.html"));
+});
 
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
