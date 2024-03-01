@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AirconditioningView from '../views/AirconditioningView.vue';
 import AlarmView from '../views/AlarmView.vue';
+import DashboardView from '../views/DashboardView.vue';
 import IrrigationView from '../views/IrrigationView.vue';
 import LightingView from '../views/LightingView.vue';
 
@@ -11,6 +12,10 @@ const router = createRouter({
       path: '/',
       name: 'dashboard',
       children: [
+        {
+          path: '',
+          component: DashboardView
+        },
         {
           path: 'ac',
           component: AirconditioningView

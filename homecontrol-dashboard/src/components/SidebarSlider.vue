@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar-slider">
-    <router-link :to="button.to" v-for="button in buttons" :key="button.icon">
+    <router-link :to="button.to" v-for="button in buttons" :key="button.icon" exact-active-class="link-active" exact>
       <SvgIcon :name="button.icon" :width="iconWidth" />
       <span>{{ button.label }}</span>
     </router-link>
@@ -15,7 +15,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  iconWidth: 60
+  iconWidth: 45
 });
 
 interface Button {
@@ -26,8 +26,13 @@ interface Button {
 
 const buttons: Button[] = [
   {
+    icon: 'homeinfo',
+    label: 'Home',
+    to: '/'
+  },
+  {
     icon: 'airconditioning',
-    label: 'Airconditioning',
+    label: 'A/C',
     to: '/ac'
   },
   {
@@ -65,12 +70,14 @@ const buttons: Button[] = [
   width: 100%;
   cursor: pointer;
   color: currentColor;
+  text-decoration: none;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+.sidebar-slider > a.link-active,
 .sidebar-slider > a:hover {
   --clr-hover: #ff4500;
   border-color: var(--clr-hover);
