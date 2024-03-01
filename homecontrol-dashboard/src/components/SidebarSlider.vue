@@ -15,16 +15,16 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  iconWidth: 45
+  iconWidth: 40
 });
 
-interface Button {
+interface SidebarSliderButton {
   icon: string;
   label: string;
   to: string;
 }
 
-const buttons: Button[] = [
+const buttons: SidebarSliderButton[] = [
   {
     icon: 'homeinfo',
     label: 'Home',
