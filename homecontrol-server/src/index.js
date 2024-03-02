@@ -13,6 +13,6 @@ app.get("*", function (_ /* request */, response) {
   response.sendFile(path.resolve(__dirname, "./dist/index.html"));
 });
 
-app.listen(port, hostname, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });

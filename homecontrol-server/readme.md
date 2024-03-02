@@ -43,29 +43,27 @@ npm i
 cd ~/
 ```
 
-### Install server packages
-
-## Setup node to run on boot
-
-### Locate node path
-
-`which node`
-
-### Edit cron configuration
-
-`sudo crontab -e`
-
-### Add boot configuration
-
-`@reboot sudo /usr/bin/node ~/homecontrol/homecontrol-server/src/index.js &`
-
 ## Kiosk mode
 
 ### Overview
 
 #### For Raspian Bookworm OS on RPI 4+, follow the instructions at: [How to use a Raspberry Pi in kiosk mode](https://www.raspberrypi.com/tutorials/how-to-use-a-raspberry-pi-in-kiosk-mode/)
 
-Sumamry of commands:
+##### Setup node to run on boot
+
+##### Locate node path
+
+`which node`
+
+##### Edit cron configuration
+
+`sudo crontab -e`
+
+##### Add boot configuration
+
+`@reboot sudo /usr/bin/node ~/homecontrol/homecontrol-server/src/index.js &`
+
+##### Sumamry of commands
 
 `sudo apt install wtype`
 
