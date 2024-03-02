@@ -2,13 +2,24 @@
   "name": "homecontrol-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "SET NODE_ENV=development&&nodemon -r dotenv/config src/index.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.18.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.24",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
   }
 }

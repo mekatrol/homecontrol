@@ -8,7 +8,7 @@ import svgLoader from 'vite-svg-loader';
 export default defineConfig({
   build: {
     target: 'esnext',
-    outDir: '../homecontrol-server/src/dist',
+    outDir: '../homecontrol-server/server/spa',
     emptyOutDir: true,
     rollupOptions: {
       output: {
