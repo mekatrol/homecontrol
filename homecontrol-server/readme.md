@@ -40,6 +40,7 @@ npm i
 npm run build
 cd ../homecontrol-server
 npm i
+npm run build
 cd ~/
 ```
 
@@ -61,7 +62,7 @@ cd ~/
 
 ##### Add boot configuration
 
-`@reboot sudo /usr/bin/node ~/homecontrol/homecontrol-server/src/index.js &`
+`@reboot sudo /usr/bin/node ~/homecontrol/homecontrol-server/server/index.js &`
 
 ##### Sumamry of commands
 
@@ -130,7 +131,7 @@ nano ./kiosk.sh
 ```bash
 #!/bin/bash
 
-sudo /usr/bin/node ~/homecontrol/homecontrol-server/src/index.js &
+sudo /usr/bin/node ~/homecontrol/homecontrol-server/server/index.js &
 
 sleep 2
 
