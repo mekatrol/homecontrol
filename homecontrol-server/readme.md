@@ -131,14 +131,27 @@ nano ./kiosk.sh
 ```bash
 #!/bin/bash
 
+# Start server 
 sudo /usr/bin/node ~/homecontrol/homecontrol-server/server/index.js &
 
 sleep 2
 
+#####
+# See: https://www.x.org/archive/X11R7.5/doc/man/man1/xset.1.html#:~:text=The%20'blank'%20flag%20sets%20the,rather%20than%20blank%20the%20video.
+
+# Set screen saver to 120 seconds
+xset s 60
+
+# s is screensaver parameters
 xset s noblank
+
+# Disable screen saver blanking
 xset s off
+
+# Turn off DPMS (Display Power Management Signaling)
 xset -dpms
 
+# Hide mouse after half a second when idle
 unclutter -idle 0.5 -root &
 
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/$USER/.config/chromium/Default/Preferences
@@ -146,6 +159,7 @@ sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/$USER/.config/chrom
 
 /usr/bin/chromium-browser --noerrdialogs --disable-infobars --kiosk http:localhost &
 
+# Look through browser tabs
 while true; do
    xdotool keydown ctrl+Next; xdotool keyup ctrl+Next;
    sleep 10

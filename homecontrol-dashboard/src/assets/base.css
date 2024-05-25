@@ -7,10 +7,12 @@
 /* semantic color variables for this project */
 :root {
   --clr-background: var(--clr-white);
+  --clr-negative: #ff0000;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --clr-background: var(--clr-black);
+    --clr-negative: #ff0000;
   }
 }

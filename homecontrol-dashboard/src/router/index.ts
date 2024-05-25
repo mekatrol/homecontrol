@@ -13,22 +13,27 @@ const router = createRouter({
       name: 'dashboard',
       children: [
         {
+          name: 'dashboard',
           path: '',
           component: DashboardView
         },
         {
+          name: 'ac',
           path: 'ac',
           component: AirconditioningView
         },
         {
+          name: 'alarm',
           path: 'alarm',
           component: AlarmView
         },
         {
+          name: 'irrigation',
           path: 'irrigation',
           component: IrrigationView
         },
         {
+          name: 'lighting',
           path: 'lighting',
           component: LightingView
         }
