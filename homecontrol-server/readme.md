@@ -14,16 +14,17 @@ sudo apt autoremove -y
 
 ## Install node
 
-Reference: [Node Installation Instructions](https://github.com/nodesource/distributions?tab=readme-ov-file#installation-instructions)
+Reference: [Node Version Manager Installation Instructions](https://nodejs.org/en/download/package-manager)
 
 > NOTE: We pass script through sed replace because apt-get no longer exists in Bookworm OS
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_21.x | sed -E 's/apt-get/apt/g' > ./addnodepackages.sh
-chmod +x ./addnodepackages.sh
-sudo ./addnodepackages.sh
-sudo apt install -y nodejs
-rm ./addnodepackages.sh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+nvm install 21
+
+node -v
+npm -v
 ```
 
 ## Clone & build rep
@@ -56,30 +57,33 @@ cd ~/
 
 `which node`
 
-##### Edit cron configuration
-
-`sudo crontab -e`
-
-##### Add boot configuration
-
-`@reboot sudo /usr/bin/node ~/homecontrol/homecontrol-server/server/index.js &`
-
-##### Sumamry of commands
-
-`sudo apt install wtype`
-
-`sudo raspi-config`
-
-Enable System Options | Boot / Auto Login | 'Desktop GUI, automatically logged in as 'pi' user'
-
 `sudo nano .config/wayfire.ini`
 
-Add followingto ini file
+Add following to ini file (use session to know type):
+
+```bash
+loginctl 
+
+# Use desktop session number from previous loginctl command
+loginctl show-session 3 -p Type 
+
+```
+
+### Wayland
 
 ```ini
 [autostart]
-chromium = chromium-browser "<http://localhost>" --kiosk --noerrdialogs --disable-infobars --no-first-run --ozone-platform=wayland --enable-features=OverlayScrollbar --start-maximized
-switchtab = bash ~/switchtab.sh
+panel = wf-panel-pi
+background = pcmanfm --desktop --profile LXDE-pi
+xdg-autostart = lxsession-xdg-autostart
+chromium = chromium-browser "[home.lan](http://home.lan)" --kiosk --noerrdialogs --disable-infobars --no-first-run --ozone-platform=wayland --enable-features=OverlayScrollbar
+```
+
+### X11
+
+```ini
+[autostart]
+chromium = chromium-browser "[home.lan](http://home.lan)" --kiosk --noerrdialogs --disable-infobars --no-first-run --ozone-platform=wayland --enable-features=OverlayScrollbar --start-maximized
 screensaver = false
 dpms = false
 ```
@@ -124,22 +128,21 @@ done
 `sudo apt install xdotool unclutter -y`
 
 ```bash
-cd ~/
-nano ./kiosk.sh
+nano ~/kiosk.sh
 ```
 
 ```bash
 #!/bin/bash
 
 # Start server 
-sudo /usr/bin/node ~/homecontrol/homecontrol-server/server/index.js &
+sudo sudo /home/pi/.nvm/versions/node/v21.7.3/bin/node ~/homecontrol/homecontrol-server/server/index.js &
 
 sleep 2
 
 #####
 # See: https://www.x.org/archive/X11R7.5/doc/man/man1/xset.1.html#:~:text=The%20'blank'%20flag%20sets%20the,rather%20than%20blank%20the%20video.
 
-# Set screen saver to 120 seconds
+# Set screen saver to 60 seconds
 xset s 60
 
 # s is screensaver parameters
@@ -159,14 +162,14 @@ sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/$USER/.config/chrom
 
 /usr/bin/chromium-browser --noerrdialogs --disable-infobars --kiosk http:localhost &
 
-# Look through browser tabs
+# Loop through browser tabs
 while true; do
    xdotool keydown ctrl+Next; xdotool keyup ctrl+Next;
    sleep 10
 done
 ```
 
-`chmod +x ./kiosk.sh`
+`chmod +x ~/kiosk.sh`
 
 On main screen terminal type
 `echo $DISPLAY`
