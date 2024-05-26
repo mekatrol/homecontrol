@@ -143,9 +143,9 @@ sleep 2
 # See: https://www.x.org/archive/X11R7.5/doc/man/man1/xset.1.html#:~:text=The%20'blank'%20flag%20sets%20the,rather%20than%20blank%20the%20video.
 
 # Useful xset commands
-#  xset -display :0.0 dpms 0 0 30
-# xset -display :0.0 dpms force on
-# xset -display :0.0 dpms force off
+#   xset -display :0.0 dpms 0 0 30
+#   xset -display :0.0 dpms force on
+#   xset -display :0.0 dpms force off
 
 # Set screen saver to 60 seconds
 xset s 60
