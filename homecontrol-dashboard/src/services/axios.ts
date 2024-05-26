@@ -1,15 +1,15 @@
-import { useUserStore } from '@/stores/user';
+// import { useUserStore } from '@/stores/user';
 import type { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
 import { getApiBaseUrl } from './http';
 
 export function requestInterceptor(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
-  const userStore = useUserStore();
-  const token = userStore.accessToken;
+  // const userStore = useUserStore();
+  // const token = userStore.accessToken;
 
-  if (token != null) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  // if (token != null) {
+  //   config.headers.Authorization = `Bearer ${token}`;
+  // }
 
   return config;
 }

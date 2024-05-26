@@ -1,8 +1,6 @@
 import { AxiosError, type AxiosRequestConfig } from 'axios';
 import { axiosApi } from './axios';
-import { useUIStore } from '@/stores/ui';
 import { ref } from 'vue';
-import { useAuthService } from './authService';
 
 const showFailedMessage = (message: string): void => {
   console.log(message);
@@ -22,7 +20,7 @@ export enum ApiErrorType {
   ConnectionFailed = 1, // Failed to connect to the server
   Timeout = 2, // Connected to server but time out awaiting response
   BadRequest = 400,
-  Unauthorised = 401,
+  Unauthorized = 401,
   PaymentRequired = 402,
   Forbidden = 403,
   NotFound = 404,
@@ -108,7 +106,7 @@ const handleApiResponseError = (err: unknown, url: string): ApiError => {
     }
   }
 
-  // There was an error resonse
+  // There was an error response
   if (error.response) {
     // The status code is mapped to an error type
     apiError.errorType = error.response.status;
@@ -124,7 +122,7 @@ const handleApiResponseError = (err: unknown, url: string): ApiError => {
   return apiError;
 };
 
-export const handleApiError = (error: unknown, url: string, method: string, errorHandlerCallback?: HandleErrorCallback, supressUnauthorisedError?: boolean): ApiError => {
+export const handleApiError = (error: unknown, url: string, method: string, errorHandlerCallback?: HandleErrorCallback, suppressUnauthorizedError?: boolean): ApiError => {
   const apiError = handleApiResponseError(error, url);
 
   // If validation errors have been returned, give them to the validation form
@@ -132,7 +130,7 @@ export const handleApiError = (error: unknown, url: string, method: string, erro
     serverValidationErrors.value = apiError.errors;
   }
 
-  let errorHandled = apiError.errorType === ApiErrorType.Unauthorised && supressUnauthorisedError;
+  let errorHandled = apiError.errorType === ApiErrorType.Unauthorized && suppressUnauthorizedError;
 
   // Did the caller pass in a custom error handler?
   if (!errorHandled && !!errorHandlerCallback) {
@@ -153,7 +151,7 @@ const displayErrorMessage = (error: ApiError, method: string): void => {
   // A HTTP 409 (conflict) indicates update concurrency exception
   if (error.errorType === ApiErrorType.Conflict) {
     showFailedMessage(
-      `${method} failed because the data has been modifed by '${error.errors[0].errorMessage}' since you started editing.` +
+      `${method} failed because the data has been modified by '${error.errors[0].errorMessage}' since you started editing.` +
         'Please reload the page and try again. Reloading will reset any changes that you have made.'
     );
   }
@@ -171,113 +169,113 @@ const displayErrorMessage = (error: ApiError, method: string): void => {
   throw error;
 };
 
-export const getAuth = async <T>(url: string, errorHandlerCallback?: HandleErrorCallback, retrying?: boolean): Promise<T> => {
-  const config = {
-    ...defaultConfig
-  };
+// export const getAuth = async <T>(url: string, errorHandlerCallback?: HandleErrorCallback, retrying?: boolean): Promise<T> => {
+//   const config = {
+//     ...defaultConfig
+//   };
 
-  // Flag we are waiting
-  const uiStore = useUIStore();
-  uiStore.incWaiting();
+//   // Flag we are waiting
+//   const uiStore = useUIStore();
+//   uiStore.incWaiting();
 
-  try {
-    const response = await axiosApi.get(url, config);
-    return response.data;
-  } catch (err: unknown) {
-    const apiError = handleApiError(err, url, 'Load', errorHandlerCallback, !retrying);
+//   try {
+//     const response = await axiosApi.get(url, config);
+//     return response.data;
+//   } catch (err: unknown) {
+//     const apiError = handleApiError(err, url, 'Load', errorHandlerCallback, !retrying);
 
-    if (apiError.errorType === ApiErrorType.Unauthorised && !retrying) {
-      const authService = useAuthService();
-      await authService.acquireToken();
-      return await getAuth(url, errorHandlerCallback, true);
-    }
+//     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
+//       const authService = useAuthService();
+//       await authService.acquireToken();
+//       return await getAuth(url, errorHandlerCallback, true);
+//     }
 
-    throw apiError;
-  } finally {
-    uiStore.decWaiting();
-  }
-};
+//     throw apiError;
+//   } finally {
+//     uiStore.decWaiting();
+//   }
+// };
 
-export const postAuth = async <TRequest, TResponse>(requestData: TRequest, url: string, errorHandlerCallback?: HandleErrorCallback, retrying?: boolean): Promise<TResponse> => {
-  const config = {
-    ...defaultConfig
-  };
+// export const postAuth = async <TRequest, TResponse>(requestData: TRequest, url: string, errorHandlerCallback?: HandleErrorCallback, retrying?: boolean): Promise<TResponse> => {
+//   const config = {
+//     ...defaultConfig
+//   };
 
-  // Flag we are waiting
-  const uiStore = useUIStore();
-  uiStore.incWaiting();
+//   // Flag we are waiting
+//   const uiStore = useUIStore();
+//   uiStore.incWaiting();
 
-  try {
-    const response = await axiosApi.post<TResponse>(url, requestData, config);
-    return response?.data ?? ({} as TResponse);
-  } catch (err: unknown) {
-    const apiError = handleApiError(err, url, 'Save', errorHandlerCallback, !retrying);
+//   try {
+//     const response = await axiosApi.post<TResponse>(url, requestData, config);
+//     return response?.data ?? ({} as TResponse);
+//   } catch (err: unknown) {
+//     const apiError = handleApiError(err, url, 'Save', errorHandlerCallback, !retrying);
 
-    if (apiError.errorType === ApiErrorType.Unauthorised && !retrying) {
-      const authService = useAuthService();
-      await authService.acquireToken();
-      return await postAuth(requestData, url, errorHandlerCallback, true);
-    }
+//     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
+//       const authService = useAuthService();
+//       await authService.acquireToken();
+//       return await postAuth(requestData, url, errorHandlerCallback, true);
+//     }
 
-    throw apiError;
-  } finally {
-    uiStore.decWaiting();
-  }
-};
+//     throw apiError;
+//   } finally {
+//     uiStore.decWaiting();
+//   }
+// };
 
-export const putAuth = async <TRequest, TResponse>(requestData: TRequest, url: string, errorHandlerCallback?: HandleErrorCallback, retrying?: boolean): Promise<TResponse> => {
-  const config = {
-    ...defaultConfig
-  };
+// export const putAuth = async <TRequest, TResponse>(requestData: TRequest, url: string, errorHandlerCallback?: HandleErrorCallback, retrying?: boolean): Promise<TResponse> => {
+//   const config = {
+//     ...defaultConfig
+//   };
 
-  // Flag we are waiting
-  const uiStore = useUIStore();
-  uiStore.incWaiting();
+//   // Flag we are waiting
+//   const uiStore = useUIStore();
+//   uiStore.incWaiting();
 
-  try {
-    const response = await axiosApi.put<TResponse>(url, requestData, config);
-    return response?.data ?? ({} as TResponse);
-  } catch (err: unknown) {
-    const apiError = handleApiError(err, url, 'Save', errorHandlerCallback, !retrying);
+//   try {
+//     const response = await axiosApi.put<TResponse>(url, requestData, config);
+//     return response?.data ?? ({} as TResponse);
+//   } catch (err: unknown) {
+//     const apiError = handleApiError(err, url, 'Save', errorHandlerCallback, !retrying);
 
-    if (apiError.errorType === ApiErrorType.Unauthorised && !retrying) {
-      const authService = useAuthService();
-      await authService.acquireToken();
-      return await putAuth(requestData, url, errorHandlerCallback, true);
-    }
+//     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
+//       const authService = useAuthService();
+//       await authService.acquireToken();
+//       return await putAuth(requestData, url, errorHandlerCallback, true);
+//     }
 
-    throw apiError;
-  } finally {
-    uiStore.decWaiting();
-  }
-};
+//     throw apiError;
+//   } finally {
+//     uiStore.decWaiting();
+//   }
+// };
 
-export const deleteAuth = async (url: string, errorHandlerCallback?: HandleErrorCallback, retrying?: boolean): Promise<boolean> => {
-  const config = {
-    ...defaultConfig
-  };
+// export const deleteAuth = async (url: string, errorHandlerCallback?: HandleErrorCallback, retrying?: boolean): Promise<boolean> => {
+//   const config = {
+//     ...defaultConfig
+//   };
 
-  // Flag we are waiting
-  const uiStore = useUIStore();
-  uiStore.incWaiting();
+//   // Flag we are waiting
+//   const uiStore = useUIStore();
+//   uiStore.incWaiting();
 
-  try {
-    await axiosApi.delete(url, config);
-    return true;
-  } catch (err: unknown) {
-    const apiError = handleApiError(err, url, 'Delete', errorHandlerCallback, !retrying);
+//   try {
+//     await axiosApi.delete(url, config);
+//     return true;
+//   } catch (err: unknown) {
+//     const apiError = handleApiError(err, url, 'Delete', errorHandlerCallback, !retrying);
 
-    if (apiError.errorType === ApiErrorType.Unauthorised && !retrying) {
-      const authService = useAuthService();
-      await authService.acquireToken();
-      return await deleteAuth(url, errorHandlerCallback, true);
-    }
+//     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
+//       const authService = useAuthService();
+//       await authService.acquireToken();
+//       return await deleteAuth(url, errorHandlerCallback, true);
+//     }
 
-    throw apiError;
-  } finally {
-    uiStore.decWaiting();
-  }
-};
+//     throw apiError;
+//   } finally {
+//     uiStore.decWaiting();
+//   }
+// };
 
 export const combineUrl = (baseUrl: string, relativeUrl: string): string => {
   return relativeUrl ? baseUrl.replace(/\/+$/, '') + '/' + relativeUrl.replace(/^\/+/, '') : baseUrl;
