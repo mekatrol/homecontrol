@@ -16,3 +16,7 @@
     --clr-negative: #ff0000;
   }
 }
+
+.color-panic {
+  color: #ff0000;
+}

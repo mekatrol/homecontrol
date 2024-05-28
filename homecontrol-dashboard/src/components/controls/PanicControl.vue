@@ -1,8 +1,8 @@
 <template>
   <div v-if="model" class="control-switch">
     <div>
-      <button class="switch">
-        <SvgIcon width="60" :name="model.state === true ? 'switch-on' : 'switch-off'" :class="model.state === undefined ? 'offline' : ''" @click="switchClicked" />
+      <button :class="`switch ${model.state === true ? 'active' : ''}`">
+        <SvgIcon width="60" name="panic" @click="switchClicked" :color="`${model.state === true ? 'panic' : ''}`" />
       </button>
     </div>
     <div></div>
@@ -40,7 +40,7 @@ const switchClicked = (): void => {
   align-items: center;
   margin: 1rem;
   border-radius: 10rem;
-  border: 2px solid #ff4500;
+  border: 2px solid #ff0000;
 }
 
 .control-switch > div {
@@ -64,5 +64,6 @@ const switchClicked = (): void => {
   padding: 0;
   margin: 0;
   min-height: 66px;
+  cursor: pointer;
 }
 </style>

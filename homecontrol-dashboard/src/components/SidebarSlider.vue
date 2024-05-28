@@ -31,7 +31,7 @@ const buttons: SidebarSliderButton[] = [
     to: '/'
   },
   {
-    icon: 'airconditioning',
+    icon: 'air-conditioning',
     label: 'A/C',
     to: '/ac'
   },

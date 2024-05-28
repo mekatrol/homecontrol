@@ -4,7 +4,10 @@
       <EnvironmentSensor v-model="sensors.indoor" />
       <EnvironmentSensor v-model="sensors.outdoor" />
     </div>
-    <div class="col"><SwitchControl v-model="switches.alfrescoStringLights" @click="() => switchClicked(switches.alfrescoStringLights)" /></div>
+    <div class="col">
+      <SwitchControl v-model="switches.alfrescoStringLights" @click="() => switchClicked(switches.alfrescoStringLights)" />
+      <PanicControl v-model="switches.panic" @click="() => switchClicked(switches.panic)" />
+    </div>
     <div class="col"></div>
     <div class="col"></div>
   </div>
@@ -16,6 +19,7 @@ import type { SensorValues } from '@/models/SensorValues';
 import type { ControlSwitch } from '@/models/ControlSwitch';
 
 import EnvironmentSensor from '@/components/controls/EnvironmentSensor.vue';
+import PanicControl from '@/components/controls/PanicControl.vue';
 import SwitchControl from '@/components/controls/SwitchControl.vue';
 
 const sensors = ref({
@@ -36,6 +40,10 @@ const sensors = ref({
 const switches = ref({
   alfrescoStringLights: {
     label: 'Alfresco string lights',
+    state: true
+  } as ControlSwitch,
+  panic: {
+    label: 'PANIC',
     state: true
   } as ControlSwitch
 });

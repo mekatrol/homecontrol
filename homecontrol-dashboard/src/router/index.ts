@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import AirconditioningView from '../views/AirconditioningView.vue';
+import AirConditioningView from '../views/AirConditioningView.vue';
 import AlarmView from '../views/AlarmView.vue';
 import DashboardView from '../views/DashboardView.vue';
 import IrrigationView from '../views/IrrigationView.vue';
@@ -20,7 +20,7 @@ const router = createRouter({
         {
           name: 'ac',
           path: 'ac',
-          component: AirconditioningView
+          component: AirConditioningView
         },
         {
           name: 'alarm',
