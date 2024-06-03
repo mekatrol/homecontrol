@@ -44,7 +44,7 @@ const switches = ref({
   } as ControlSwitch,
   panic: {
     label: 'PANIC',
-    state: true
+    state: false
   } as ControlSwitch
 });
 

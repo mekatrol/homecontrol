@@ -75,6 +75,8 @@ const buttons: SidebarSliderButton[] = [
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  color: green;
 }
 
 .sidebar-slider > a.link-active,

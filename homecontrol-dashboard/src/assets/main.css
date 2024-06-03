@@ -12,4 +12,6 @@
   grid-template-columns: 1fr 11fr;
   grid-gap: 0.5rem;
   height: 100%;
+
+  background-color: var(--clr-background);
 }
