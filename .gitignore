@@ -131,3 +131,4 @@ dist
 homecontrol-server/src/spa/*
 homecontrol-hub/config.debug.yaml
 __pycache__
+homecontrol-hub/log.txt

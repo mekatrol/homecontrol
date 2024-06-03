@@ -6,6 +6,10 @@
 #       You only need to define the values that you want to override. You do not need to repeat any
 #       configuration setting values here that are not different.
 
+logging:
+  file-name: "log.txt"
+  level: "INFO"
+
 home-assistant:
   server-url: "ws://ha.lan:8123/api/websocket"
   auth-token: "<insert long lived token here>"

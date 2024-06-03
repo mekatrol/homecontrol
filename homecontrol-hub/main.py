@@ -1,6 +1,9 @@
 import asyncio
+import logging
 from configuration.YamlConfiguration import YamlConfiguration
 from services.HomeAssistant import HomeAssistant
+
+logger = logging.getLogger(__name__)
 
 
 async def main():
@@ -9,18 +12,23 @@ async def main():
         config = YamlConfiguration("config.yaml", "config.debug.yaml")
         cfg = await config.read()
 
+        # Configure logging
+        log_levels = logging.getLevelNamesMapping()
+        log_level = log_levels[cfg["logging"]["level"]]
+        logging.basicConfig(filename=cfg["logging"]["file-name"], level=log_level)
+
         # Create home assistant instance
-        home_assistant = HomeAssistant(
-            cfg["home-assistant"]["server-url"], cfg["home-assistant"]["auth-token"]
-        )
+        server_url = cfg["home-assistant"]["server-url"]
+        auth_token = cfg["home-assistant"]["auth-token"]
+        home_assistant = HomeAssistant(server_url, auth_token)
 
         # Connect and disconnect from home assistant
         version = await home_assistant.connect()
 
         if version is not None:
-            print(f"Connected to home assistant version: '{version}'")
+            logger.info(f"Connected to home assistant version: '{version}'")
         else:
-            print("Failed to connect to home assistant")
+            logger.error("Failed to connect to home assistant")
 
     finally:
         if home_assistant:
