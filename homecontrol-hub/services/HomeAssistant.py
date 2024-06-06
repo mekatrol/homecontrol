@@ -34,7 +34,7 @@ class HomeAssistant:
             if message_type != "auth_required":
                 return None
 
-            await self._auth()
+            message = await self._auth()
 
             if message["type"] != "auth_ok":
                 await self.disconnect()
