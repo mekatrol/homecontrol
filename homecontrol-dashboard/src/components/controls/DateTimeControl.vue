@@ -21,7 +21,7 @@ useIntervalTimer(async () => {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  timeDisplay.value = `${hrs}`.padStart(2, '0') + ':' + `${dt.getMinutes()}`.padStart(2, '0') + ':' + `${dt.getSeconds()}`.padStart(2, '0') + ' ' + meridiem;
+  timeDisplay.value = `${hrs}`.padStart(2, '0') + ':' + `${dt.getMinutes()}`.padStart(2, '0') + ' ' + meridiem;
   dateDisplay.value = daysOfWeek[dt.getDay()].toLocaleUpperCase() + ' ' + dt.getDate() + ' ' + months[dt.getMonth()].toLocaleUpperCase() + ' ' + dt.getFullYear();
   return true;
 }, 500);
