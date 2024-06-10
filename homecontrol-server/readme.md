@@ -9,6 +9,12 @@ sudo apt autoremove -y
 sudo apt install xscreensaver -y
 ```
 
+## Setting brightness
+
+```bash
+sudo sh -c 'echo "255" > /sys/class/backlight/10-0045/brightness'
+```
+
 ## Install git
 
 `sudo apt install git`
