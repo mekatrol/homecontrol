@@ -8,7 +8,7 @@
       <SwitchControl v-model="switches.alfrescoStringLights" @click="() => switchClicked(switches.alfrescoStringLights)" />
       <PanicControl v-model="switches.panic" @click="() => switchClicked(switches.panic)" />
     </div>
-    <div class="col">{{ screenSize }}</div>
+    <div class="col"></div>
     <div class="col"></div>
   </div>
 </template>
