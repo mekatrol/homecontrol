@@ -22,10 +22,6 @@ import EnvironmentSensor from '@/components/controls/EnvironmentSensor.vue';
 import PanicControl from '@/components/controls/PanicControl.vue';
 import SwitchControl from '@/components/controls/SwitchControl.vue';
 
-import { useScreenSize } from 'vue-boosted';
-
-const screenSize = useScreenSize();
-
 const sensors = ref({
   indoor: {
     label: 'Indoor',
