@@ -60,7 +60,7 @@ const switchClicked = (theSwitch: ControlSwitch): void => {
 <style lang="css">
 .page {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: auto;
 }
 </style>
