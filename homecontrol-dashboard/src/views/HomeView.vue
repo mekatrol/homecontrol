@@ -1,15 +1,12 @@
 <template>
-  <div class="page">
-    <div class="col">
-      <EnvironmentSensor v-model="sensors.indoor" />
-      <EnvironmentSensor v-model="sensors.outdoor" />
-    </div>
-    <div class="col">
-      <SwitchControl v-model="switches.alfrescoStringLights" @click="() => switchClicked(switches.alfrescoStringLights)" />
+  <div class="home-container">
+    <div class="head"><DateTimeControl v-model="switches.panic" class="date-time" /></div>
+    <div class="left"><EnvironmentSensor v-model="sensors.indoor" /></div>
+    <div class="mid"><SwitchControl v-model="switches.alfrescoStringLights" @click="() => switchClicked(switches.alfrescoStringLights)" /></div>
+    <div class="right"><EnvironmentSensor v-model="sensors.outdoor" /></div>
+    <div class="foot">
       <PanicControl v-model="switches.panic" @click="() => switchClicked(switches.panic)" />
     </div>
-    <div class="col"></div>
-    <div class="col"></div>
   </div>
 </template>
 
@@ -21,6 +18,7 @@ import type { ControlSwitch } from '@/models/ControlSwitch';
 import EnvironmentSensor from '@/components/controls/EnvironmentSensor.vue';
 import PanicControl from '@/components/controls/PanicControl.vue';
 import SwitchControl from '@/components/controls/SwitchControl.vue';
+import DateTimeControl from '@/components/controls/DateTimeControl.vue';
 
 const sensors = ref({
   indoor: {
@@ -53,10 +51,33 @@ const switchClicked = (theSwitch: ControlSwitch): void => {
 };
 </script>
 
-<style lang="css">
-.page {
+<style scoped lang="css">
+.home-container {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: auto;
+  grid-auto-flow: row;
+  grid-template-areas:
+    'head head head'
+    'left mid right'
+    'foot foot foot';
+}
+
+.head {
+  grid-area: head;
+}
+
+.foot {
+  grid-area: foot;
+}
+
+.left {
+  grid-area: left;
+}
+
+.mid {
+  grid-area: mid;
+}
+
+.right {
+  grid-area: right;
 }
 </style>

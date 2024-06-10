@@ -20,7 +20,7 @@ import SvgIcon from '@/components/controls/SvgIcon.vue';
 const model = defineModel<SensorValues>();
 </script>
 
-<style lang="css">
+<style scoped lang="css">
 .sensor-values {
   display: flex;
   flex-direction: column;

@@ -53,7 +53,7 @@ const buttons: SidebarSliderButton[] = [
 ];
 </script>
 
-<style lang="css">
+<style scoped lang="css">
 .sidebar-slider {
   display: flex;
   flex-direction: column;

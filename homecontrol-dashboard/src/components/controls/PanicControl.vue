@@ -30,7 +30,7 @@ const switchClicked = (): void => {
 };
 </script>
 
-<style lang="css" scoped>
+<style scoped lang="css">
 .control-switch {
   display: flex;
   flex-direction: column;
