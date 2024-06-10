@@ -1,0 +1,6 @@
+@Home.Automation.NodeServer_HostAddress = http://localhost:5035
+
+GET {{Home.Automation.NodeServer_HostAddress}}/ping/
+Accept: application/json
+
+###

@@ -8,6 +8,8 @@
 :root {
   --clr-background: var(--clr-white);
   --clr-negative: #ff0000;
+
+  --clr-background: var(--clr-black);
 }
 
 @media (prefers-color-scheme: dark) {
