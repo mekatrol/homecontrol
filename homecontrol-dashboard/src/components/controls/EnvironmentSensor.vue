@@ -30,7 +30,7 @@ const model = defineModel<SensorValues>();
   align-items: center;
   margin: 1rem;
   border-radius: 10rem;
-  border: 2px solid #ff4500;
+  border: 2px solid #0096ff;
 }
 
 .sensor-values > div {

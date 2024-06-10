@@ -81,7 +81,7 @@ const buttons: SidebarSliderButton[] = [
 
 .sidebar-slider > a.link-active,
 .sidebar-slider > a:hover {
-  --clr-hover: #ff4500;
+  --clr-hover: #0096ff;
   border-color: var(--clr-hover);
   color: var(--clr-hover);
 }
