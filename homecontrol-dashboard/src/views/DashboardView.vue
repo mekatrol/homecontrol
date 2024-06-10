@@ -8,7 +8,7 @@
       <SwitchControl v-model="switches.alfrescoStringLights" @click="() => switchClicked(switches.alfrescoStringLights)" />
       <PanicControl v-model="switches.panic" @click="() => switchClicked(switches.panic)" />
     </div>
-    <div class="col"></div>
+    <div class="col">{{ screenSize }}</div>
     <div class="col"></div>
   </div>
 </template>
@@ -21,6 +21,10 @@ import type { ControlSwitch } from '@/models/ControlSwitch';
 import EnvironmentSensor from '@/components/controls/EnvironmentSensor.vue';
 import PanicControl from '@/components/controls/PanicControl.vue';
 import SwitchControl from '@/components/controls/SwitchControl.vue';
+
+import { useScreenSize } from 'vue-boosted';
+
+const screenSize = useScreenSize();
 
 const sensors = ref({
   indoor: {
@@ -56,6 +60,7 @@ const switchClicked = (theSwitch: ControlSwitch): void => {
 <style lang="css">
 .page {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
 }
 </style>
