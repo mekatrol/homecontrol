@@ -12,20 +12,17 @@ import { useIntervalTimer } from 'vue-boosted';
 const timeDisplay = ref('');
 const dateDisplay = ref('');
 
-const romanize = (num: number): string => {
-  if (!+num) return '';
-  let digits = String(+num).split(''),
-    key = ['', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC', 'CM', '', 'X', 'XX', 'XXX', 'XL', 'L', 'LX', 'LXX', 'LXXX', 'XC', '', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'],
-    roman = '',
-    i = 3;
-  while (i--) roman = (key[+digits.pop()! + i * 10] || '') + roman;
-  return Array(+digits.join('') + 1).join('M') + roman;
-};
-
 useIntervalTimer(async () => {
   const dt = new Date();
-  timeDisplay.value = romanize(dt.getHours() + 1) + ' . ' + romanize(dt.getMinutes()) + ' . ' + romanize(dt.getSeconds());
-  dateDisplay.value = romanize(dt.getMonth() + 1) + ' . ' + romanize(dt.getDate()) + ' . ' + romanize(dt.getFullYear()) + 1;
+
+  const hrs24 = dt.getHours();
+  const hrs = hrs24 >= 12 ? hrs24 - 12 : hrs24;
+  const meridiem = hrs24 >= 12 ? 'PM' : 'AM';
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  timeDisplay.value = `${hrs}`.padStart(2, '0') + ':' + `${dt.getMinutes()}`.padStart(2, '0') + ':' + `${dt.getSeconds()}`.padStart(2, '0') + ' ' + meridiem;
+  dateDisplay.value = daysOfWeek[dt.getDay()].toLocaleUpperCase() + ' ' + dt.getDate() + ' ' + months[dt.getMonth()].toLocaleUpperCase() + ' ' + dt.getFullYear();
   return true;
 }, 500);
 </script>
