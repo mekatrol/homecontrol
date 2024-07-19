@@ -139,3 +139,4 @@ homecontrol-hub/log.txt
 /Home.Automation/Home.Automation.Services/obj
 homecontrol-server/server.key
 homecontrol-server/server.cert
+homecontrol-server/data
