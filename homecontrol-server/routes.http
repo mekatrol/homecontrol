@@ -1,0 +1,39 @@
+GET http://localhost:8888/api/points
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYm9iIiwiaWF0IjoxNzIxMzgxNzg5LCJleHAiOjE3MjEzODE4MDR9.4umaOcLHt8N4J2zgsPbqW-yr-OMXev34qUchkOJ2LQQ
+
+###
+
+POST http://localhost:8888/api/points
+Content-Type: application/json
+
+{
+  "id": "1",
+  "name": "fred"
+}
+
+###
+
+POST http://localhost:8888/login
+Content-Type: application/json
+
+{
+  "username": "bob"
+}
+
+###
+
+POST http://localhost:8888/token
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYm9iIiwiaWF0IjoxNzIxMzgxODAzfQ.Dr-OEqso2Zgc8B5xbkQm5bkmivcnKHB-HUZrkqEaXWU"
+}
+
+###
+
+DELETE  http://localhost:8888/logout
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYm9iIiwiaWF0IjoxNzIxMzgxODAzfQ.Dr-OEqso2Zgc8B5xbkQm5bkmivcnKHB-HUZrkqEaXWU"
+}

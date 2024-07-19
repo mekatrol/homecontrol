@@ -1,5 +1,5 @@
 <template>
-  <div v-if="model" class="control-switch">
+  <div v-if="model" class="mekatrol-panic-switch">
     <div>
       <button :class="`switch ${model.state === true ? 'active' : ''}`">
         <SvgIcon width="60" name="panic" @click="switchClicked" :color="`${model.state === true ? 'panic' : ''}`" />
@@ -31,7 +31,7 @@ const switchClicked = (): void => {
 </script>
 
 <style scoped lang="css">
-.control-switch {
+.mekatrol-panic-switch {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
@@ -43,22 +43,22 @@ const switchClicked = (): void => {
   border: 2px solid #ff0000;
 }
 
-.control-switch > div {
+.mekatrol-panic-switch > div {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
 }
 
-.control-switch > div:first-child {
+.mekatrol-panic-switch > div:first-child {
   font-size: 2em;
 }
 
-.control-switch .offline {
+.mekatrol-panic-switch .offline {
   color: var(--clr-negative);
 }
 
-.control-switch button {
+.mekatrol-panic-switch button {
   background-color: inherit;
   border: none;
   padding: 0;

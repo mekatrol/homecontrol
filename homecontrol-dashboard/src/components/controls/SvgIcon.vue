@@ -11,7 +11,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  color: 'current'
+  color: 'currentColor'
 });
 
 const importSvg = (): unknown => {
