@@ -15,7 +15,8 @@ declare namespace Express {
   }
 }
 
-const hostname = 'localhost';
+const hostIP = process.env.HOST_IP ?? '0.0.0.0';
+const hostPort: number = +(process.env.HOST_PORT ?? (process.env.USE_SSL ? 8443 : 8888));
 
 const envFile = path.resolve(__dirname, process.env.NODE_ENV ? `../.env.${process.env.NODE_ENV}` : '.env');
 dotenv.config({ path: envFile });
@@ -35,7 +36,6 @@ const users: User[] = [];
 const dataManager = initDataManager(process.env.DATA_DIRECTORY ?? DATA_DIRECTORY);
 console.log(dataManager);
 
-const port: number = +(process.env.PORT ?? 80);
 const app: Express = express();
 
 let spaRelativePath = '/spa';
@@ -48,25 +48,37 @@ const spaPath = path.resolve(__dirname + spaRelativePath);
 
 export const authenticateToken: RequestHandler = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const bearerToken = authHeader && authHeader.split(' ');
 
-  if (!token) {
+  // Muse be 2 parts, the word bearer and the token
+  if (!bearerToken || bearerToken.length != 2) {
     return res.sendStatus(401);
   }
 
+  // First part must be the word bearer
+  if (bearerToken[0].trim().toLowerCase() !== 'bearer') {
+    return res.sendStatus(401);
+  }
+
+  // Second part is the token
+  const token = bearerToken[1].trim();
+
+  // Make sure token is valid
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err, user) => {
     if (err) {
       return res.sendStatus(403);
     }
 
+    // Set request user
     const request = req as Express.Request;
     request.user = user;
+
     next();
   });
 };
 
 const generateAccessToken = (user: User): string => {
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '15s' });
+  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: 300 });
   return accessToken;
 };
 
@@ -158,14 +170,26 @@ app.use(authenticateToken);
 // Points controller
 app.use(pointsRouter);
 
-https
-  .createServer(
-    {
-      key: fs.readFileSync('server.key'),
-      cert: fs.readFileSync('server.cert')
-    },
-    app
-  )
-  .listen(port, '0.0.0.0', () => {
-    console.log(`Home automation running at http://${hostname}:${port}/`);
+const useSsl = process.env.USE_SSL?.toLowerCase() === 'true';
+
+console.log('useSsl', useSsl);
+
+if (useSsl && process.env.SSL_CERT_FILENAME && process.env.SSL_KEY_FILENAME) {
+  // Will be created As HTTPS
+  https
+    .createServer(
+      {
+        cert: fs.readFileSync(process.env.SSL_CERT_FILENAME),
+        key: fs.readFileSync(process.env.SSL_KEY_FILENAME)
+      },
+      app
+    )
+    .listen(hostPort, hostIP, () => {
+      console.log(`Home automation running at https://${hostIP}:${hostPort}/`);
+    });
+} else {
+  // Will be created As HTTP
+  app.listen(hostPort, hostIP, () => {
+    console.log(`Home automation running at http://${hostIP}:${hostPort}/`);
   });
+}

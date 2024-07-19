@@ -1,5 +1,5 @@
 GET https://localhost:8888/api/points
-Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjEzODQ5MDAsImV4cCI6MTcyMTM4NDkxNX0.EjaXcpmuaOwiF-wb91aLhJmxenRfT_XpAM-zmdUDiFk
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZWQiLCJwYXNzd29yZCI6IiQyYiQxMCRzWFdMTUhpTC53dktOLm5sL0RTU1FlMENSeEJla1ZqSjlEQmd6aWZvRld0YnNrQW5UT1ZqdSIsImlhdCI6MTcyMTM4Njc5NiwiZXhwIjoxNzIxMzg3MDk2fQ.CWLIE8fP5nbIOi6knJwViCxhWQJVBc2wSaFTnoik9vo
 
 ###
 
@@ -26,7 +26,7 @@ POST https://localhost:8888/token
 Content-Type: application/json
 
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZWQiLCJwYXNzd29yZCI6IiQyYiQxMCRKQmFTSHBBckJ0dFhXN3pvdFRLT3hlZDRkVHdKclJlYUs3UXJqcVJkMk1JS1REbkRjQ29kdSIsImlhdCI6MTcyMTM4NDg2OX0.HzghhqPT-E8O_SqUwqPsvjGeHn0tJwihdadl7N8vuWw"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZWQiLCJwYXNzd29yZCI6IiQyYiQxMCRzb0MvbXdWWkxsalVhWU0yZkx6STUuTVZ2WWhuL3I1cjNQU2tiZElJN01uWTMyVm9YenpJaSIsImlhdCI6MTcyMTM4NjMzNn0.O5m2O78QedPF0CQIi09vq_zAbEgFTAspmlMBhWbtQz8"
 }
 
 ###
