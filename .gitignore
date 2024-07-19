@@ -137,3 +137,5 @@ homecontrol-hub/log.txt
 /Home.Automation/Home.Automation.NodeServer/obj
 /Home.Automation/Home.Automation.Services/bin/Debug/net8.0
 /Home.Automation/Home.Automation.Services/obj
+homecontrol-server/server.key
+homecontrol-server/server.cert

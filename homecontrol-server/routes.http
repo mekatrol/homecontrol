@@ -1,9 +1,9 @@
-GET http://localhost:8888/api/points
-Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZWQiLCJwYXNzd29yZCI6IiQyYiQxMCRVSGJoTlFqY1dHRzdqNHk3MlpibUdlUHNTbmhiTmpvMnQ0WU5tOEt4WHRBMERjUFkubmJvUyIsImlhdCI6MTcyMTM4NDE5NSwiZXhwIjoxNzIxMzg0MjEwfQ.sZOFR8U9CWa4mpKzdDi781u-M14r8Lihnlr0D1OqCW0
+GET https://localhost:8888/api/points
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjEzODQ5MDAsImV4cCI6MTcyMTM4NDkxNX0.EjaXcpmuaOwiF-wb91aLhJmxenRfT_XpAM-zmdUDiFk
 
 ###
 
-POST http://localhost:8888/api/points
+POST https://localhost:8888/api/points
 Content-Type: application/json
 
 {
@@ -13,7 +13,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8888/login
+POST https://localhost:8888/login
 Content-Type: application/json
 
 {
@@ -22,16 +22,16 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8888/token
+POST https://localhost:8888/token
 Content-Type: application/json
 
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYm9iIiwiaWF0IjoxNzIxMzgxODAzfQ.Dr-OEqso2Zgc8B5xbkQm5bkmivcnKHB-HUZrkqEaXWU"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZWQiLCJwYXNzd29yZCI6IiQyYiQxMCRKQmFTSHBBckJ0dFhXN3pvdFRLT3hlZDRkVHdKclJlYUs3UXJqcVJkMk1JS1REbkRjQ29kdSIsImlhdCI6MTcyMTM4NDg2OX0.HzghhqPT-E8O_SqUwqPsvjGeHn0tJwihdadl7N8vuWw"
 }
 
 ###
 
-DELETE  http://localhost:8888/logout
+DELETE  https://localhost:8888/logout
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 
 ### 
 
-POST http://localhost:8888/users
+POST https://localhost:8888/users
 Content-Type: application/json
 
 {
@@ -49,7 +49,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8888/users/login
+POST https://localhost:8888/users/login
 Content-Type: application/json
 
 {

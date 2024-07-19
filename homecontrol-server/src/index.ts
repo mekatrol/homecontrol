@@ -6,6 +6,8 @@ import { initDataManager } from './data/dataManager';
 import { DATA_DIRECTORY } from './constants';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import https from 'https';
 
 declare namespace Express {
   export interface Request {
@@ -156,6 +158,14 @@ app.use(authenticateToken);
 // Points controller
 app.use(pointsRouter);
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Home automation running at http://${hostname}:${port}/`);
-});
+https
+  .createServer(
+    {
+      key: fs.readFileSync('server.key'),
+      cert: fs.readFileSync('server.cert')
+    },
+    app
+  )
+  .listen(port, '0.0.0.0', () => {
+    console.log(`Home automation running at http://${hostname}:${port}/`);
+  });
