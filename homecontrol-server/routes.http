@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ###
 
-POST https://localhost:8888/token
+POST https://localhost:8888/refresh-token
 Content-Type: application/json
 
 {
@@ -55,4 +55,13 @@ Content-Type: application/json
 {
   "username": "fred",
   "password": "da-password123"
+}
+
+### 
+
+POST https://localhost:8888/generate-api-key
+Content-Type: application/json
+
+{
+  "username": "fred"
 }

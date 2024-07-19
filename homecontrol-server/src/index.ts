@@ -119,6 +119,16 @@ app.post('/users', async (req, res) => {
   }
 });
 
+app.post('/generate-api-key', async (req, res) => {
+  try {
+    const token = crypto.randomUUID();
+    const hashedToken = await bcrypt.hash(req.body.username + '_' + token, 10);
+    return res.status(200).json({ key: hashedToken });
+  } catch {
+    return res.sendStatus(500);
+  }
+});
+
 app.post('/users/login', async (req, res) => {
   try {
     const user = users.find((u) => u.username === req.body.username);
@@ -139,7 +149,7 @@ app.post('/users/login', async (req, res) => {
   }
 });
 
-app.post('/token', (req, res) => {
+app.post('/refresh-token', (req, res) => {
   const refreshToken = req.body.token;
   if (!refreshToken) {
     return res.sendStatus(401);
