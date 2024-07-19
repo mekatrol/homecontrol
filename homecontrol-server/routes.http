@@ -1,5 +1,5 @@
 GET http://localhost:8888/api/points
-Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYm9iIiwiaWF0IjoxNzIxMzgxNzg5LCJleHAiOjE3MjEzODE4MDR9.4umaOcLHt8N4J2zgsPbqW-yr-OMXev34qUchkOJ2LQQ
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZWQiLCJwYXNzd29yZCI6IiQyYiQxMCRVSGJoTlFqY1dHRzdqNHk3MlpibUdlUHNTbmhiTmpvMnQ0WU5tOEt4WHRBMERjUFkubmJvUyIsImlhdCI6MTcyMTM4NDE5NSwiZXhwIjoxNzIxMzg0MjEwfQ.sZOFR8U9CWa4mpKzdDi781u-M14r8Lihnlr0D1OqCW0
 
 ###
 
@@ -36,4 +36,23 @@ Content-Type: application/json
 
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYm9iIiwiaWF0IjoxNzIxMzgxODAzfQ.Dr-OEqso2Zgc8B5xbkQm5bkmivcnKHB-HUZrkqEaXWU"
+}
+
+### 
+
+POST http://localhost:8888/users
+Content-Type: application/json
+
+{
+  "username": "fred",
+  "password": "da-password123"
+}
+
+###
+POST http://localhost:8888/users/login
+Content-Type: application/json
+
+{
+  "username": "fred",
+  "password": "da-password123"
 }

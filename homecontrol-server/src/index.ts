@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { initDataManager } from './data/dataManager';
 import { DATA_DIRECTORY } from './constants';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 declare namespace Express {
   export interface Request {
@@ -11,12 +13,22 @@ declare namespace Express {
   }
 }
 
-import jwt from 'jsonwebtoken';
-
 const hostname = 'localhost';
 
 const envFile = path.resolve(__dirname, process.env.NODE_ENV ? `../.env.${process.env.NODE_ENV}` : '.env');
 dotenv.config({ path: envFile });
+
+interface User {
+  username: string;
+  password: string;
+}
+
+interface Jwt {
+  accessToken: string;
+  refreshToken: string;
+}
+
+const users: User[] = [];
 
 const dataManager = initDataManager(process.env.DATA_DIRECTORY ?? DATA_DIRECTORY);
 console.log(dataManager);
@@ -51,9 +63,16 @@ export const authenticateToken: RequestHandler = (req, res, next) => {
   });
 };
 
-const generateAccessToken = (user: any): string => {
+const generateAccessToken = (user: User): string => {
   const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '15s' });
   return accessToken;
+};
+
+const generateAccessAndRefreshTokens = (user: User): Jwt => {
+  const accessToken = generateAccessToken(user);
+  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET as string);
+  refreshTokens.push(refreshToken);
+  return { accessToken: accessToken, refreshToken: refreshToken };
 };
 
 // Serve static assets
@@ -64,17 +83,46 @@ let refreshTokens: string[] = [];
 
 app.post('/login', (req, res) => {
   const username = req.body.username;
-  const user = { name: username };
+  const user = { username: username } as User;
 
-  const accessToken = generateAccessToken(user);
-  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET as string);
-  refreshTokens.push(refreshToken);
-  res.json({ accessToken: accessToken, refreshToken: refreshToken });
+  const jwt = generateAccessAndRefreshTokens(user);
+  res.json(jwt);
 });
 
 app.delete('/logout', (req, res) => {
   refreshTokens = refreshTokens.filter((t) => t !== req.body.token);
   res.sendStatus(204);
+});
+
+app.post('/users', async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const user = { username: req.body.username, password: hashedPassword };
+    users.push(user);
+    return res.status(201).json(user);
+  } catch (err: any) {
+    return res.status(500).json({ message: err.message });
+  }
+});
+
+app.post('/users/login', async (req, res) => {
+  try {
+    const user = users.find((u) => u.username === req.body.username);
+
+    if (!user) {
+      return res.sendStatus(404);
+    }
+
+    const matched = await bcrypt.compare(req.body.password, user.password);
+
+    if (!matched) {
+      return res.sendStatus(401);
+    }
+
+    return res.status(200).json(generateAccessAndRefreshTokens(user));
+  } catch (err: any) {
+    return res.sendStatus(500);
+  }
 });
 
 app.post('/token', (req, res) => {
@@ -92,7 +140,7 @@ app.post('/token', (req, res) => {
       return res.sendStatus(403);
     }
 
-    const accessToken = generateAccessToken({ name: user.name });
+    const accessToken = generateAccessToken({ username: user.name } as User);
     res.json({ accessToken: accessToken });
   });
 });
