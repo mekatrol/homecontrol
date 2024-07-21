@@ -1,0 +1,68 @@
+GET https://localhost:8888/api/points
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjEzODg0MzYsImV4cCI6MTcyMTM4ODczNn0.n-F7tm3fqRTGjdFdn8rC7V-sVBV5LUS1k2bW5CJIBmo
+
+###
+
+POST https://localhost:8888/api/points
+Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjEzODg0MzYsImV4cCI6MTcyMTM4ODczNn0.n-F7tm3fqRTGjdFdn8rC7V-sVBV5LUS1k2bW5CJIBmo
+Content-Type: application/json
+
+{
+  "id": "1",
+  "name": "fred"
+}
+
+###
+
+POST https://localhost:8888/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "bob"
+}
+
+###
+
+POST https://localhost:8888/api/auth/refresh-token
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZWQiLCJwYXNzd29yZCI6IiQyYiQxMCRPTzF5YVR2RldNd3NOclBSZUs5elBlUExsMlBsRTdSWGZjL0VjcGZaRmtoa1VOV0FTSXhQTyIsImlhdCI6MTcyMTM4ODQyMX0.RtJgQEWOhQyMxCouef3a42t1H1WeEQsR5zvmNXYE2AI"
+}
+
+###
+
+DELETE  https://localhost:8888/api/auth/logout
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZWQiLCJwYXNzd29yZCI6IiQyYiQxMCRPTzF5YVR2RldNd3NOclBSZUs5elBlUExsMlBsRTdSWGZjL0VjcGZaRmtoa1VOV0FTSXhQTyIsImlhdCI6MTcyMTM4ODQyMX0.RtJgQEWOhQyMxCouef3a42t1H1WeEQsR5zvmNXYE2AI"
+}
+
+### 
+
+POST https://localhost:8888/api/auth/users
+Content-Type: application/json
+
+{
+  "username": "fred",
+  "password": "da-password123"
+}
+
+###
+POST https://localhost:8888/api/auth/users/login
+Content-Type: application/json
+
+{
+  "username": "fred",
+  "password": "da-password123"
+}
+
+### 
+
+POST https://localhost:8888/api/auth/generate-api-key
+Content-Type: application/json
+
+{
+  "username": "fred"
+}

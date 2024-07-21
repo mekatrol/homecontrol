@@ -8,18 +8,21 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
 import SidebarSlider from './components/SidebarSlider.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useHomeAssistant } from './composables/home-assistant';
 
 const isHidden = ref(false);
 
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    isHidden.value = true;
-  } else {
-    const timer = setTimeout(() => {
-      isHidden.value = false;
-      clearTimeout(timer);
-    }, 5);
-  }
+const homeAssistant = useHomeAssistant('ws://ha.lan:8123/api/websocket', 'aaa');
+
+const delay = (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+onMounted(async () => {
+  await homeAssistant.disconnect();
+  await homeAssistant.connect();
+  await delay(2000);
+  await homeAssistant.disconnect();
 });
 </script>
