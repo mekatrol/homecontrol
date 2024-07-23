@@ -3,7 +3,7 @@ from schemas import UserSchema
 from flask_jwt_extended import jwt_required
 from wireup import container
 
-from services.data import DataService
+from services.data_service import DataService
 
 user_bp = Blueprint('users', __name__)
 

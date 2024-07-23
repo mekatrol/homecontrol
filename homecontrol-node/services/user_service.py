@@ -5,7 +5,7 @@ from wireup import container
 from wireup import service
 from models.user import User
 from services.base import BaseService
-from services.data import DataService
+from services.data_service import DataService
 
 
 @service
@@ -20,6 +20,7 @@ class UserService(BaseService):
         if len(users) == 0:
             return None
 
+        # Created user instance using the the first returned element
         return User(**users[0])
 
     def validate_user_password(self, password: str, user: User) -> bool:
@@ -57,4 +58,6 @@ class UserService(BaseService):
         users_db.add(new_user.model_dump())
 
         users = users_db.getBy({"username": admin})
+
+        # Created user instance using the the first returned element
         return User(**users[0])

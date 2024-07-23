@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 import bcrypt
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required, current_user
@@ -7,8 +7,9 @@ from models.revoked_token import RevokedToken
 from models.user import User
 from wireup import container
 
-from services.data import DataService
-from services.user import UserService
+from services.data_service import DataService
+from services.revoked_token_service import RevokedTokenService
+from services.user_service import UserService
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -19,6 +20,7 @@ def register_user():
         # Get body as JSON
         data = request.get_json()
 
+        # Get user credentials from the request
         username = data.get("username").strip()
         password = data.get("password").strip()
 
@@ -57,24 +59,32 @@ def login_user(user_service: UserService):
         # Get body as JSON
         data = request.get_json()
 
+        # Get user credentials from the request
+        username = data.get("username").strip()
+        password = data.get("password").strip()
+
         # Locate user by username
-        user = user_service.get_user(data.get('username'))
+        user = user_service.get_user(username)
 
         if user is None:
-            # Not found
-            return jsonify({"message": "user does not exist"}), 404
+            # A matching username was not found in the database
+            return jsonify({"message": "invalid username or password"}), 401
 
-        if user_service.validate_user_password(data.get('password'), user):
-            expires = timedelta(minutes=10)
-            username = user.username
-            access_token = create_access_token(
-                identity=username, expires_delta=expires)
-            refresh_token = create_refresh_token(identity=user.username)
+        # Test password for match against database
+        password_valid = user_service.validate_user_password(password, user)
 
-            return jsonify({"access_token": access_token, "refresh_token": refresh_token}), 200
+        if not password_valid:
+            # Invalid password for the given username
+            return jsonify({"message": f"invalid username or password"}), 401
 
-        # User failed to login
-        return jsonify({"message": f"invalid username or password"}), 401
+        # Create access and refresh tokens
+        expires = timedelta(minutes=10)
+        access_token = create_access_token(
+            identity=username, expires_delta=expires)
+        refresh_token = create_refresh_token(identity=user.username)
+
+        return jsonify({"access_token": access_token, "refresh_token": refresh_token}), 200
+
     except Exception as ex:
         # Print exception for debugging use
         print(ex)
@@ -86,15 +96,13 @@ def login_user(user_service: UserService):
 @auth_bp.get('/logout')
 @jwt_required(verify_type=False)
 @container.autowire
-def revoke_token(data_service: DataService):
+def revoke_token(revoked_token_service: RevokedTokenService):
     jwt = get_jwt()
-    jti = jwt["jti"]
-    token_type = jwt["type"]
 
-    if jti is not None:
-        revoked_token = RevokedToken(id=0, jti=jti, type=token_type)
-        id = data_service.get_revoked_users_db().add(revoked_token)
-        return jsonify({"message": f"'{token_type}' revoked with ID: '{id}'"}), 200
+    revoked_token = revoked_token_service.revoke_token(jwt)
+
+    if revoked_token is not None:
+        return jsonify({"message": f"'{revoked_token.token_type}' revoked with ID: '{revoked_token.id}'"}), 200
 
     return jsonify({"message": "invalid token"}), 400
 

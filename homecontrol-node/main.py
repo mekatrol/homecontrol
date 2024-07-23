@@ -3,8 +3,9 @@ from flask_jwt_extended import JWTManager
 from pysondb import db
 from flask import Flask, jsonify
 from auth import auth_bp
+from services.revoked_token_service import RevokedTokenService
 from users import user_bp
-from services.user import UserService
+from services.user_service import UserService
 from wireup import container, initialize_container
 from pyaml_env import parse_config
 import services
@@ -41,13 +42,13 @@ def create_app():
         if username is None:
             return None
 
-        user = UserService.get_user(username=username)
+        user = user_service.get_user(username=username)
         return user
 
     # JWT claims
     @ jwt.additional_claims_loader
     def inject_user_claims(identity):
-        user = UserService.get_user(username=identity)
+        user = user_service.get_user(username=identity)
         if user and user.id == "cca7efea-7652-4486-b90c-63ab67a54c1a":
             return {"is_admin": True}
 
@@ -72,18 +73,13 @@ def create_app():
 
     @ jwt.token_in_blocklist_loader
     def check_token_revoked(jwt_header, jwt_data):
-        jti = jwt_data["jti"]
-
-        token = None
-
-        return jti != 'bob' and token is not None
+        revoked_token_service = container.get(RevokedTokenService)
+        revoked_token = revoked_token_service.get_revoked_token(jwt_data)
+        return revoked_token is None
 
     return app
 
 
 if __name__ == "__main__":
-    a = db.getDb("db.json")
-    print(a)
-
-    # app = create_app()
-    # app.run()
+    app = create_app()
+    app.run()
