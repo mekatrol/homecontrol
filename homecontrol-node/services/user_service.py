@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 import bcrypt
 from typing import Optional
-from wireup import container
 from wireup import service
-from models.user import User
+from entities.user import User
 from services.base import BaseService
 from services.data_service import DataService
 
@@ -12,6 +11,13 @@ from services.data_service import DataService
 @dataclass
 class UserService(BaseService):
     data_service: DataService
+
+    def get_all_users(self) -> list[User]:
+        users_list_dict = self.data_service.get_users_db().getAll()
+
+        users = list(map(lambda u: User(**u), users_list_dict))
+
+        return users
 
     def get_user(self, username: str) -> Optional[User]:
         users = self.data_service.get_users_db().getBy(

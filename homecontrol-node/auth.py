@@ -3,8 +3,8 @@ import bcrypt
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required, current_user
 from pysondb import db
-from models.revoked_token import RevokedToken
-from models.user import User
+from entities.revoked_token import RevokedToken
+from entities.user import User
 from wireup import container
 
 from services.data_service import DataService

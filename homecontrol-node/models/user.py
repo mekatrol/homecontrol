@@ -1,7 +1,6 @@
-from pydantic import BaseModel
+from marshmallow import fields, Schema
 
 
-class User(BaseModel):
-    id: int
-    username: str
-    password: str
+class UserModel(Schema):
+    id = fields.String()
+    username = fields.String()

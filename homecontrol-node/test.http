@@ -2,7 +2,7 @@ POST http://127.0.0.1:5000/auth/register
 Content-Type: application/json
 
 {
-  "username": "test2",
+  "username": "test",
   "password": "password"
 }
 
@@ -12,7 +12,7 @@ POST http://127.0.0.1:5000/auth/login
 Content-Type: application/json
 
 {
-  "username": "test2",
+  "username": "test",
   "password": "password"
 }
 
@@ -24,8 +24,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsI
 
 ###
 
-GET http://127.0.0.1:5000/users/all?page=2&per_page=2
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTc3NDg2MSwianRpIjoiNzUyY2JkZTUtMmNlMS00OTcxLWFhNjAtZTI0NGI1NTliZmIwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QyIiwibmJmIjoxNzIxNzc0ODYxLCJjc3JmIjoiYThjZThmMGMtNzY1YS00OGMwLWEzYTgtMjNlOTQ1Mzk5ZTI0IiwiZXhwIjoxNzIxNzc1NDYxfQ.zUlKGIjvpE1-suuJEZTmcpTqj7h6vsaEXN222fe_o6M
+GET http://127.0.0.1:5000/users/all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTc3NjA0NywianRpIjoiZGNkN2UxOWMtOWM5MS00OTY5LTgxYzEtOTlkOTdkOWQwYzYzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QiLCJuYmYiOjE3MjE3NzYwNDcsImNzcmYiOiJiYTFjZDJmMy04MTBkLTQ5OTMtOWQxNC0wNGJkOGFhNDEwOTUiLCJleHAiOjE3MjE3NzY2NDd9.Mo2O7-xL_g9OaYB54AsGGmkwTEDzfjTy4NXbvQiherw
 
 ###
 

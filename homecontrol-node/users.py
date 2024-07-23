@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify
-from schemas import UserSchema
+from models.user import UserModel
 from flask_jwt_extended import jwt_required
 from wireup import container
 
-from services.data_service import DataService
+from services.user_service import UserService
 
 user_bp = Blueprint('users', __name__)
 
@@ -11,13 +11,12 @@ user_bp = Blueprint('users', __name__)
 @user_bp.get('/all')
 @jwt_required()
 @container.autowire
-def get_all_users(data_service: DataService):
-    users_db = data_service.get_users_db()
+def get_all_users(user_service: UserService):
+    users = user_service.get_all_users()
 
-    users = users_db.getAll()
-
-    result = UserSchema().dump(users, many=True)
+    # Create JSON model without password
+    user_models = UserModel().dump(users, many=True)
 
     return jsonify({
-        "users": result,
+        "users": user_models
     }), 200

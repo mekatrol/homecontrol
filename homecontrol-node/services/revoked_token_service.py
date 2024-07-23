@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
 from wireup import service
-from models.revoked_token import RevokedToken
+from entities.revoked_token import RevokedToken
 from services.base import BaseService
 from services.data_service import DataService
 
