@@ -1,0 +1,16 @@
+{
+  "cSpell.words": [
+    "autowire",
+    "checkpw",
+    "gensalt",
+    "hashpw",
+    "jsonify",
+    "pyaml",
+    "pydantic",
+    "pysondb",
+    "sessionmaker",
+    "sqlalchemy",
+    "werkzeug",
+    "wireup"
+  ]
+}

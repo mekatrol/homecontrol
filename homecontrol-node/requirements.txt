@@ -1,0 +1,10 @@
+flask
+python-dotenv
+flask-jwt-extended
+marshmallow
+pysondb
+bcrypt
+pydantic
+wireup
+pyyaml
+pyaml-env

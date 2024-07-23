@@ -1,0 +1,5 @@
+app:
+  data_files:
+    users_data_file: ./instance/users.json
+    revoked_users_data_file: ./instance/revoked.json
+    points_data_file: ./instance/points.json

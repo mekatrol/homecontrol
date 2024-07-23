@@ -1,0 +1,38 @@
+POST http://127.0.0.1:5000/auth/register
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "password"
+}
+
+###
+
+POST http://127.0.0.1:5000/auth/login
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "password"
+}
+
+###
+
+GET http://127.0.0.1:5000/auth/logout
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTY0ODc0MywianRpIjoiN2JjOTNlMzYtMWU1My00OGE1LWIzYWEtMGQ4OGM1M2NjYWE0IiwidHlwZSI6InJlZnJlc2giLCJzdWIiOiJ0ZXN0MSIsIm5iZiI6MTcyMTY0ODc0MywiY3NyZiI6IjczNDViMzM0LTc3NjMtNDUwNy1hNmI5LTE2MzlkNDFjZWYxMCIsImV4cCI6MTcyNDI0MDc0MywiaXNfYWRtaW4iOnRydWV9.mtcMRDZ7G1Ap238ISzic16HqUMblZwle3Q_2KJxBuAI
+
+###
+
+GET http://127.0.0.1:5000/users/all?page=2&per_page=2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTY0ODAwOCwianRpIjoiMmZhN2YzYzQtODQ4OC00M2JiLWE1YjUtMjc1MzhiNmIxODdmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QxIiwibmJmIjoxNzIxNjQ4MDA4LCJjc3JmIjoiMGRlOTNlYmUtMzZlZi00MWI0LTg3ZDUtNjJjODgzNjVkOTkwIiwiZXhwIjoxNzIxNjQ4NjA4LCJpc19hZG1pbiI6dHJ1ZX0.if6iCaSb3fYZg0JBJq6eP28ke7uB0K8l2k7k5ByK-V8
+
+###
+
+GET http://127.0.0.1:5000/auth/refresh-token
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTY0NTU5NywianRpIjoiMzc5YjAwOTktN2I0OS00OGExLThmNWEtZmU2N2ZkZWY0YmJlIiwidHlwZSI6InJlZnJlc2giLCJzdWIiOiJ0ZXN0MSIsIm5iZiI6MTcyMTY0NTU5NywiY3NyZiI6IjEyZjA3NTA3LTIzODgtNDU5Ny1hZmVjLWJlYjlmZWQ3NThkZSIsImV4cCI6MTcyNDIzNzU5NywiaXNfYWRtaW4iOnRydWV9.WDHK1BoYedZ5hfoWaiNKz41PH803kg1H-9nY5qYHpp0
+
+###
+
+GET http://127.0.0.1:5000/auth/who-am-i
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTY0NzI1NywianRpIjoiOWFmODc5MGMtNGE3MC00MGRmLThiZTUtM2I0ODVjNDQ3Y2Y2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QxIiwibmJmIjoxNzIxNjQ3MjU3LCJjc3JmIjoiM2M5MWE4YzAtN2YxYi00ZGY3LWI5ZjQtMjU0YmM5NDAyOTc2IiwiZXhwIjoxNzIxNjQ3ODU3LCJpc19hZG1pbiI6dHJ1ZX0.N4yDKQWKFbQknIYtr05JZqJMsJmANGxPZYSL4QnJaWg
