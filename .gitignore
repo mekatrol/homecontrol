@@ -140,4 +140,4 @@ homecontrol-hub/log.txt
 homecontrol-server/server.key
 homecontrol-server/server.cert
 homecontrol-server/data
-*.sqlite3
+homecontrol-server/server
