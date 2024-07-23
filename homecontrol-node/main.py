@@ -75,7 +75,7 @@ def create_app():
     def check_token_revoked(jwt_header, jwt_data):
         revoked_token_service = container.get(RevokedTokenService)
         revoked_token = revoked_token_service.get_revoked_token(jwt_data)
-        return revoked_token is None
+        return revoked_token is not None
 
     return app
 

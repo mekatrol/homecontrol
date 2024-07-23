@@ -141,3 +141,4 @@ homecontrol-server/server.key
 homecontrol-server/server.cert
 homecontrol-server/data
 homecontrol-server/server
+homecontrol-node/instance
