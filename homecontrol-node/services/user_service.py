@@ -7,19 +7,45 @@ from constants.user_security_roles import SECURITY_ROLE_ADMIN, SECURITY_ROLE_USE
 from models.user import UserModel
 from services.base import BaseService
 from services.data_service import DataService
+from services.user_mapper_service import UserMapperService
 
 
 @service
 @dataclass
 class UserService(BaseService):
     data_service: DataService
+    user_mapper_service: UserMapperService
 
-    def get_all_users(self) -> list[User]:
+    def get_all_users(self, include_roles: bool = False) -> list[UserModel]:
+        # Get all users (as dictionary objects)
         users_dict = self.data_service.get_users_db().getAll()
-        users = list(map(lambda u: User(**u), users_dict))
-        return users
 
-    def get_all_user_security_roles(self) -> list[User]:
+        # Convert to entities
+        user_entities = list(map(lambda u: User(**u), users_dict))
+
+        # Create empty model list
+        user_models = []
+
+        # Default to no roles
+        user_security_roles = None
+
+        # If the caller wants roles included then fetch all user security roles
+        if include_roles:
+            user_security_roles = self.get_all_user_security_roles()
+
+        # Iterate each entity
+        for user_entity in user_entities:
+            # Convert to user model (including user roles if roles list populated)
+            user_model = self.user_mapper_service.map_to_model(
+                user_entity, user_security_roles)
+
+            # Add to role model list
+            user_models.append(user_model)
+
+        # Return list of role models
+        return user_models
+
+    def get_all_user_security_roles(self) -> list[UserSecurityRole]:
         roles_dict = self.data_service.get_user_security_roles_db().getAll()
         roles = list(map(lambda role: UserSecurityRole(**role), roles_dict))
         return roles
