@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class DataFileConfig:
     users_data_file: str
     points_data_file: str
-    revoked_users_data_file: str
+    users_revoked_tokens_data_file: str
 
 
 @dataclass(frozen=True)
