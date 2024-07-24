@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify
-from models.user import UserModel
 from flask_jwt_extended import jwt_required
 from wireup import container
 
 from services.user_service import UserService
+from models.user import UserModel
 
 user_bp = Blueprint('users', __name__)
 

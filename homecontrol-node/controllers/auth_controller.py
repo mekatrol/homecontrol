@@ -1,13 +1,13 @@
-from datetime import datetime, timedelta, timezone
 import bcrypt
+
+from datetime import timedelta
+from pysondb import db
+from wireup import container
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required, current_user
-from pysondb import db
-from entities.revoked_token import RevokedToken
-from entities.user import User
-from wireup import container
 
-from services.data_service import DataService
+from entities.user import User
+
 from services.revoked_token_service import RevokedTokenService
 from services.user_service import UserService
 

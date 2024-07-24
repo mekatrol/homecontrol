@@ -1,14 +1,14 @@
 import yaml
 from flask_jwt_extended import JWTManager
-from pysondb import db
 from flask import Flask, jsonify
-from auth import auth_bp
-from services.revoked_token_service import RevokedTokenService
-from users import user_bp
-from services.user_service import UserService
 from wireup import container, initialize_container
 from pyaml_env import parse_config
+
+from controllers.auth_controller import auth_bp
+from controllers.user_controller import user_bp
 import services
+from services.revoked_token_service import RevokedTokenService
+from services.user_service import UserService
 
 
 def create_app():
