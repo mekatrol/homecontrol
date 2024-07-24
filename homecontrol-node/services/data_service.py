@@ -9,7 +9,7 @@ from services.base import BaseService
 @service
 class DataService(BaseService):
     users_db: db.JsonDatabase
-    revoked_users_db: db.JsonDatabase
+    user_revoked_tokens_db: db.JsonDatabase
     user_security_roles_db: db.JsonDatabase
     points_db: db.JsonDatabase
 
@@ -17,8 +17,8 @@ class DataService(BaseService):
         super().__init__()
 
         users_data_file = data_files.get("users_data_file")
-        users_revoked_tokens_data_file = data_files.get(
-            "users_revoked_tokens_data_file")
+        user_revoked_tokens_data_file = data_files.get(
+            "user_revoked_tokens_data_file")
         user_security_roles_data_file = data_files.get(
             "user_security_roles_data_file")
         points_data_file = data_files.get("points_data_file")
@@ -27,9 +27,9 @@ class DataService(BaseService):
             raise Exception(
                 "'users_data_file' setting missing from configuration file")
 
-        if users_revoked_tokens_data_file is None:
+        if user_revoked_tokens_data_file is None:
             raise Exception(
-                "'users_revoked_tokens_data_file' setting missing from configuration file")
+                "'user_revoked_tokens_data_file' setting missing from configuration file")
 
         if user_security_roles_data_file is None:
             raise Exception(
@@ -40,15 +40,18 @@ class DataService(BaseService):
                 "'points_data_file' setting missing from configuration file")
 
         self.users_db = db.getDb(users_data_file)
-        self.revoked_users_db = db.getDb(users_revoked_tokens_data_file)
+        self.user_revoked_tokens_db = db.getDb(user_revoked_tokens_data_file)
         self.user_security_roles_db = db.getDb(user_security_roles_data_file)
         self.points_db = db.getDb(points_data_file)
 
     def get_users_db(self) -> db.JsonDatabase:
         return self.users_db
 
-    def get_revoked_users_db(self) -> db.JsonDatabase:
-        return self.revoked_users_db
+    def get_user_revoked_tokens_db(self) -> db.JsonDatabase:
+        return self.user_revoked_tokens_db
+
+    def get_user_security_roles_db(self) -> db.JsonDatabase:
+        return self.user_security_roles_db
 
     def get_points_db(self) -> db.JsonDatabase:
         return self.points_db

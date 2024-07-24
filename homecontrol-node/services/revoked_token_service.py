@@ -15,7 +15,7 @@ class RevokedTokenService(BaseService):
     def get_revoked_token(self, jwt: dict) -> Optional[RevokedToken]:
         jti = jwt["jti"]
 
-        revoked_tokens = self.data_service.get_revoked_users_db().getBy(
+        revoked_tokens = self.data_service.get_user_revoked_tokens_db().getBy(
             {"jti": jti})
 
         if len(revoked_tokens) == 0:
@@ -37,7 +37,7 @@ class RevokedTokenService(BaseService):
             id=0, jti=jti, type=token_type, created=datetime.now(timezone.utc).isoformat())
 
         # Add to DB (and set ID to DB generated ID that is returned)
-        revoked_token.id = self.data_service.get_revoked_users_db().add(
+        revoked_token.id = self.data_service.get_user_revoked_tokens_db().add(
             revoked_token.model_dump())
 
         # Return the created token instance
