@@ -12,7 +12,6 @@ from services.user_service import UserService
 
 
 def create_app():
-
     app = Flask(__name__)
 
     # Register blueprints
