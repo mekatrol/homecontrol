@@ -1,6 +1,8 @@
-from marshmallow import fields, Schema
+from dataclasses import dataclass
 
 
-class UserModel(Schema):
-    id = fields.String()
-    username = fields.String()
+@dataclass
+class UserModel:
+    id: int
+    userName: str
+    roles: list[str]

@@ -4,6 +4,7 @@ from typing import Optional
 from wireup import service
 from entities.user import User, UserSecurityRole
 from constants.user_security_roles import SECURITY_ROLE_ADMIN, SECURITY_ROLE_USER
+from models.user import UserModel
 from services.base import BaseService
 from services.data_service import DataService
 
@@ -14,11 +15,14 @@ class UserService(BaseService):
     data_service: DataService
 
     def get_all_users(self) -> list[User]:
-        users_list_dict = self.data_service.get_users_db().getAll()
-
-        users = list(map(lambda u: User(**u), users_list_dict))
-
+        users_dict = self.data_service.get_users_db().getAll()
+        users = list(map(lambda u: User(**u), users_dict))
         return users
+
+    def get_all_user_security_roles(self) -> list[User]:
+        roles_dict = self.data_service.get_user_security_roles_db().getAll()
+        roles = list(map(lambda role: UserSecurityRole(**role), roles_dict))
+        return roles
 
     def get_user(self, username: str) -> Optional[User]:
         users = self.data_service.get_users_db().getBy(
