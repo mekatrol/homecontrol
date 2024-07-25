@@ -105,7 +105,7 @@ def revoke_token(revoked_token_service: RevokedTokenService):
     revoked_token = revoked_token_service.revoke_token(jwt)
 
     if revoked_token is not None:
-        return jsonify({"message": f"'{revoked_token.type}' revoked with ID: '{revoked_token["id"]}'"}), 200
+        return jsonify({"message": f"'{revoked_token["type"]}' revoked with ID: '{revoked_token["id"]}'"}), 200
 
     return jsonify({"message": "invalid token"}), 400
 

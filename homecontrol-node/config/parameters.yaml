@@ -1,4 +1,5 @@
 app:
+  lock_file: ./instance/app.lock
   data_files:
     users_data_file: ./instance/users.json
     user_revoked_tokens_data_file: ./instance/user_revoked_tokens.json

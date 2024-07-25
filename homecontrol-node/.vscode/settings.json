@@ -2,6 +2,7 @@
   "cSpell.words": [
     "autowire",
     "checkpw",
+    "filelock",
     "gensalt",
     "hashpw",
     "jsonify",
