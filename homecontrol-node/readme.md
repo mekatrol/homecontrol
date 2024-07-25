@@ -17,8 +17,8 @@ flask --app main.py shell
 > The following commands are executed from the python shell
 
 ```python
-from secrets
+import secrets
 
-secrets.token_hex(12)
+secrets.token_hex(24)
 
 ```

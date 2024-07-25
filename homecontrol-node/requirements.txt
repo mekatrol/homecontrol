@@ -1,5 +1,4 @@
 flask
-python-dotenv
 flask-jwt-extended
 pysondb
 bcrypt

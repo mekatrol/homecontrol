@@ -1,3 +1,4 @@
+from datetime import timedelta
 import yaml
 from flask_jwt_extended import JWTManager
 from flask import Flask, jsonify
@@ -23,6 +24,12 @@ def create_app():
     container.params.update(all_config["app"])
     initialize_container(container, service_modules=[services])
 
+    # Initialise JWT settings
+    app.config["JWT_COOKIE_SECURE"] = True
+    app.config["JWT_SECRET_KEY"] = all_config["app"]["jwt_key"]
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+        minutes=all_config["app"]["jwt_expiry_mins"])
+
     # Initialise JWT
     jwt = JWTManager()
     jwt.init_app(app)
@@ -34,7 +41,7 @@ def create_app():
     app.config.from_prefixed_env()
 
     # User injection
-    @ jwt.user_lookup_loader
+    @jwt.user_lookup_loader
     def inject_user(jwt_headers, jwt_data):
         user_name = jwt_data["sub"]
 
@@ -45,7 +52,7 @@ def create_app():
         return user
 
     # JWT claims
-    @ jwt.additional_claims_loader
+    @jwt.additional_claims_loader
     def inject_user_claims(identity):
         user = user_service.get_user(user_name=identity)
         if user and user["id"] == "cca7efea-7652-4486-b90c-63ab67a54c1a":
@@ -54,23 +61,23 @@ def create_app():
         return None
 
     # JWT error handling
-    @ jwt.expired_token_loader
+    @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_data):
         return jsonify({"message": "Authorization header Bearer JWT has expired"}), 401
 
-    @ jwt.invalid_token_loader
+    @jwt.invalid_token_loader
     def invalid_token_callback(error):
         return jsonify({"message": "Authorization header Bearer JWT is invalid"}), 401
 
-    @ jwt.unauthorized_loader
+    @jwt.unauthorized_loader
     def missing_token_callback(error):
         return jsonify({"message": "Authorization header Bearer JWT is missing"}), 401
 
-    @ jwt.revoked_token_loader
+    @jwt.revoked_token_loader
     def revoked_token_callback(jwt_header, jwt_data):
         return jsonify({"message": "Authorization header Bearer JWT has been revoked"}), 401
 
-    @ jwt.token_in_blocklist_loader
+    @jwt.token_in_blocklist_loader
     def check_token_revoked(jwt_header, jwt_data):
         user_token_service = container.get(UserTokenService)
         user_token = user_token_service.get(jwt_data["sub"])
