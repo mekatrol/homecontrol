@@ -22,3 +22,9 @@ import secrets
 secrets.token_hex(24)
 
 ```
+
+## Run production server
+
+```bash
+waitress-serve --port=8080 --call main:create_app
+```

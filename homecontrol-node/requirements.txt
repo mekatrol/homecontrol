@@ -7,3 +7,4 @@ wireup
 pyyaml
 pyaml-env
 filelock
+waitress

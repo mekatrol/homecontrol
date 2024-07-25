@@ -14,14 +14,18 @@ from services.user_service import UserService
 
 
 def create_app():
-    app = Flask(__name__)
+    # Initialise configuration and DI
+    all_config = parse_config("config/config.yaml", loader=yaml.Loader)
+
+    app = Flask(__name__,
+                static_url_path='',
+                static_folder='web/static',
+                template_folder='web/templates')
 
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(user_bp, url_prefix='/users')
 
-    # Initialise configuration and DI
-    all_config = parse_config("config/parameters.yaml", loader=yaml.Loader)
     container.params.update(all_config["app"])
     initialize_container(container, service_modules=[services])
 
