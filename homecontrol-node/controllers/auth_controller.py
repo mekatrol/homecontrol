@@ -15,9 +15,11 @@ def register_user(user_service: UserService):
         # Get body as JSON
         data = request.get_json()
 
+        user_name = data.get("userName", "")
+        password = data.get("password", "")
+
         # create the user
-        user = user_service.create_user(
-            data.get("userName"),  data.get("password"))
+        user = user_service.create_user(user_name, password)
 
         # Return created message with the new user ID
         return jsonify({"message": f"user '{user["userName"]}' created"}), 201
@@ -25,7 +27,7 @@ def register_user(user_service: UserService):
     except UserExistsException:
         return jsonify({"message": "user already exists"}), 409  # Conflict
     except InvalidCredentialsException as ex:
-        return jsonify({"message": ex}), 400  # Conflict
+        return jsonify({"message": str(ex)}), 400  # Conflict
     except Exception as ex:
         # Print exception for debugging use
         print(ex)

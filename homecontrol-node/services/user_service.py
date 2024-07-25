@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 import bcrypt
-from typing import Optional
+from typing import Optional, Union
 from wireup import service
+from flask_jwt_extended import current_user
 from constants.user_security_roles import SECURITY_ROLE_ADMIN, SECURITY_ROLE_USER
 from services.base import BaseService
 from services.data_service import DataService
@@ -16,13 +17,22 @@ class InvalidCredentialsException(Exception):
     pass
 
 
+class ForbiddenException(Exception):
+    pass
+
+
 @service
 @dataclass
 class UserService(BaseService):
     data_service: DataService
     user_mapper_service: UserMapperService
 
-    def create_user(self, user_name: str, password: str) -> dict:
+    def create_user(self, user_name: Union[str, None], password: Union[str, None]) -> dict:
+        if user_name is None or password is None:
+            # Raise invalid credentials provided exception
+            raise InvalidCredentialsException(
+                "invalid user name or password provided")
+
         # Make sure white space stripped
         user_name = user_name.strip()
         password = password.strip()
@@ -57,6 +67,10 @@ class UserService(BaseService):
         return new_user
 
     def get_all_users(self, include_roles: bool = False) -> list[dict]:
+        # Does this user have permissions to access?
+        if current_user is None or current_user["roles"] is None or "admin" not in current_user["roles"]:
+            raise ForbiddenException()
+
         with self.data_service:
             # Default to no roles
             user_security_roles = None
