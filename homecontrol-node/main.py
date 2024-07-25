@@ -38,8 +38,6 @@ def create_app():
     user_service = container.get(UserService)
     user_service.ensure_admin_user()
 
-    app.config.from_prefixed_env()
-
     # User injection
     @jwt.user_lookup_loader
     def inject_user(jwt_headers, jwt_data):
