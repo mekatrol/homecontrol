@@ -6,8 +6,6 @@ from wireup import container
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required, current_user
 
-from entities.user import User
-
 from services.revoked_token_service import RevokedTokenService
 from services.user_service import UserService
 
@@ -21,13 +19,13 @@ def register_user():
         data = request.get_json()
 
         # Get user credentials from the request
-        username = data.get("username").strip()
+        username = data.get("userName").strip()
         password = data.get("password").strip()
 
         users_db = db.getDb("./instance/users.json")
 
         # Locate user by username
-        users = users_db.getBy({"username": username})
+        users = users_db.getBy({"userName": username})
 
         # Make sure not an existing user
         if (len(users) > 0):
@@ -38,9 +36,13 @@ def register_user():
         hashed_password = bcrypt.hashpw(
             password_bytes, password_salt).decode('utf-8')
 
-        new_user = User(id=0, username=username, password=hashed_password)
+        new_user = {
+            "userName": username,
+            "password": hashed_password,
+            "resetPassword": False
+        }
 
-        id = users_db.add(new_user.model_dump())
+        id = users_db.add(new_user)
 
         # Return created message with the new user ID
         return jsonify({"message": f"user created with ID: '{id}'"}), 201
@@ -60,7 +62,7 @@ def login_user(user_service: UserService):
         data = request.get_json()
 
         # Get user credentials from the request
-        username = data.get("username").strip()
+        username = data.get("userName").strip()
         password = data.get("password").strip()
 
         # Locate user by username
@@ -71,7 +73,8 @@ def login_user(user_service: UserService):
             return jsonify({"message": "invalid username or password"}), 401
 
         # Test password for match against database
-        password_valid = user_service.validate_user_password(password, user)
+        password_valid = user_service.validate_user_password(
+            password, user["id"])
 
         if not password_valid:
             # Invalid password for the given username
@@ -81,7 +84,7 @@ def login_user(user_service: UserService):
         expires = timedelta(minutes=10)
         access_token = create_access_token(
             identity=username, expires_delta=expires)
-        refresh_token = create_refresh_token(identity=user.username)
+        refresh_token = create_refresh_token(identity=username)
 
         return jsonify({"access_token": access_token, "refresh_token": refresh_token}), 200
 
@@ -102,7 +105,7 @@ def revoke_token(revoked_token_service: RevokedTokenService):
     revoked_token = revoked_token_service.revoke_token(jwt)
 
     if revoked_token is not None:
-        return jsonify({"message": f"'{revoked_token.type}' revoked with ID: '{revoked_token.id}'"}), 200
+        return jsonify({"message": f"'{revoked_token.type}' revoked with ID: '{revoked_token["id"]}'"}), 200
 
     return jsonify({"message": "invalid token"}), 400
 
@@ -117,7 +120,7 @@ def refresh_token():
     return jsonify({"access_token": access_token})
 
 
-@auth_bp.get('/who-am-i')
+@auth_bp.get('/me')
 @jwt_required()
 def get_user_detail():
-    return jsonify({"message": f"{current_user.username}: {current_user.id}"})
+    return jsonify({"user": current_user})

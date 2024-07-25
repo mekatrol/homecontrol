@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Annotated
 from pysondb import db
 from wireup import Inject, service
-from entities.config import DataFileConfig
+from models.config import DataFileConfig
 from services.base import BaseService
 
 

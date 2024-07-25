@@ -2,7 +2,7 @@ POST http://127.0.0.1:5000/auth/register
 Content-Type: application/json
 
 {
-  "username": "test",
+  "userName": "test",
   "password": "password"
 }
 
@@ -12,27 +12,37 @@ POST http://127.0.0.1:5000/auth/login
 Content-Type: application/json
 
 {
-  "username": "test",
+  "userName": "test",
   "password": "password"
+}
+
+###
+
+POST http://127.0.0.1:5000/auth/login
+Content-Type: application/json
+
+{
+  "userName": "admin",
+  "password": "admin"
 }
 
 ###
 
 GET http://127.0.0.1:5000/auth/logout
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTc3NDY1MywianRpIjoiMDYwZTIyMjAtM2M0OC00YWQ5LTkxNzEtNWZhN2NiNzAzNTJjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QiLCJuYmYiOjE3MjE3NzQ2NTMsImNzcmYiOiI2ZmM0ZmRjOC00OGIyLTRiYjUtYTkyNy01Y2FmNmY3NGNiYWUiLCJleHAiOjE3MjE3NzUyNTN9.WfBlGmBxX88sxGOMIHQvX4Vd8XFaLPSyvSR-RDrocqk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTg3Njc3MCwianRpIjoiMDIzM2U2ZTAtNTE1Zi00MGViLThkYWMtMjdjOGY2MDc5YWMyIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QiLCJuYmYiOjE3MjE4NzY3NzAsImNzcmYiOiIzOTQ5NTMzNC0zZTA0LTQ1MjMtODBkNi04ZGExNzdhYzU0NDkiLCJleHAiOjE3MjE4NzczNzB9.v-Fk1GvO6efcjPwyFPRz-jYLpfkrzu6Om-4GPKJ0sM4
 
 ###
 
 GET http://127.0.0.1:5000/users/all
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTgyNjIyOSwianRpIjoiMDliMDM0MmUtNzE0NS00ZWViLWJjMjMtNDIzN2EyNzhjOWFmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QiLCJuYmYiOjE3MjE4MjYyMjksImNzcmYiOiJmMzhmYjE4Yy04NGUzLTRkMGQtOTVkMy1hYzViZmQyNGFmNWUiLCJleHAiOjE3MjE4MjY4Mjl9.S1BLP8z-lF_meqk4vB3LrS3KPdREMJbycQ-b99SKVDI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTg5NzY3OCwianRpIjoiMGY5YTI3YmEtMTdmNy00OTZmLWI4ODEtMTQxMzBiNjNjODE3IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QiLCJuYmYiOjE3MjE4OTc2NzgsImNzcmYiOiIzNzUzN2ZlMy1jZGU2LTRlYjMtYTA2MS03ZDA2YmI4NDU0NWEiLCJleHAiOjE3MjE4OTg1Nzh9.O3ziYpmdhePFydvq2QzIq3xMJdvLhMwgpkkbT2_4x78
 
 ###
 
 GET http://127.0.0.1:5000/auth/refresh-token
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTc3NDcwNSwianRpIjoiMTFjMzQxMzYtNDllMS00MjRjLWEzZWQtNTgxZWNiZDk1M2I5IiwidHlwZSI6InJlZnJlc2giLCJzdWIiOiJ0ZXN0IiwibmJmIjoxNzIxNzc0NzA1LCJjc3JmIjoiYWEwMDZjMmItZmRiYi00MTRjLTg3NzktNmQ2OTMwNzdjZjk0IiwiZXhwIjoxNzI0MzY2NzA1fQ.Ie3pwyq8e7zQResfM5VGtuMh26TocdOD0Fi1SOrJghA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTg5NzY2MiwianRpIjoiZmFiMDJlNzItYjEzNS00MTEzLTk1MmYtNDdiYTY1NjBlZGRjIiwidHlwZSI6InJlZnJlc2giLCJzdWIiOiJ0ZXN0IiwibmJmIjoxNzIxODk3NjYyLCJjc3JmIjoiOWE3MTc0NjYtZjVlMS00ZWY5LWI2MzAtMTAwMDVkYzYyMjI5IiwiZXhwIjoxNzI0NDg5NjYyfQ.SMIQ8WYDtHFq45wkUW_VvEX6LVMVELqaQlVVk-zheVw
 
 ###
 
-GET http://127.0.0.1:5000/auth/who-am-i
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTc3NDY1MywianRpIjoiMDYwZTIyMjAtM2M0OC00YWQ5LTkxNzEtNWZhN2NiNzAzNTJjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QiLCJuYmYiOjE3MjE3NzQ2NTMsImNzcmYiOiI2ZmM0ZmRjOC00OGIyLTRiYjUtYTkyNy01Y2FmNmY3NGNiYWUiLCJleHAiOjE3MjE3NzUyNTN9.WfBlGmBxX88sxGOMIHQvX4Vd8XFaLPSyvSR-RDrocqk
+GET http://127.0.0.1:5000/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTg5ODU5NywianRpIjoiYTMxZGJlYjgtOGQ1ZC00NDA5LWI0MzEtMjQ4NGVkMjY2YmUwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIxODk4NTk3LCJjc3JmIjoiZmY1ZWQ5YjItN2U2ZC00MWVlLWFjNzgtNDk2ODhkYmEyNzU3IiwiZXhwIjoxNzIxODk5MTk3fQ.eYrN0aexPivFx-U-Fo33yBq_dJhl_6ZYgPK7DawL7qQ

@@ -16,9 +16,9 @@ def get_all_users(user_service: UserService):
     users = user_service.get_all_users(include_roles=True)
 
     # Convert to serializable dictionary versions
-    serializable_users = list(map(lambda u: asdict(u), users))
+    # serializable_users = list(map(lambda u: asdict(u), users))
 
     # Return JSON response with user list
     return jsonify({
-        "users": serializable_users
+        "users": users
     }), 200
