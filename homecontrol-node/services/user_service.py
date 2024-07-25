@@ -3,10 +3,12 @@ import bcrypt
 from typing import Optional, Union
 from wireup import service
 from flask_jwt_extended import current_user
+from constants.messages import INVALID_USER_NAME_OR_PASSWORD
 from constants.user_security_roles import SECURITY_ROLE_ADMIN, SECURITY_ROLE_USER
 from services.base import BaseService
 from services.data_service import DataService
 from services.user_mapper_service import UserMapperService
+from services.user_token_service import UserTokenService
 
 
 class UserExistsException(Exception):
@@ -26,12 +28,12 @@ class ForbiddenException(Exception):
 class UserService(BaseService):
     data_service: DataService
     user_mapper_service: UserMapperService
+    user_token_service: UserTokenService
 
     def create_user(self, user_name: Union[str, None], password: Union[str, None]) -> dict:
         if user_name is None or password is None:
             # Raise invalid credentials provided exception
-            raise InvalidCredentialsException(
-                "invalid user name or password provided")
+            raise InvalidCredentialsException(INVALID_USER_NAME_OR_PASSWORD)
 
         # Make sure white space stripped
         user_name = user_name.strip()
@@ -39,8 +41,7 @@ class UserService(BaseService):
 
         if len(user_name) == 0 or len(password) == 0:
             # Raise invalid credentials provided exception
-            raise InvalidCredentialsException(
-                "invalid user name or password provided")
+            raise InvalidCredentialsException(INVALID_USER_NAME_OR_PASSWORD)
 
         users_db = self.data_service.get_users_db()
 
@@ -116,17 +117,29 @@ class UserService(BaseService):
             # Created user instance using the the first returned element
             return user_model
 
+    def login_user(self, user_name: str, password: str) -> dict:
+        valid = self.validate_user_password(user_name, password)
+
+        if not valid:
+            # Raise invalid credentials provided exception
+            raise InvalidCredentialsException(INVALID_USER_NAME_OR_PASSWORD)
+
+        # Create access and refresh tokens
+        token = self.user_token_service.create(user_name)
+
+        return token
+
     def get_user_security_roles(self, user_id: int) -> list[dict]:
         with self.data_service:
             # Get any roles for the specified user ID
             return self.data_service.get_user_security_roles_db().getBy(
                 {"userId": user_id})
 
-    def validate_user_password(self, password: str, user_id: int) -> bool:
+    def validate_user_password(self, user_name: str, password: str) -> bool:
         with self.data_service:
             # We need to refetch user including password
             users = self.data_service.get_users_db().getBy(
-                {"id": user_id})
+                {"userName": user_name})
 
             if len(users) == 0:
                 # Password not valid for unknown user

@@ -2,6 +2,7 @@ from wireup import container
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required, current_user
 
+from constants.messages import ACCESS_TOKEN_INVALID, INVALID_USER_NAME_OR_PASSWORD, SERVER_ERROR_OCCURRED, USER_ALREADY_EXISTS, ACCESS_TOKEN_REVOKED
 from services.user_token_service import UserTokenService
 from services.user_service import InvalidCredentialsException, UserExistsException, UserService
 
@@ -15,65 +16,69 @@ def register_user(user_service: UserService):
         # Get body as JSON
         data = request.get_json()
 
+        # Get provided user name and password (with defaults if not provided)
         user_name = data.get("userName", "")
         password = data.get("password", "")
 
-        # create the user
+        # Create the user
         user = user_service.create_user(user_name, password)
 
         # Return created message with the new user ID
         return jsonify({"message": f"user '{user["userName"]}' created"}), 201
 
     except UserExistsException:
-        return jsonify({"message": "user already exists"}), 409  # Conflict
+        return jsonify({"message": USER_ALREADY_EXISTS}), 409  # Conflict
     except InvalidCredentialsException as ex:
-        return jsonify({"message": str(ex)}), 400  # Conflict
+        return jsonify({"message": str(ex)}), 400  # Bad request
     except Exception as ex:
         # Print exception for debugging use
         print(ex)
 
         # Internal server error
-        return jsonify({"message": f"server error occurred"}), 500
+        return jsonify({"message": SERVER_ERROR_OCCURRED}), 500
 
 
 @auth_bp.post('/login')
 @container.autowire
-def login_user(user_service: UserService, user_token_service: UserTokenService):
+def login_user(user_service: UserService):
     try:
         # Get body as JSON
         data = request.get_json()
 
+        # Get provided user name and password (with defaults if not provided)
+        user_name = data.get("userName", "")
+        password = data.get("password", "")
+
+        if user_name == None or len(user_name) == 0 or password == None or len(password) == 0:
+            # A user name and password must be provided
+            return jsonify({"message": INVALID_USER_NAME_OR_PASSWORD}), 401
+
         # Get user credentials from the request
-        user_name = data.get("userName").strip()
-        password = data.get("password").strip()
+        user_name = user_name.strip()
+        password = password.strip()
 
         # Locate user by user_name
         user = user_service.get_user(user_name)
 
         if user is None:
             # A matching user_name was not found in the database
-            return jsonify({"message": "invalid user_name or password"}), 401
+            return jsonify({"message": INVALID_USER_NAME_OR_PASSWORD}), 401
 
-        # Test password for match against database
-        password_valid = user_service.validate_user_password(
-            password, user["id"])
+        try:
+            # Login user
+            token = user_service.login_user(user_name, password)
 
-        if not password_valid:
-            # Invalid password for the given user_name
-            return jsonify({"message": f"invalid user_name or password"}), 401
-
-        # Create access and refresh tokens
-        token = user_token_service.create(user_name)
-
-        # Return token to caller
-        return jsonify(token), 200
+            # Return token to caller
+            return jsonify(token), 200
+        except InvalidCredentialsException as ex:
+            return jsonify({"message": str(ex)}), 401  # Unauthorized
 
     except Exception as ex:
         # Print exception for debugging use
         print(ex)
 
         # Internal server error
-        return jsonify({"message": f"server error occurred"}), 500
+        return jsonify({"message": SERVER_ERROR_OCCURRED}), 500
 
 
 @auth_bp.get('/logout')
@@ -85,7 +90,7 @@ def revoke_token(user_token_service: UserTokenService):
     user_token_service.revoke(jwt["sub"])
 
     # Always return success regardless of result
-    return jsonify({"message": "user token revoked"}), 200
+    return jsonify({"message": ACCESS_TOKEN_REVOKED}), 200
 
 
 @auth_bp.get('/refresh-token')
@@ -97,7 +102,9 @@ def refresh_token(user_token_service: UserTokenService):
     access_token = user_token_service.refresh(identity)
 
     if access_token is None:
-        return jsonify({"message": "invalid or expired token"}), 401
+        # If the user had a valid refresh token but they have no access token entry in the DB
+        # then their refresh token is no longer valid
+        return jsonify({"message": ACCESS_TOKEN_INVALID}), 401
 
     return jsonify({"access_token": access_token}), 200
 

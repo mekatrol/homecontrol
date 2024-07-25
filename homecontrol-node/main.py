@@ -5,6 +5,7 @@ from flask import Flask, jsonify
 from wireup import container, initialize_container
 from pyaml_env import parse_config
 
+from constants.messages import ACCESS_TOKEN_EXPIRED, ACCESS_TOKEN_EXPIRED, ACCESS_TOKEN_INVALID, ACCESS_TOKEN_MISSING, ACCESS_TOKEN_REVOKED
 from controllers.auth_controller import auth_bp
 from controllers.user_controller import user_bp
 import services
@@ -61,19 +62,19 @@ def create_app():
     # JWT error handling
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_data):
-        return jsonify({"message": "Authorization header Bearer JWT has expired"}), 401
+        return jsonify({"message": ACCESS_TOKEN_EXPIRED}), 401
 
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
-        return jsonify({"message": "Authorization header Bearer JWT is invalid"}), 401
+        return jsonify({"message": ACCESS_TOKEN_INVALID}), 401
 
     @jwt.unauthorized_loader
     def missing_token_callback(error):
-        return jsonify({"message": "Authorization header Bearer JWT is missing"}), 401
+        return jsonify({"message": ACCESS_TOKEN_MISSING}), 401
 
     @jwt.revoked_token_loader
     def revoked_token_callback(jwt_header, jwt_data):
-        return jsonify({"message": "Authorization header Bearer JWT has been revoked"}), 401
+        return jsonify({"message": ACCESS_TOKEN_REVOKED}), 401
 
     @jwt.token_in_blocklist_loader
     def check_token_revoked(jwt_header, jwt_data):

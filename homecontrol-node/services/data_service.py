@@ -2,7 +2,7 @@ from typing import Annotated
 from pysondb import db
 from wireup import Inject, service
 from filelock import BaseFileLock, Timeout, SoftFileLock
-from models.config import DataFileConfig
+from config.config import DataFileConfig
 from services.base import BaseService
 
 
