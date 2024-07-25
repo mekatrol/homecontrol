@@ -53,8 +53,8 @@ def create_app():
     @jwt.additional_claims_loader
     def inject_user_claims(identity):
         user = user_service.get_user(user_name=identity)
-        if user and user["id"] == "cca7efea-7652-4486-b90c-63ab67a54c1a":
-            return {"is_admin": True}
+        if user and len(user["roles"]) > 0:
+            return {"roles": user["roles"]}
 
         return None
 

@@ -8,11 +8,53 @@ from services.data_service import DataService
 from services.user_mapper_service import UserMapperService
 
 
+class UserExistsException(Exception):
+    pass
+
+
+class InvalidCredentialsException(Exception):
+    pass
+
+
 @service
 @dataclass
 class UserService(BaseService):
     data_service: DataService
     user_mapper_service: UserMapperService
+
+    def create_user(self, user_name: str, password: str) -> dict:
+        # Make sure white space stripped
+        user_name = user_name.strip()
+        password = password.strip()
+
+        if len(user_name) == 0 or len(password) == 0:
+            # Raise invalid credentials provided exception
+            raise InvalidCredentialsException(
+                "invalid user name or password provided")
+
+        users_db = self.data_service.get_users_db()
+
+        # Locate existing user by user_name
+        users = users_db.getBy({"userName": user_name})
+
+        # Make sure not an existing user
+        if (len(users) > 0):
+            raise UserExistsException("user already exists")
+
+        password_bytes = password.encode('utf-8')
+        password_salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(
+            password_bytes, password_salt).decode('utf-8')
+
+        new_user = {
+            "userName": user_name,
+            "password": hashed_password,
+            "resetPassword": False
+        }
+
+        users_db.add(new_user)
+
+        return new_user
 
     def get_all_users(self, include_roles: bool = False) -> list[dict]:
         with self.data_service:

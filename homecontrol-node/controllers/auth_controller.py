@@ -1,51 +1,31 @@
-import bcrypt
-
-from datetime import timedelta
-from pysondb import db
 from wireup import container
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required, current_user
+from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required, current_user
 
 from services.user_token_service import UserTokenService
-from services.user_service import UserService
+from services.user_service import InvalidCredentialsException, UserExistsException, UserService
 
 auth_bp = Blueprint('auth', __name__)
 
 
 @auth_bp.post('/register')
-def register_user():
+@container.autowire
+def register_user(user_service: UserService):
     try:
         # Get body as JSON
         data = request.get_json()
 
-        # Get user credentials from the request
-        user_name = data.get("userName").strip()
-        password = data.get("password").strip()
-
-        users_db = db.getDb("./instance/users.json")
-
-        # Locate user by user_name
-        users = users_db.getBy({"userName": user_name})
-
-        # Make sure not an existing user
-        if (len(users) > 0):
-            return jsonify({"message": "user already exists"}), 409  # Conflict
-
-        password_bytes = password.encode('utf-8')
-        password_salt = bcrypt.gensalt()
-        hashed_password = bcrypt.hashpw(
-            password_bytes, password_salt).decode('utf-8')
-
-        new_user = {
-            "userName": user_name,
-            "password": hashed_password,
-            "resetPassword": False
-        }
-
-        id = users_db.add(new_user)
+        # create the user
+        user = user_service.create_user(
+            data.get("userName"),  data.get("password"))
 
         # Return created message with the new user ID
-        return jsonify({"message": f"user created with ID: '{id}'"}), 201
+        return jsonify({"message": f"user '{user["userName"]}' created"}), 201
+
+    except UserExistsException:
+        return jsonify({"message": "user already exists"}), 409  # Conflict
+    except InvalidCredentialsException as ex:
+        return jsonify({"message": ex}), 400  # Conflict
     except Exception as ex:
         # Print exception for debugging use
         print(ex)
