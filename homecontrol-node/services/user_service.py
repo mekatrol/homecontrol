@@ -44,10 +44,10 @@ class UserService(BaseService):
             roles = self.data_service.get_user_security_roles_db().getAll()
             return roles
 
-    def get_user(self, username: str) -> Optional[dict]:
+    def get_user(self, user_name: str) -> Optional[dict]:
         with self.data_service:
             users = self.data_service.get_users_db().getBy(
-                {"userName": username})
+                {"userName": user_name})
 
             if len(users) == 0:
                 return None
@@ -101,7 +101,7 @@ class UserService(BaseService):
             if len(users) > 0:
                 return None  # No user created
 
-            # Create a user with 'admin' as username and 'admin' as password
+            # Create a user with 'admin' as user_name and 'admin' as password
             admin = "admin"
 
             new_user = {

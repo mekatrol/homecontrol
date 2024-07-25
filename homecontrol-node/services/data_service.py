@@ -9,7 +9,7 @@ from services.base import BaseService
 @service
 class DataService(BaseService):
     __users_db: db.JsonDatabase
-    __user_revoked_tokens_db: db.JsonDatabase
+    __user_tokens_db: db.JsonDatabase
     __user_security_roles_db: db.JsonDatabase
     __points_db: db.JsonDatabase
     __lock: BaseFileLock
@@ -24,8 +24,8 @@ class DataService(BaseService):
             with self.__lock.acquire(timeout=1):
 
                 users_data_file = data_files.get("users_data_file")
-                user_revoked_tokens_data_file = data_files.get(
-                    "user_revoked_tokens_data_file")
+                user_tokens_data_file = data_files.get(
+                    "user_tokens_data_file")
                 user_security_roles_data_file = data_files.get(
                     "user_security_roles_data_file")
                 points_data_file = data_files.get("points_data_file")
@@ -34,9 +34,9 @@ class DataService(BaseService):
                     raise Exception(
                         "'users_data_file' setting missing from configuration file")
 
-                if user_revoked_tokens_data_file is None:
+                if user_tokens_data_file is None:
                     raise Exception(
-                        "'user_revoked_tokens_data_file' setting missing from configuration file")
+                        "'user_tokens_data_file' setting missing from configuration file")
 
                 if user_security_roles_data_file is None:
                     raise Exception(
@@ -47,8 +47,7 @@ class DataService(BaseService):
                         "'points_data_file' setting missing from configuration file")
 
                 self.__users_db = db.getDb(users_data_file)
-                self.__user_revoked_tokens_db = db.getDb(
-                    user_revoked_tokens_data_file)
+                self.__user_tokens_db = db.getDb(user_tokens_data_file)
                 self.__user_security_roles_db = db.getDb(
                     user_security_roles_data_file)
                 self.__points_db = db.getDb(points_data_file)
@@ -67,8 +66,8 @@ class DataService(BaseService):
     def get_users_db(self) -> db.JsonDatabase:
         return self.__users_db
 
-    def get_user_revoked_tokens_db(self) -> db.JsonDatabase:
-        return self.__user_revoked_tokens_db
+    def get_user_tokens_db(self) -> db.JsonDatabase:
+        return self.__user_tokens_db
 
     def get_user_security_roles_db(self) -> db.JsonDatabase:
         return self.__user_security_roles_db

@@ -6,7 +6,7 @@ from wireup import container
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt, get_jwt_identity, jwt_required, current_user
 
-from services.revoked_token_service import RevokedTokenService
+from services.user_token_service import UserTokenService
 from services.user_service import UserService
 
 auth_bp = Blueprint('auth', __name__)
@@ -19,13 +19,13 @@ def register_user():
         data = request.get_json()
 
         # Get user credentials from the request
-        username = data.get("userName").strip()
+        user_name = data.get("userName").strip()
         password = data.get("password").strip()
 
         users_db = db.getDb("./instance/users.json")
 
-        # Locate user by username
-        users = users_db.getBy({"userName": username})
+        # Locate user by user_name
+        users = users_db.getBy({"userName": user_name})
 
         # Make sure not an existing user
         if (len(users) > 0):
@@ -37,7 +37,7 @@ def register_user():
             password_bytes, password_salt).decode('utf-8')
 
         new_user = {
-            "userName": username,
+            "userName": user_name,
             "password": hashed_password,
             "resetPassword": False
         }
@@ -56,37 +56,35 @@ def register_user():
 
 @auth_bp.post('/login')
 @container.autowire
-def login_user(user_service: UserService):
+def login_user(user_service: UserService, user_token_service: UserTokenService):
     try:
         # Get body as JSON
         data = request.get_json()
 
         # Get user credentials from the request
-        username = data.get("userName").strip()
+        user_name = data.get("userName").strip()
         password = data.get("password").strip()
 
-        # Locate user by username
-        user = user_service.get_user(username)
+        # Locate user by user_name
+        user = user_service.get_user(user_name)
 
         if user is None:
-            # A matching username was not found in the database
-            return jsonify({"message": "invalid username or password"}), 401
+            # A matching user_name was not found in the database
+            return jsonify({"message": "invalid user_name or password"}), 401
 
         # Test password for match against database
         password_valid = user_service.validate_user_password(
             password, user["id"])
 
         if not password_valid:
-            # Invalid password for the given username
-            return jsonify({"message": f"invalid username or password"}), 401
+            # Invalid password for the given user_name
+            return jsonify({"message": f"invalid user_name or password"}), 401
 
         # Create access and refresh tokens
-        expires = timedelta(minutes=10)
-        access_token = create_access_token(
-            identity=username, expires_delta=expires)
-        refresh_token = create_refresh_token(identity=username)
+        token = user_token_service.create(user_name)
 
-        return jsonify({"access_token": access_token, "refresh_token": refresh_token}), 200
+        # Return token to caller
+        return jsonify(token), 200
 
     except Exception as ex:
         # Print exception for debugging use
@@ -99,28 +97,30 @@ def login_user(user_service: UserService):
 @auth_bp.get('/logout')
 @jwt_required(verify_type=False)
 @container.autowire
-def revoke_token(revoked_token_service: RevokedTokenService):
+def revoke_token(user_token_service: UserTokenService):
     jwt = get_jwt()
 
-    revoked_token = revoked_token_service.revoke_token(jwt)
+    user_token_service.revoke(jwt["sub"])
 
-    if revoked_token is not None:
-        return jsonify({"message": f"'{revoked_token["type"]}' revoked with ID: '{revoked_token["id"]}'"}), 200
-
-    return jsonify({"message": "invalid token"}), 400
+    # Always return success regardless of result
+    return jsonify({"message": "user token revoked"}), 200
 
 
 @auth_bp.get('/refresh-token')
 @jwt_required(refresh=True)
-def refresh_token():
+@container.autowire
+def refresh_token(user_token_service: UserTokenService):
     identity = get_jwt_identity()
 
-    access_token = create_access_token(identity=identity)
+    access_token = user_token_service.refresh(identity)
 
-    return jsonify({"access_token": access_token})
+    if access_token is None:
+        return jsonify({"message": "invalid or expired token"}), 401
+
+    return jsonify({"access_token": access_token}), 200
 
 
 @auth_bp.get('/me')
 @jwt_required()
 def get_user_detail():
-    return jsonify({"user": current_user})
+    return jsonify({"user": current_user}), 200

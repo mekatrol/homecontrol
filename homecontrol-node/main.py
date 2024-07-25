@@ -7,7 +7,7 @@ from pyaml_env import parse_config
 from controllers.auth_controller import auth_bp
 from controllers.user_controller import user_bp
 import services
-from services.revoked_token_service import RevokedTokenService
+from services.user_token_service import UserTokenService
 from services.user_service import UserService
 
 
@@ -36,18 +36,18 @@ def create_app():
     # User injection
     @ jwt.user_lookup_loader
     def inject_user(jwt_headers, jwt_data):
-        username = jwt_data["sub"]
+        user_name = jwt_data["sub"]
 
-        if username is None:
+        if user_name is None:
             return None
 
-        user = user_service.get_user(username=username)
+        user = user_service.get_user(user_name=user_name)
         return user
 
     # JWT claims
     @ jwt.additional_claims_loader
     def inject_user_claims(identity):
-        user = user_service.get_user(username=identity)
+        user = user_service.get_user(user_name=identity)
         if user and user["id"] == "cca7efea-7652-4486-b90c-63ab67a54c1a":
             return {"is_admin": True}
 
@@ -72,9 +72,11 @@ def create_app():
 
     @ jwt.token_in_blocklist_loader
     def check_token_revoked(jwt_header, jwt_data):
-        revoked_token_service = container.get(RevokedTokenService)
-        revoked_token = revoked_token_service.get_revoked_token(jwt_data)
-        return revoked_token is not None
+        user_token_service = container.get(UserTokenService)
+        user_token = user_token_service.get(jwt_data["sub"])
+
+        # The user token is revoked if there is no user token
+        return user_token is None
 
     return app
 
