@@ -112,4 +112,11 @@ def refresh_token(user_token_service: UserTokenService):
 @auth_bp.get('/me')
 @jwt_required()
 def get_user_detail():
-    return jsonify({"user": current_user}), 200
+    print(current_user)
+
+    user_model = {
+        "id": current_user["id"],
+        "userName": current_user["userName"],
+        "roles": current_user["roles"]
+    }
+    return jsonify({"user": user_model}), 200
