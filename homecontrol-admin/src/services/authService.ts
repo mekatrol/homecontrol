@@ -89,7 +89,6 @@ class AuthServiceImpl implements AuthService {
   async login(userName: string, password: string, errorHandlerCallback?: HandleErrorCallback): Promise<AccessToken | undefined> {
     try {
       const token = await httpPost<LoginRequest, AccessToken>({ userName, password }, LOGIN_URL, errorHandlerCallback);
-      console.log(token);
       return token;
     } catch {
       return undefined;
