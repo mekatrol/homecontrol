@@ -1,0 +1,59 @@
+:root {
+  color-scheme: light dark;
+
+  /* Theme colours */
+  --clr-primary: #010933;
+  --clr-primary-text: #ffffff;
+
+  --clr-secondary: #267f00;
+  --clr-secondary-text: #ffffff;
+
+  --clr-danger: #cc0000;
+  --clr-danger-text: #ffffff;
+
+  --required: var(--clr-danger);
+
+  /* Default (light theme) colours */
+  --primary-background: #eaf0f8;
+  --primary-border: var(--primary);
+
+  --btn-primary-color: var(--clr-primary-text);
+  --btn-primary-background-color: var(--clr-primary);
+
+  --corner-radius: 4px;
+
+  /* Font sizes */
+  --font-standard: 1rem;
+
+  /* Form variables */
+  --form-max-width: 1200px;
+
+  /* Input variables */
+  --input-label-font-size: var(--font-standard);
+  --input-label-line-height: calc(var(--input-label-font-size) + 0.5rem);
+  --input-border-radius: var(--corner-radius);
+  --input-background-color: #ccc;
+  --input-border-color: #333;
+
+  /* Custom checkbox variables */
+  --cb-checkmark-color: #eee;
+  --cb-background-color-hover: #666;
+  --cb-background-color-unchecked: #ccc;
+  --cb-background-color-checked: var(--btn-primary-background-color);
+
+  /* Overlay and spinner */
+  --ov-background-color: rgb(0, 0, 0, 0.5); /* Includes opacity */
+  --ov-z-index: 99999;
+
+  --spn-size: 120px;
+  --spn-border-color: #f3f3f3;
+  --spn-spinner-color: var(--clr-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #ddd;
+    --primary-background: #323232;
+    --primary-border: #646464;
+  }
+}

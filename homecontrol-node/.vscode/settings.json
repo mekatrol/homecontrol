@@ -6,6 +6,7 @@
     "gensalt",
     "hashpw",
     "jsonify",
+    "nimda",
     "pyaml",
     "pydantic",
     "pysondb",

@@ -23,9 +23,18 @@ Content-Type: application/json
 
 {
   "userName": "admin",
-  "password": "admin"
+  "password": "nimda"
 }
 
+###
+
+POST http://docker2.lan:5000/auth/login
+Content-Type: application/json
+
+{
+  "userName": "admin",
+  "password": "nimda"
+}
 ###
 
 GET http://127.0.0.1:5000/auth/logout

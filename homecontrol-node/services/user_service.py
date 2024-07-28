@@ -170,12 +170,12 @@ class UserService(BaseService):
             if len(users) > 0:
                 return None  # No user created
 
-            # Create a user with 'admin' as user_name and 'admin' as password
+            # Create a user with 'admin' as user_name and 'mekatrol' as password
             admin = "admin"
 
             new_user = {
                 "userName": admin,
-                "password": UserService.generate_hashed_password(admin),
+                "password": UserService.generate_hashed_password("mekatrol"),
                 "resetPassword": True  # New users should reset password
             }
 

@@ -39,7 +39,15 @@ module.exports = {
   rules: {
     'prefer-promise-reject-errors': 'error',
 
-    'max-len': ['error', 150],
+    'max-len': [
+      'error',
+      150,
+      {
+        // Ignore path of SVG
+        // Ignore content string (eg embedded image or SVG) in CSS
+        ignorePattern: 'd="([\\s\\S]*?)"|content:\\s*url([\\s\\S]*?)'
+      }
+    ],
 
     // An error not to use single quotes
     quotes: [

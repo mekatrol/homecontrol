@@ -2,6 +2,7 @@ from datetime import timedelta
 import yaml
 from flask_jwt_extended import JWTManager
 from flask import Flask, jsonify
+from flask_cors import CORS
 from wireup import container, initialize_container
 from pyaml_env import parse_config
 
@@ -38,6 +39,9 @@ def create_app():
     # Initialise JWT
     jwt = JWTManager()
     jwt.init_app(app)
+
+    # Initialise CORS
+    CORS(app, resources={r"/auth/*": {"origins": "*"}})
 
     # Make sure there is at least one user who is the default admin user
     user_service = container.get(UserService)

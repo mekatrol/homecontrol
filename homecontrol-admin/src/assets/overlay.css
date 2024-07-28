@@ -1,0 +1,32 @@
+/* Adapted from https://www.w3schools.com/howto/howto_css_overlay.asp */
+.overlay {
+  /* Fill parent (overlay siblings) */
+  position: absolute;
+
+  /* Hidden by default */
+  display: none;
+
+  /* Full width (cover the whole page) */
+  width: 100%;
+
+  /* Full height (cover the whole page) */
+  height: 100%;
+
+  /* Pin to each corner */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background-color: var(--overlay-background-color, rgb(0, 0, 0, 0.5));
+  z-index: var(--overlay-z-index, 99999);
+
+  &.full-screen {
+    /* Fill page (overlay page) */
+    position: fixed;
+  }
+
+  &.show {
+    display: revert;
+  }  
+}

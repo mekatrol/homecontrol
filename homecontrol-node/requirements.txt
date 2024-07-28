@@ -1,5 +1,6 @@
 flask
 flask-jwt-extended
+flask-cors
 pysondb
 bcrypt
 pydantic

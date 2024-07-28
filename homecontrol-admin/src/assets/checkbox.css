@@ -1,0 +1,77 @@
+/**********************************************************************
+ * Styled checkboxes
+ **********************************************************************/
+
+:root {
+  --cb-box-size: 25px;
+  --cb-box-label-gap: 7px;
+}
+
+.checkbox-label {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  position: relative;
+  padding-left: calc(var(--cb-box-size) + var(--cb-box-label-gap));
+  cursor: pointer;
+  font-size: var(--input-label-font-size);
+  line-height: var(--input-label-line-height);
+  user-select: none;
+}
+
+.checkbox-label > * {
+  display: block;
+}
+
+/* Hide the browser's default checkbox */
+input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: var(--cb-box-size);
+  width: var(--cb-box-size);
+  border-radius: var(--input-border-radius);
+  background-color: var(--cb-background-color-unchecked);
+}
+
+/* On mouse-over, add a grey background color */
+.section:hover input ~ .checkmark {
+  background-color: var(--cb-background-color-hover);
+}
+
+/* When the checkbox is checked, add a blue background */
+input:checked ~ .checkmark {
+  background-color: var(--cb-background-color-checked);
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: '';
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--cb-checkmark-color);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
