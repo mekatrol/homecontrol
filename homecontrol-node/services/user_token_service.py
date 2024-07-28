@@ -18,6 +18,15 @@ class UserTokenService(BaseService):
     jwt_refresh_token_expiry_mins: Annotated[int, Inject(
         param="jwt_refresh_token_expiry_mins")]
 
+    def get(self, user_name: str) -> list[dict]:
+        with self.data_service:
+            # Try and get by access token JTI
+            user_tokens = self.data_service.get_user_tokens_db().getBy(
+                {"userName": user_name})
+
+            # Return user
+            return user_tokens
+
     def getByAccessJti(self, jti: str) -> Optional[dict]:
         with self.data_service:
             # Try and get by access token JTI
@@ -107,7 +116,16 @@ class UserTokenService(BaseService):
     def revoke(self, jti: str) -> None:
         with self.data_service:
             # Find existing tokens
-            tokens = self.getByAccessJti(jti)
+            token = self.getByAccessJti(jti)
+
+            if token is None:
+                return
+
+            # Get username from token
+            user_name = token["userName"]
+
+            # Get all tokens by user name
+            tokens = self.get(user_name)
 
             # Revoke all found tokens
             for token in tokens:

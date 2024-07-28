@@ -90,10 +90,14 @@ def create_app():
     def check_token_revoked(jwt_header, jwt_data):
         user_token_service = container.get(UserTokenService)
 
-        if jwt_data["type"] == "access":
-            user_token = user_token_service.getByAccessJti(jwt_data["jti"])
-        else:
-            user_token = user_token_service.getByRefreshJti(jwt_data["jti"])
+        jti = jwt_data["jti"]
+        type = jwt_data["type"]
+
+        user_token = None
+        if type == "access":
+            user_token = user_token_service.getByAccessJti(jti)
+        elif type == "refresh":
+            user_token = user_token_service.getByRefreshJti(jti)
 
         # The user token is revoked if there is no user token
         return user_token is None
