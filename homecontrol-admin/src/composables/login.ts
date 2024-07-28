@@ -6,7 +6,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 export interface LoginLogout {
   login: (userName: string, password: string, rememberMe: boolean) => Promise<boolean>;
-  logout: () => void;
+  logout: (logOutOfServer: boolean) => void;
 }
 
 export const useLogin = (): LoginLogout => {
@@ -53,11 +53,13 @@ export const useLogin = (): LoginLogout => {
     }
   };
 
-  const logout = async (): Promise<void> => {
+  const logout = async (logOutOfServer: boolean): Promise<void> => {
     appStore.incrementBusy();
 
-    // Logout from server
-    await authService.logout();
+    if (logOutOfServer) {
+      // Logout from server
+      await authService.logout();
+    }
 
     // Navigate to current route so that it triggers any route guards after signing out
     router.go(0);

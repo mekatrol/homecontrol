@@ -4,7 +4,7 @@
 
     <a
       href=""
-      @click.prevent="logout"
+      @click.prevent="() => logout(true)"
       >Logout</a
     >
 
@@ -25,6 +25,10 @@ const appStore = useAppStore();
 const { logout } = useLogin();
 
 const getUser = async (): Promise<void> => {
-  await useAuthService().updateUser();
+  try {
+    await useAuthService().updateUser();
+  } catch {
+    logout(false);
+  }
 };
 </script>

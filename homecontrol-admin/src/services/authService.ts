@@ -55,14 +55,14 @@ class AuthServiceImpl implements AuthService {
         const success = await this.refreshToken();
 
         if (!success) {
-          logout();
+          logout(false);
           return;
         }
 
         await this.updateUser();
       } catch {
         // Error refreshing token so force logout (and user will need to login again)
-        logout();
+        logout(false);
       }
     }
   }
@@ -75,7 +75,16 @@ class AuthServiceImpl implements AuthService {
         return false;
       }
 
-      const refreshedToken = await httpGet<RefreshedToken>(REFRESH_TOKEN_URL, undefined, true);
+      const refreshedToken = await httpGet<RefreshedToken>(
+        REFRESH_TOKEN_URL,
+        (apiError): boolean => {
+          if (apiError.errors && apiError.errors.length > 0 && apiError.errors[0].errorMessage === 'user token revoked') {
+            return true;
+          }
+          return false;
+        },
+        true
+      );
 
       // Set new access token
       appStore.userToken.accessToken = refreshedToken.accessToken;

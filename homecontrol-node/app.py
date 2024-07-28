@@ -60,6 +60,16 @@ def create_app():
         user = user_service.get_user(user_name=user_name)
         return user
 
+    def create_error(message: str) -> list:
+        error_model = [
+            {
+                "property": None,
+                "errorMessage": message
+            }
+        ]
+
+        return error_model
+
     # JWT claims
     @jwt.additional_claims_loader
     def inject_user_claims(identity):
@@ -72,19 +82,19 @@ def create_app():
     # JWT error handling
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_data):
-        return jsonify({"message": ACCESS_TOKEN_EXPIRED}), 401
+        return jsonify(create_error(ACCESS_TOKEN_EXPIRED)), 401
 
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
-        return jsonify({"message": ACCESS_TOKEN_INVALID}), 401
+        return jsonify(create_error(ACCESS_TOKEN_INVALID)), 401
 
     @jwt.unauthorized_loader
     def missing_token_callback(error):
-        return jsonify({"message": ACCESS_TOKEN_MISSING}), 401
+        return jsonify(create_error(ACCESS_TOKEN_MISSING)), 401
 
     @jwt.revoked_token_loader
     def revoked_token_callback(jwt_header, jwt_data):
-        return jsonify({"message": ACCESS_TOKEN_REVOKED}), 401
+        return jsonify(create_error(ACCESS_TOKEN_REVOKED)), 401
 
     @jwt.token_in_blocklist_loader
     def check_token_revoked(jwt_header, jwt_data):

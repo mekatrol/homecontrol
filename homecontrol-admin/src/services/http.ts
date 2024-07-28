@@ -196,8 +196,9 @@ export const httpGet = async <T>(url: string, errorHandlerCallback?: HandleError
 
     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
       const authService = useAuthService();
-      await authService.refreshToken();
-      return await httpGet(url, errorHandlerCallback, true);
+      if (await authService.refreshToken()) {
+        return await httpGet(url, errorHandlerCallback, true);
+      }
     }
 
     throw apiError;
@@ -228,8 +229,9 @@ export const httpPost = async <TRequest, TResponse>(
 
     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
       const authService = useAuthService();
-      await authService.refreshToken();
-      return await httpPost(requestData, url, errorHandlerCallback, true);
+      if (await authService.refreshToken()) {
+        return await httpPost(requestData, url, errorHandlerCallback, true);
+      }
     }
 
     throw apiError;
@@ -260,8 +262,9 @@ export const httpPut = async <TRequest, TResponse>(
 
     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
       const authService = useAuthService();
-      await authService.refreshToken();
-      return await httpPut(requestData, url, errorHandlerCallback, true);
+      if (await authService.refreshToken()) {
+        return await httpPut(requestData, url, errorHandlerCallback, true);
+      }
     }
 
     throw apiError;
@@ -292,8 +295,9 @@ export const httpPatch = async <TRequest, TResponse>(
 
     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
       const authService = useAuthService();
-      await authService.refreshToken();
-      return await httpPut(requestData, url, errorHandlerCallback, true);
+      if (await authService.refreshToken()) {
+        return await httpPut(requestData, url, errorHandlerCallback, true);
+      }
     }
 
     throw apiError;
@@ -319,8 +323,9 @@ export const httpDelete = async (url: string, errorHandlerCallback?: HandleError
 
     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
       const authService = useAuthService();
-      await authService.refreshToken();
-      return await httpDelete(url, errorHandlerCallback, true);
+      if (await authService.refreshToken()) {
+        return await httpDelete(url, errorHandlerCallback, true);
+      }
     }
 
     throw apiError;
