@@ -1,8 +1,12 @@
 <template>
   <main class="main-body">
-    <h1>H1</h1>
+    <pre>{{ appStore.user }}</pre>
 
-    <a href="" @click.prevent="logout">User authenticated: {{ !!appStore.currentUser }}</a>
+    <a
+      href=""
+      @click.prevent="logout"
+      >Logout</a
+    >
   </main>
 </template>
 
@@ -12,5 +16,4 @@ import { useAppStore } from '@/stores/app';
 
 const appStore = useAppStore();
 const { logout } = useLogin();
-
 </script>

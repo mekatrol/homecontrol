@@ -1,15 +1,15 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import type { AccessToken } from 'src/services/authService';
+import type { AccessToken, User } from 'src/services/authService';
 import { useLocalSessionJsonObject } from '@/composables/local-session';
-import { useRouter } from 'vue-router';
 
 export const TOKEN_SESSION_KEY = 'mekatrol-token';
 
 export const useAppStore = defineStore('app', () => {
   const isBusyCount = ref(0);
   const apiBaseUrl = ref('/');
-  const currentUser = ref<AccessToken | undefined>(undefined);
+  const userToken = ref<AccessToken | undefined>(undefined);
+  const user = ref<User | undefined>(undefined);
 
   const isBusy = computed(() => isBusyCount.value > 0);
 
@@ -25,17 +25,17 @@ export const useAppStore = defineStore('app', () => {
     }
   };
 
-  const setUserToken = (userToken: AccessToken | undefined, rememberMe: boolean): void => {
+  const setUserToken = (token: AccessToken | undefined, rememberMe: boolean): void => {
     const persistSettings = useLocalSessionJsonObject<AccessToken>(TOKEN_SESSION_KEY);
 
-    currentUser.value = userToken;
+    userToken.value = token;
 
-    if (rememberMe && !!userToken) {      
-      persistSettings.setting = userToken;
+    if (rememberMe && !!token) {
+      persistSettings.setting = token;
     } else {
       persistSettings.remove();
-    }    
+    }
   };
 
-  return { isBusy, incrementBusy, decrementBusy, apiBaseUrl, currentUser, setUserToken };
+  return { isBusy, incrementBusy, decrementBusy, apiBaseUrl, userToken, user, setUserToken };
 });

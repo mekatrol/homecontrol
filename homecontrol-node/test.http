@@ -53,5 +53,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsI
 
 ###
 
-GET http://127.0.0.1:5000/auth/me
+GET http://127.0.0.1:5000/auth/user
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyMTk3NjkzNSwianRpIjoiYjVkNWI0N2UtZTE2Ni00YmUwLTgxY2UtODQzNGUzYWEzNGU2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluIiwibmJmIjoxNzIxOTc2OTM1LCJjc3JmIjoiZTU5ZWE3NzctNjExZS00ZmRmLTliNjItNjNkNTcxOTk1YTQ5IiwiZXhwIjoxNzIxOTc3NTM1LCJyb2xlcyI6WyJhZG1pbiIsInVzZXIiXX0.9NcLbFvM_C_V0B-4vYmkLV2xML9WLJ4DL_SCTHzEvDQ

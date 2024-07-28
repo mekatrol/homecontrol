@@ -84,7 +84,7 @@ def login_user(user_service: UserService):
 @auth_bp.get('/logout')
 @jwt_required(verify_type=False)
 @container.autowire
-def revoke_token(user_token_service: UserTokenService):
+def logout_user(user_token_service: UserTokenService):
     jwt = get_jwt()
 
     user_token_service.revoke(jwt["sub"])
@@ -106,14 +106,12 @@ def refresh_token(user_token_service: UserTokenService):
         # then their refresh token is no longer valid
         return jsonify({"message": ACCESS_TOKEN_INVALID}), 401
 
-    return jsonify({"access_token": access_token}), 200
+    return jsonify({"accessToken": access_token}), 200
 
 
-@auth_bp.get('/me')
+@auth_bp.get('/user')
 @jwt_required()
 def get_user_detail():
-    print(current_user)
-
     user_model = {
         "id": current_user["id"],
         "userName": current_user["userName"],

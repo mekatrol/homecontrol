@@ -19,7 +19,7 @@ export const useLogin = (): LoginLogout => {
     appStore.incrementBusy();
     try {
       // Get an access token for the user
-      const accessToken = await authService.login(userName, password, (err) => {
+      const token = await authService.login(userName, password, (err) => {
         if (err.errorType === ApiErrorType.Unauthorized) {
           return true;
         }
@@ -28,7 +28,12 @@ export const useLogin = (): LoginLogout => {
       });
 
       // Save the access token to the store and set remember me state
-      appStore.setUserToken(accessToken, rememberMe);
+      appStore.setUserToken(token, rememberMe);
+
+      if (token) {
+        // Refresh user
+        await authService.updateUser();
+      }
 
       // Redirect user back to where they navigated from (or home if unknown)
       if (route.query['return']) {
@@ -40,7 +45,7 @@ export const useLogin = (): LoginLogout => {
         // If no return route specified then return user to home
         router.push({ name: 'home' });
       }
-      return !!accessToken;
+      return !!token;
     } catch (e) {
       return false;
     } finally {
@@ -49,17 +54,15 @@ export const useLogin = (): LoginLogout => {
   };
 
   const logout = async (): Promise<void> => {
-    try {
-      appStore.incrementBusy();
+    appStore.incrementBusy();
 
-      // Logout from server
-      await authService.logout();
+    // Logout from server
+    await authService.logout();
 
-      // Navigate to current route so that it triggers any route guards after signing out
-      router.go(0);
-    } finally {
-      appStore.decrementBusy();
-    }
+    // Navigate to current route so that it triggers any route guards after signing out
+    router.go(0);
+
+    // NOTE: no need to call 'appStore.decrementBusy' because the page is being reloaded
   };
 
   return { login, logout };

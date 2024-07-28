@@ -20,8 +20,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, _from) => {
-  const { currentUser } = useAppStore();
-  const isAuthenticated = !!currentUser;
+  const { userToken } = useAppStore();
+  const isAuthenticated = !!userToken;
 
   if (
     // User is not authenticated

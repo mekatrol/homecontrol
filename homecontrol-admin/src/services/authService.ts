@@ -6,12 +6,22 @@ import { useLogin } from '@/composables/login';
 export const REFRESH_TOKEN_URL = '/auth/refresh-token';
 export const LOGIN_URL = '/auth/login';
 export const LOGOUT_URL = '/auth/logout';
+export const USER_URL = '/auth/user';
 
-export interface AccessToken {
-  userName: string;
+export interface RefreshedToken {
   accessToken: string;
+}
+
+export interface AccessToken extends RefreshedToken {
+  userName: string;
   refreshToken: string;
   refreshTokenExpiry: string;
+}
+
+export interface User {
+  id: number;
+  userName: string;
+  roles: string[];
 }
 
 interface LoginRequest {
@@ -24,6 +34,7 @@ export interface AuthService {
   refreshToken(): Promise<boolean>;
   login(userName: string, password: string, errorHandlerCallback?: HandleErrorCallback): Promise<AccessToken | undefined>;
   logout(errorHandlerCallback?: HandleErrorCallback): Promise<void>;
+  updateUser(): Promise<void>;
 }
 
 class AuthServiceImpl implements AuthService {
@@ -35,16 +46,21 @@ class AuthServiceImpl implements AuthService {
     const appStore = useAppStore();
 
     if (persistSettings.setting) {
-      // Store cached token token
+      // Store token from browser storage to store
       appStore.setUserToken(persistSettings.setting, true);
 
       try {
         // Refresh the token
         const success = await this.refreshToken();
 
+        console.log(`success: ${success}`);
+
         if (!success) {
           logout();
+          return;
         }
+
+        await updateUser();
       } catch {
         // Error refreshing token so force logout (and user will need to login again)
         logout();
@@ -56,16 +72,16 @@ class AuthServiceImpl implements AuthService {
     try {
       const appStore = useAppStore();
 
-      if (!appStore.currentUser) {
+      if (!appStore.userToken) {
         return false;
       }
 
-      const token = await httpGet<string>(REFRESH_TOKEN_URL, undefined, true);
+      const refreshedToken = await httpGet<RefreshedToken>(REFRESH_TOKEN_URL, undefined, true);
 
       // Set new access token
-      appStore.currentUser.accessToken = token;
+      appStore.userToken.accessToken = refreshedToken.accessToken;
 
-      return !!token;
+      return !!refreshedToken;
     } catch {
       return false;
     }
@@ -89,6 +105,12 @@ class AuthServiceImpl implements AuthService {
       const appStore = useAppStore();
       appStore.setUserToken(undefined, false);
     }
+  }
+
+  async updateUser(): Promise<void> {
+    // Refresh user as the user object includes their included security roles
+    const appStore = useAppStore();
+    appStore.user = await httpGet<User>(USER_URL);
   }
 }
 

@@ -11,7 +11,7 @@ export const requestInterceptor = (config: InternalAxiosRequestConfig): Internal
   delete config.headers.Authorization;
 
   // Get the token based on whether this is a refresh request (use refresh token) or another request (user access token)
-  const token = config.url === REFRESH_TOKEN_URL ? userStore.currentUser?.refreshToken : userStore.currentUser?.accessToken;
+  const token = config.url === REFRESH_TOKEN_URL ? userStore.userToken?.refreshToken : userStore.userToken?.accessToken;
 
   // If there is a token then set the bearer token
   if (token) {
