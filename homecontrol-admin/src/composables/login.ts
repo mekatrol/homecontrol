@@ -19,7 +19,7 @@ export const useLogin = (): LoginLogout => {
     appStore.incrementBusy();
     try {
       // Get an access token for the user
-      const accessToken = await authService.authenticateUser(userName, password, (err) => {
+      const accessToken = await authService.login(userName, password, (err) => {
         if (err.errorType === ApiErrorType.Unauthorized) {
           return true;
         }
@@ -48,12 +48,18 @@ export const useLogin = (): LoginLogout => {
     }
   };
 
-  const logout = (): void => {
-    // Clear current user info
-    appStore.setUserToken(undefined, false);
+  const logout = async (): Promise<void> => {
+    try {
+      appStore.incrementBusy();
 
-    // Navigate to current route so that it triggers any route guards after signing out
-    router.go(0);
+      // Logout from server
+      await authService.logout();
+
+      // Navigate to current route so that it triggers any route guards after signing out
+      router.go(0);
+    } finally {
+      appStore.decrementBusy();
+    }
   };
 
   return { login, logout };

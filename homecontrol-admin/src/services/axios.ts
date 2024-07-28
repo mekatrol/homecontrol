@@ -2,11 +2,18 @@ import type { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConf
 import axios from 'axios';
 import { getApiBaseUrl } from './url';
 import { useAppStore } from '@/stores/app';
+import { REFRESH_TOKEN_URL } from './authService';
 
 export const requestInterceptor = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
   const userStore = useAppStore();
-  const token = userStore.currentUser?.accessToken;
 
+  // Clear Authorization bearer (if it exists)
+  delete config.headers.Authorization;
+
+  // Get the token based on whether this is a refresh request (use refresh token) or another request (user access token)
+  const token = config.url === REFRESH_TOKEN_URL ? userStore.currentUser?.refreshToken : userStore.currentUser?.accessToken;
+
+  // If there is a token then set the bearer token
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

@@ -14,6 +14,7 @@ const serverValidationErrors = ref<ErrorModel[]>([]);
 export const defaultConfig: AxiosRequestConfig = {
   timeout: 50000, // 50 seconds
   headers: {
+    'Content-Type': 'application/json',
     Accept: 'application/json'
   }
 };
@@ -195,7 +196,7 @@ export const httpGet = async <T>(url: string, errorHandlerCallback?: HandleError
 
     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
       const authService = useAuthService();
-      await authService.acquireToken();
+      await authService.refreshToken();
       return await httpGet(url, errorHandlerCallback, true);
     }
 
@@ -227,7 +228,7 @@ export const httpPost = async <TRequest, TResponse>(
 
     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
       const authService = useAuthService();
-      await authService.acquireToken();
+      await authService.refreshToken();
       return await httpPost(requestData, url, errorHandlerCallback, true);
     }
 
@@ -259,7 +260,7 @@ export const httpPut = async <TRequest, TResponse>(
 
     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
       const authService = useAuthService();
-      await authService.acquireToken();
+      await authService.refreshToken();
       return await httpPut(requestData, url, errorHandlerCallback, true);
     }
 
@@ -291,7 +292,7 @@ export const httpPatch = async <TRequest, TResponse>(
 
     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
       const authService = useAuthService();
-      await authService.acquireToken();
+      await authService.refreshToken();
       return await httpPut(requestData, url, errorHandlerCallback, true);
     }
 
@@ -318,7 +319,7 @@ export const httpDelete = async (url: string, errorHandlerCallback?: HandleError
 
     if (apiError.errorType === ApiErrorType.Unauthorized && !retrying) {
       const authService = useAuthService();
-      await authService.acquireToken();
+      await authService.refreshToken();
       return await httpDelete(url, errorHandlerCallback, true);
     }
 

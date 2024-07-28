@@ -21,13 +21,20 @@
 
 <script setup lang="ts">
 import { RouterLink, RouterView, useRoute } from 'vue-router';
-import { useAppStore } from '@/stores/app';
+import { computed, onMounted } from 'vue';
+import { useAuthService } from './services/authService';
+import { useAppStore } from './stores/app';
 import BusyOverlay from '@/components/BusyOverlay.vue';
 import AppMessage from '@/components/AppMessage.vue';
-import { computed } from 'vue';
 
 const route = useRoute();
 const isLoginPage = computed(() => route.path === '/login');
 
 const appStore = useAppStore();
+const authService = useAuthService();
+
+onMounted(async () => {
+  // Load access token from local/session storage if it exists
+  await authService.loadStorageToken();
+});
 </script>

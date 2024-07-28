@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import Annotated, Optional
 from flask_jwt_extended import create_access_token, create_refresh_token
-from wireup import service
+from wireup import Inject, service
 from services.base import BaseService
 from services.data_service import DataService
 
@@ -11,6 +11,7 @@ from services.data_service import DataService
 @dataclass
 class UserTokenService(BaseService):
     data_service: DataService
+    jwt_expiry_mins: Annotated[int, Inject(param="jwt_expiry_mins")]
 
     def get(self, user_name: str) -> Optional[dict]:
         with self.data_service:
@@ -28,21 +29,31 @@ class UserTokenService(BaseService):
             # Revoke any existing
             self.revoke(user_name)
 
-            # Create access and refresh tokens
-            expires = timedelta(minutes=10)
-            expiry = datetime.now(timezone.utc) + expires
+            # Create access token and metadata
+            access_token_expires = timedelta(minutes=10)
+            access_token_expiry = datetime.now(
+                timezone.utc) + access_token_expires
             access_token = create_access_token(
-                identity=user_name, expires_delta=expires)
+                identity=user_name, expires_delta=access_token_expires)
+
+            # Create refresh token and metadata
             refresh_token = create_refresh_token(identity=user_name)
+            refresh_token_expires = timedelta(minutes=self.jwt_expiry_mins)
+            refresh_token_expiry = datetime.now(
+                timezone.utc) + refresh_token_expires
 
             token = {
                 "userName": user_name,
                 "accessToken": access_token,
+                "accessTokenExpiry": access_token_expiry.isoformat(),
                 "refreshToken": refresh_token,
-                "expiry": expiry.isoformat()
+                "refreshTokenExpiry": refresh_token_expiry.isoformat()
             }
 
             self.data_service.get_user_tokens_db().add(token)
+
+            # We don't want to include the ID of the token in the return value
+            del token['id']
 
             return token
 
