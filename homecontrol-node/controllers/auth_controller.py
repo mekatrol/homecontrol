@@ -87,7 +87,7 @@ def login_user(user_service: UserService):
 def logout_user(user_token_service: UserTokenService):
     jwt = get_jwt()
 
-    user_token_service.revoke(jwt["sub"])
+    user_token_service.revoke(jwt["jti"])
 
     # Always return success regardless of result
     return jsonify({"message": ACCESS_TOKEN_REVOKED}), 200
@@ -97,16 +97,16 @@ def logout_user(user_token_service: UserTokenService):
 @jwt_required(refresh=True)
 @container.autowire
 def refresh_token(user_token_service: UserTokenService):
-    identity = get_jwt_identity()
+    jwt = get_jwt()
 
-    access_token = user_token_service.refresh(identity)
+    access_token = user_token_service.refresh(jwt["jti"])
 
     if access_token is None:
         # If the user had a valid refresh token but they have no access token entry in the DB
         # then their refresh token is no longer valid
         return jsonify({"message": ACCESS_TOKEN_INVALID}), 401
 
-    return jsonify({"accessToken": access_token}), 200
+    return jsonify(access_token), 200
 
 
 @auth_bp.get('/user')

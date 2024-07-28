@@ -13,5 +13,5 @@ class DataFileConfig:
 class AppConfig:
     lock_file: str
     jwt_key: str
-    jwt_expiry_mins: int
+    jwt_refresh_token_expiry_mins: int
     data_files: DataFileConfig

@@ -10,6 +10,7 @@ export const USER_URL = '/auth/user';
 
 export interface RefreshedToken {
   accessToken: string;
+  accessTokenExpiry: string;
 }
 
 export interface AccessToken extends RefreshedToken {
@@ -53,14 +54,12 @@ class AuthServiceImpl implements AuthService {
         // Refresh the token
         const success = await this.refreshToken();
 
-        console.log(`success: ${success}`);
-
         if (!success) {
           logout();
           return;
         }
 
-        await updateUser();
+        await this.updateUser();
       } catch {
         // Error refreshing token so force logout (and user will need to login again)
         logout();
@@ -89,7 +88,9 @@ class AuthServiceImpl implements AuthService {
 
   async login(userName: string, password: string, errorHandlerCallback?: HandleErrorCallback): Promise<AccessToken | undefined> {
     try {
-      return await httpPost<LoginRequest, AccessToken>({ userName, password }, LOGIN_URL, errorHandlerCallback);
+      const token = await httpPost<LoginRequest, AccessToken>({ userName, password }, LOGIN_URL, errorHandlerCallback);
+      console.log(token);
+      return token;
     } catch {
       return undefined;
     }

@@ -32,7 +32,7 @@ def create_app():
 
     # Initialise JWT settings
     refresh_token_expiry_delta = timedelta(
-        minutes=all_config["app"]["jwt_expiry_mins"])
+        minutes=all_config["app"]["jwt_refresh_token_expiry_mins"])
 
     app.config["JWT_COOKIE_SECURE"] = True
     app.config["JWT_SECRET_KEY"] = all_config["app"]["jwt_key"]
@@ -89,7 +89,7 @@ def create_app():
     @jwt.token_in_blocklist_loader
     def check_token_revoked(jwt_header, jwt_data):
         user_token_service = container.get(UserTokenService)
-        user_token = user_token_service.get(jwt_data["sub"])
+        user_token = user_token_service.get(jwt_data["jti"])
 
         # The user token is revoked if there is no user token
         return user_token is None
