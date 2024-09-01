@@ -30,13 +30,8 @@ def create_app():
     container.params.update(all_config["app"])
     initialize_container(container, service_modules=[services])
 
-    # Initialise JWT settings
-    refresh_token_expiry_delta = timedelta(
-        minutes=all_config["app"]["jwt_refresh_token_expiry_mins"])
-
     app.config["JWT_COOKIE_SECURE"] = True
     app.config["JWT_SECRET_KEY"] = all_config["app"]["jwt_key"]
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = refresh_token_expiry_delta
 
     # Initialise JWT
     jwt = JWTManager()

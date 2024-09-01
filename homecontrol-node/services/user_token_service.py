@@ -65,9 +65,10 @@ class UserTokenService(BaseService):
                 identity=user_name, expires_delta=access_token_expires)
 
             # Create refresh token and metadata
-            refresh_token = create_refresh_token(identity=user_name)
             refresh_token_expires = timedelta(
                 minutes=self.jwt_refresh_token_expiry_mins)
+            refresh_token = create_refresh_token(
+                identity=user_name, expires_delta=refresh_token_expires)
             refresh_token_expiry = datetime.now(
                 timezone.utc) + refresh_token_expires
 
