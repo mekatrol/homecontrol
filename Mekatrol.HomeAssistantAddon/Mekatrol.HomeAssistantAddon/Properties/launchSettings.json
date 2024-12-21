@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Mekatrol.HomeAssistantAddon": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

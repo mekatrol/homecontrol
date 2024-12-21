@@ -132,11 +132,9 @@ homecontrol-server/src/spa/*
 homecontrol-hub/config.debug.yaml
 __pycache__
 homecontrol-hub/log.txt
-/Home.Automation/.vs
-/Home.Automation/Home.Automation.NodeServer/bin/Debug/net8.0
-/Home.Automation/Home.Automation.NodeServer/obj
-/Home.Automation/Home.Automation.Services/bin/Debug/net8.0
-/Home.Automation/Home.Automation.Services/obj
+Mekatrol.HomeAssistantAddon/.vs
+Mekatrol.HomeAssistantAddon/Mekatrol.HomeAssistantAddon/bin
+Mekatrol.HomeAssistantAddon/Mekatrol.HomeAssistantAddon/obj
 homecontrol-server/server.key
 homecontrol-server/server.cert
 homecontrol-server/data
