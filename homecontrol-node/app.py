@@ -5,10 +5,10 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from wireup import container, initialize_container
 from pyaml_env import parse_config
-
 from constants.messages import ACCESS_TOKEN_EXPIRED, ACCESS_TOKEN_EXPIRED, ACCESS_TOKEN_INVALID, ACCESS_TOKEN_MISSING, ACCESS_TOKEN_REVOKED
 from controllers.auth_controller import auth_bp
 from controllers.user_controller import user_bp
+from controllers.app_controller import app_bp, start_background_task
 import services
 from services.user_token_service import UserTokenService
 from services.user_service import UserService
@@ -18,6 +18,12 @@ def create_app():
     # Initialise configuration and DI
     all_config = parse_config("config/config.yaml", loader=yaml.Loader)
 
+    result = start_background_task()
+
+    if result != None:
+        print(result)
+        exit()
+
     app = Flask(__name__,
                 static_url_path='',
                 static_folder='web/static',
@@ -26,6 +32,7 @@ def create_app():
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(user_bp, url_prefix='/users')
+    app.register_blueprint(app_bp, url_prefix='/app')
 
     container.params.update(all_config["app"])
     initialize_container(container, service_modules=[services])
