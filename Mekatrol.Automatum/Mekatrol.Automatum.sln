@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5FD3F1D7-577A-4059-A60B-B682C05ABE08}"
+	ProjectSection(SolutionItems) = preProject
+		config.yaml = config.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.NodeServer", "Mekatrol.Automatum.NodeServer\Mekatrol.Automatum.NodeServer.csproj", "{9E7A5299-7A00-4BB5-AF2A-CB1D5B47381A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Services", "Mekatrol.Automatum.Services\Mekatrol.Automatum.Services.csproj", "{D7C16529-4D42-4DBA-8BFF-3D8C2DC7F82E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Models", "Mekatrol.Automatum.Models\Mekatrol.Automatum.Models.csproj", "{6AE1086B-2D14-49F6-B6F6-DD1B1FF761DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E7A5299-7A00-4BB5-AF2A-CB1D5B47381A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E7A5299-7A00-4BB5-AF2A-CB1D5B47381A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E7A5299-7A00-4BB5-AF2A-CB1D5B47381A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E7A5299-7A00-4BB5-AF2A-CB1D5B47381A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7C16529-4D42-4DBA-8BFF-3D8C2DC7F82E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7C16529-4D42-4DBA-8BFF-3D8C2DC7F82E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7C16529-4D42-4DBA-8BFF-3D8C2DC7F82E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7C16529-4D42-4DBA-8BFF-3D8C2DC7F82E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AE1086B-2D14-49F6-B6F6-DD1B1FF761DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AE1086B-2D14-49F6-B6F6-DD1B1FF761DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AE1086B-2D14-49F6-B6F6-DD1B1FF761DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AE1086B-2D14-49F6-B6F6-DD1B1FF761DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {15880214-5F5C-4FBE-A286-42A43D54F18E}
+	EndGlobalSection
+EndGlobal

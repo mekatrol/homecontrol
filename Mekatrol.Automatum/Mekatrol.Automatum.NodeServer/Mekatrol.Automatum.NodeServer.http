@@ -1,0 +1,6 @@
+@Mekatrol.Automatum.NodeServer_HostAddress = https://localhost:32774
+
+GET {{Mekatrol.Automatum.NodeServer_HostAddress}}/ping/
+Accept: application/json
+
+###

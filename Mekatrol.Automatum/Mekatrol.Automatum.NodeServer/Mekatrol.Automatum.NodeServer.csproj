@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>a060f93f-79dd-4178-aaec-b379e55ac9ac</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Mekatrol.Automatum.Models\Mekatrol.Automatum.Models.csproj" />
+	  <ProjectReference Include="..\Mekatrol.Automatum.Services\Mekatrol.Automatum.Services.csproj" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<!-- See: https://learn.microsoft.com/en-us/visualstudio/containers/container-volume-mapping?view=vs-2022#mount-a-container-volume -->
+		<DockerfileRunArguments>--user root --mount type=volume,src=mekatrol-automatum-data,dst=/data</DockerfileRunArguments>
+	</PropertyGroup>
+
+</Project>

@@ -1,0 +1,14 @@
+name: "Mekatrol Automatum Node Server"
+description: "A node server for running automation using flow logic."
+version: "1.0.0"
+slug: "mekatrol-automatum-nodeserver"
+init: false
+hassio_api: true
+arch:
+  - aarch64
+  - amd64
+  - armv7
+startup: services
+ports:
+  8080/tcp: 8080
+  8081/tcp: 8081
