@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Services
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Models", "Mekatrol.Automatum.Models\Mekatrol.Automatum.Models.csproj", "{6AE1086B-2D14-49F6-B6F6-DD1B1FF761DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Tests.Integration", "Mekatrol.Automatum.Tests.Integration\Mekatrol.Automatum.Tests.Integration.csproj", "{37BE6BE1-35F2-47C5-A4C8-597B80F6D801}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Tests.Unit", "Mekatrol.Automatum.Tests.Unit\Mekatrol.Automatum.Tests.Unit.csproj", "{312478BB-AB74-4AF4-980E-B9F5988E1D93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +36,14 @@ Global
 		{6AE1086B-2D14-49F6-B6F6-DD1B1FF761DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AE1086B-2D14-49F6-B6F6-DD1B1FF761DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AE1086B-2D14-49F6-B6F6-DD1B1FF761DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37BE6BE1-35F2-47C5-A4C8-597B80F6D801}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37BE6BE1-35F2-47C5-A4C8-597B80F6D801}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37BE6BE1-35F2-47C5-A4C8-597B80F6D801}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37BE6BE1-35F2-47C5-A4C8-597B80F6D801}.Release|Any CPU.Build.0 = Release|Any CPU
+		{312478BB-AB74-4AF4-980E-B9F5988E1D93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{312478BB-AB74-4AF4-980E-B9F5988E1D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{312478BB-AB74-4AF4-980E-B9F5988E1D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{312478BB-AB74-4AF4-980E-B9F5988E1D93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

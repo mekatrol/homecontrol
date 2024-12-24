@@ -151,3 +151,9 @@ Mekatrol.Automatum/Mekatrol.Automatum.Services/obj
 
 Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/bin
 Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/obj
+
+Mekatrol.Automatum/Mekatrol.Automatum.Tests.Integration/bin
+Mekatrol.Automatum/Mekatrol.Automatum.Tests.Integration/obj
+
+Mekatrol.Automatum/Mekatrol.Automatum.Tests.Unit/bin
+Mekatrol.Automatum/Mekatrol.Automatum.Tests.Unit/obj

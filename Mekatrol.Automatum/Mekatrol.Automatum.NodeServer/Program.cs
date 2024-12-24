@@ -1,7 +1,10 @@
 
 using Mekatrol.Automatum.Models.Configuration;
+using Mekatrol.Automatum.NodeServer.Extensions;
 using Mekatrol.Automatum.Services.Extensions;
+using Microsoft.AspNetCore.Http.Json;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 
 namespace Mekatrol.Automatum.NodeServer;
 
@@ -11,49 +14,62 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-        // Try and initialize/load the server certificate
-        X509Certificate2? serverCertificate = await CertificateHelper.InitializeLoadCertificate(args);
+        WebApplication app;
 
-        var builder = WebApplication.CreateBuilder(args);
-
-        // Bind origins configuration
-        var originsConfiguration = new OriginsOptions();
-        builder.Configuration.Bind(OriginsOptions.SectionName, originsConfiguration);
-
-        // If the certificate was loaded then configure host to use it
-        // NOTE: a server certificate is typically not loaded if debugging through Visual Studio
-        //       and is why appsettings.Development.json has: "UseSelfSignedCertificate": false
-        if (serverCertificate != null)
+        // Scope next section so that garbage collector will clean up builder helper after we complete the section
         {
-            builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+            var builderHelper = new BuilderHelper();
+
+            //  Create web application builder
+            var webAppBuilder = WebApplication.CreateBuilder(args);
+
+            // Bind origins options
+            var originsOptions = new OriginsOptions();
+            webAppBuilder.Configuration.Bind(OriginsOptions.SectionName, originsOptions);
+
+            // Try and initialize/load the server certificate
+            X509Certificate2? serverCertificate = await CertificateHelper.InitializeLoadCertificate(builderHelper);
+
+            // If the certificate was loaded then configure host to use it
+            // NOTE: a server certificate is typically not loaded if debugging through Visual Studio
+            //       and is why appsettings.Development.json has: "UseSelfSignedCertificate": false
+            if (serverCertificate != null)
             {
-                serverOptions.ConfigureHttpsDefaults(configureOptions =>
+                webAppBuilder.WebHost.ConfigureKestrel((context, serverOptions) =>
                 {
-                    configureOptions.ServerCertificate = serverCertificate;
+                    serverOptions.ConfigureHttpsDefaults(configureOptions =>
+                    {
+                        configureOptions.ServerCertificate = serverCertificate;
+                    });
                 });
+            }
+
+            // Add services to the container.
+            webAppBuilder.Services.AddAppServices(webAppBuilder, builderHelper.Logger);
+
+            webAppBuilder.Services.Configure<JsonOptions>(options =>
+            {
+                options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
+
+            webAppBuilder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: AppCorsPolicy,
+                    policy =>
+                    {
+                        policy.WithOrigins([.. originsOptions]);
+                        policy.AllowAnyMethod();
+                        policy.AllowAnyHeader();
+                    });
+            });
+
+            webAppBuilder.Services.AddControllers();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            webAppBuilder.Services.AddEndpointsApiExplorer();
+            webAppBuilder.Services.AddSwaggerGen();
+
+            app = webAppBuilder.Build();
         }
-
-        // Add services to the container.
-        builder.Services.AddAppServices();
-
-        builder.Services.AddCors(options =>
-        {
-            options.AddPolicy(name: AppCorsPolicy,
-                policy =>
-                {
-                    policy.WithOrigins([.. originsConfiguration]);
-                    policy.AllowAnyMethod();
-                    policy.AllowAnyHeader();
-                });
-        });
-
-        builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-
-        var app = builder.Build();
 
         app.UseCors(AppCorsPolicy);
 

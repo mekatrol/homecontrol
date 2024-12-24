@@ -1,4 +1,5 @@
 ﻿using Mekatrol.Automatum.Models.Configuration;
+using Mekatrol.Automatum.NodeServer.Extensions;
 using Mekatrol.Automatum.Services;
 using Mekatrol.Automatum.Services.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,20 +10,11 @@ namespace Mekatrol.Automatum.NodeServer;
 
 internal static class CertificateHelper
 {
-    public static async Task<X509Certificate2?> InitializeLoadCertificate(string[] args)
+    public static async Task<X509Certificate2?> InitializeLoadCertificate(BuilderHelper builderHelper)
     {
-        // We use a web application builder as the boiler plate code sets up a lot of items
-        // such as config and services without the need for use to do it ourselves.
-        // This is not that expensive (we don't start the app), but it means we leverage the
-        // out of the box .NET framework code to do heavy lifting.
-        var builder = WebApplication.CreateBuilder(args);
-
-        builder.Services.AddAppServices();
-        var app = builder.Build();
-
         X509Certificate2? certificate = null;
 
-        var certificateOptions = app.Configuration
+        var certificateOptions = builderHelper.Configuration
            .GetSection(CertificateOptions.SectionName)
            .Get<CertificateOptions>();
 
@@ -72,7 +64,7 @@ internal static class CertificateHelper
             // so create a new one.
             if (certificate == null)
             {
-                var certificateService = app.Services.GetRequiredService<ICertificateService>();
+                var certificateService = builderHelper.Services.GetRequiredService<ICertificateService>();
 
                 // Generate pfx certificate
                 certificate = certificateService.GenerateX509(certificateOptions.CertificateCommonName, certificateOptions.CertificatePassword);

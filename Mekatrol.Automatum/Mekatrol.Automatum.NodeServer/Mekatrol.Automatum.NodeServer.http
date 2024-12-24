@@ -1,6 +1,20 @@
 @Mekatrol.Automatum.NodeServer_HostAddress = https://localhost:32774
+@HomeAssistant_HostAddress = http://ha.lan:8123
+@HomeAssistant_SupervisorToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3MzdiMzlhNzdjODc0YWQwOGQ5ZmIwOTNkMDNjOGNjNCIsImlhdCI6MTczNDkzNzg2OCwiZXhwIjoyMDUwMjk3ODY4fQ.tuKiyqfxRoPo8m97WyGn4R7NrH9RK_l8thJwmcYfeP8
 
 GET {{Mekatrol.Automatum.NodeServer_HostAddress}}/ping/
 Accept: application/json
+
+###
+
+GET {{HomeAssistant_HostAddress}}/api/states
+Accept: application/json
+Authorization: Bearer {{HomeAssistant_SupervisorToken}}
+
+###
+
+GET {{HomeAssistant_HostAddress}}/api/services
+Accept: application/json
+Authorization: Bearer {{HomeAssistant_SupervisorToken}}
 
 ###
