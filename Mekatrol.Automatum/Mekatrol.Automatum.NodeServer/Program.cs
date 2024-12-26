@@ -49,7 +49,7 @@ public class Program
 
             // Initialise DB context
             webAppBuilder.Services.AddDbContext<IAutomatumDbContext, AutomatumDbContext>(
-                options => options.UseSqlite("Data Source=automatum.db"),
+                options => options.UseSqlite($"Data Source={nameof(Mekatrol)}.{nameof(Automatum)}.db".ToLower()),
                 ServiceLifetime.Scoped);
 
             // Add services to the container.
