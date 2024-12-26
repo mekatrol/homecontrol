@@ -37,7 +37,7 @@ end;
 
         foreach (var tableName in tables)
         {
-            var triggerName = $"Update{tableName}RowVersion";
+            var triggerName = $"UpdateRowVersion{tableName}";
 
             if(triggerNames.Contains(triggerName))
             {
