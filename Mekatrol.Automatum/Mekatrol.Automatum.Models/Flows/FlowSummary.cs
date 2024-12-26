@@ -1,6 +1,6 @@
 ﻿namespace Mekatrol.Automatum.Models.Flows;
 
-public class FlowSummaryModel : BaseModel
+public class FlowSummary : Base
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 

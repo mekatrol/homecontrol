@@ -1,6 +1,7 @@
 ﻿using Mekatrol.Automatum.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
 
 namespace Mekatrol.Automatum.Data.Context;
@@ -11,15 +12,13 @@ public class AutomatumDbContext(DbContextOptions<AutomatumDbContext> options) : 
 
     public DbSet<FlowEntity> Flows { get; set; }
 
-    public DbSet<FlowConnectionEntity> FlowConnections { get; set; }
-
     public async Task InitializeDatabase(CancellationToken cancellationToken = default)
     {
         // Make sure all migrations applied
         await Database.MigrateAsync(cancellationToken);
 
         // Now apply row version triggers
-        IList<string> tables = ["Flows", "FlowConnections", "Points"];
+        IList<string> tables = ["Flows", "Points"];
         var triggerSql =
             @"
 create trigger UpdateRowVersion{0}

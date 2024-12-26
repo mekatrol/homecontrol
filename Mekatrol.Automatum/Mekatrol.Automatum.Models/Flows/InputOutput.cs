@@ -1,6 +1,6 @@
 ﻿namespace Mekatrol.Automatum.Models.Flows;
 
-public class InputOutputModel
+public class InputOutput
 {
     public int Pin { get; set; }
 
@@ -12,9 +12,9 @@ public class InputOutputModel
 
     public InputOutputDirection Direction { get; set; }
 
-    public OffsetModel Offset { get; set; } = new OffsetModel();
+    public Offset Offset { get; set; } = new Offset();
 
-    public SizeModel Size { get; set; } = new SizeModel();
+    public Size Size { get; set; } = new Size();
 
     public BlockSide Side { get; set; }
 }

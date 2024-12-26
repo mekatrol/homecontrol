@@ -9,8 +9,6 @@ public interface IAutomatumDbContext
 
     DbSet<FlowEntity> Flows { get; set; }
 
-    DbSet<FlowConnectionEntity> FlowConnections { get; set; }
-
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 
     Task InitializeDatabase(CancellationToken cancellationToken = default);

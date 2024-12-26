@@ -10,7 +10,7 @@ namespace Mekatrol.Automatum.NodeServer.Controllers;
 public class FlowController(ILogger<FlowController> logger, IFlowService flowService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IList<FlowSummaryModel>> Get(CancellationToken cancellationToken)
+    public async Task<IList<FlowSummary>> Get(CancellationToken cancellationToken)
     {
         logger.LogDebug("Getting flows...");
         var flows = await flowService.GetSummaries(cancellationToken);
@@ -18,7 +18,7 @@ public class FlowController(ILogger<FlowController> logger, IFlowService flowSer
     }
 
     [HttpGet("{id}")]
-    public async Task<FlowModel> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<Flow> Get(Guid id, CancellationToken cancellationToken)
     {
         logger.LogDebug("{message}", $"Getting flow with ID '{id}'");
         var flow = await flowService.Get(id, cancellationToken);
@@ -26,7 +26,7 @@ public class FlowController(ILogger<FlowController> logger, IFlowService flowSer
     }
 
     [HttpPost]
-    public async Task<FlowModel> Post([FromBody] FlowModel flow, CancellationToken cancellationToken)
+    public async Task<Flow> Post([FromBody] Flow flow, CancellationToken cancellationToken)
     {
         logger.LogDebug("{message}", $"Creating flow with ID '{flow.Id}'");
         flow = await flowService.Create(flow, cancellationToken);
@@ -34,7 +34,7 @@ public class FlowController(ILogger<FlowController> logger, IFlowService flowSer
     }
 
     [HttpPut]
-    public async Task<FlowModel> Put([FromBody] FlowModel flow, CancellationToken cancellationToken)
+    public async Task<Flow> Put([FromBody] Flow flow, CancellationToken cancellationToken)
     {
         logger.LogDebug("{message}", $"Updating flow with ID '{flow.Id}'");
         flow = await flowService.Update(flow, cancellationToken);

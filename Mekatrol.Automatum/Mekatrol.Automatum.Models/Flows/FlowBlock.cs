@@ -1,6 +1,6 @@
 ﻿namespace Mekatrol.Automatum.Models.Flows;
 
-public class FlowBlockModel
+public class FlowBlock
 {
     //   Block identifier metadata
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -8,11 +8,11 @@ public class FlowBlockModel
 
     // Functional properties for execution of flow
     public string FunctionType { get; set; } = string.Empty;    
-    public IList<InputOutputModel> Io { get; set; } = [];
+    public IList<InputOutput> Io { get; set; } = [];
 
     // Visual properties for display in user interface
-    public OffsetModel Offset { get; set; } = new OffsetModel();
-    public SizeModel Size { get; set; } = new SizeModel();
+    public Offset Offset { get; set; } = new Offset();
+    public Size Size { get; set; } = new Size();
     public int ZOrder { get; set; }
     public int ZBoost { get; set; }
     public int Z { get; set; }

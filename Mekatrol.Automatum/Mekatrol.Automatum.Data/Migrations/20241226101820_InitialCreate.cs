@@ -12,22 +12,6 @@ namespace Mekatrol.Automatum.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "FlowConnections",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Key = table.Column<string>(type: "TEXT", nullable: false),
-                    Json = table.Column<string>(type: "TEXT", nullable: false),
-                    Created = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    Updated = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    RowVersion = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FlowConnections", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Flows",
                 columns: table => new
                 {
@@ -63,9 +47,6 @@ namespace Mekatrol.Automatum.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "FlowConnections");
-
             migrationBuilder.DropTable(
                 name: "Flows");
 

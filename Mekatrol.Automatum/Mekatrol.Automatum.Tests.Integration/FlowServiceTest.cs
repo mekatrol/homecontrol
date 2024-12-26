@@ -34,7 +34,7 @@ public class FlowServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flow = new FlowModel
+            var flow = new Flow
             {
                 Label = "label1",
                 Blocks = [],
@@ -54,7 +54,7 @@ public class FlowServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flow = new FlowModel
+            var flow = new Flow
             {
                 Id = Guid.NewGuid(),
                 Label = "label1",
@@ -75,7 +75,7 @@ public class FlowServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flow = new FlowModel
+            var flow = new Flow
             {
                 Id = Guid.NewGuid(),
                 Label = "label1",
@@ -122,7 +122,7 @@ public class FlowServiceTest : IntegrationTestBase
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var flow = new FlowModel
+                var flow = new Flow
                 {
                     Id = id,
                     Label = "label1",
@@ -170,7 +170,7 @@ public class FlowServiceTest : IntegrationTestBase
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var flow = new FlowModel
+                var flow = new Flow
                 {
                     Id = id,
                     Label = "label1",
@@ -190,7 +190,7 @@ public class FlowServiceTest : IntegrationTestBase
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var flow = new FlowModel
+                var flow = new Flow
                 {
                     Id = id, // // Will be duplicate ID
                     Label = "label2",
@@ -220,7 +220,7 @@ public class FlowServiceTest : IntegrationTestBase
 
             await using var scope = services.CreateAsyncScope();
             
-            var flow = new FlowModel
+            var flow = new Flow
             {
                 Id = id,
                 Label = "label1",

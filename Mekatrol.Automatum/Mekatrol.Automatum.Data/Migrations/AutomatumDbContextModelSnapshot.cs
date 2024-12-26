@@ -17,34 +17,6 @@ namespace Mekatrol.Automatum.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
-            modelBuilder.Entity("Mekatrol.Automatum.Data.Entities.FlowConnectionEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Json")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("RowVersion")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTimeOffset>("Updated")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FlowConnections");
-                });
-
             modelBuilder.Entity("Mekatrol.Automatum.Data.Entities.FlowEntity", b =>
                 {
                     b.Property<Guid>("Id")

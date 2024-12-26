@@ -6,8 +6,10 @@ using Mekatrol.Automatum.NodeServer.Extensions;
 using Mekatrol.Automatum.Services.Extensions;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Mekatrol.Automatum.NodeServer;
 
@@ -59,6 +61,7 @@ public class Program
             webAppBuilder.Services.Configure<JsonOptions>(options =>
             {
                 options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
             webAppBuilder.Services.AddCors(options =>
@@ -72,7 +75,14 @@ public class Program
                     });
             });
 
-            webAppBuilder.Services.AddControllers();
+            webAppBuilder.Services
+                .AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             webAppBuilder.Services.AddEndpointsApiExplorer();
             webAppBuilder.Services.AddSwaggerGen();

@@ -12,16 +12,16 @@ internal class FlowService(IAutomatumDbContext dbContext) : IFlowService
 {
     private readonly IAutomatumDbContext _dbContext = dbContext;
 
-    public async Task<IList<FlowSummaryModel>> GetSummaries(CancellationToken cancellationToken)
+    public async Task<IList<FlowSummary>> GetSummaries(CancellationToken cancellationToken)
     {
         var flowEntities = await _dbContext.Flows.ToListAsync(cancellationToken);
 
         var flowSummaries = flowEntities.Select(x =>
         {
-            var flow = JsonSerializer.Deserialize<FlowModel>(x.Json, JsonSerializerExtensions.ApiSerializerOptions)
+            var flow = JsonSerializer.Deserialize<Flow>(x.Json, JsonSerializerExtensions.ApiSerializerOptions)
                 ?? throw CouldNotDeserializeFlowException(x.Id);
 
-            return new FlowSummaryModel
+            return new FlowSummary
             {
                 Id = x.Id,
                 Label = flow.Label,
@@ -35,12 +35,12 @@ internal class FlowService(IAutomatumDbContext dbContext) : IFlowService
         return flowSummaries;
     }
 
-    public async Task<FlowModel> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<Flow> Get(Guid id, CancellationToken cancellationToken)
     {
         // If the id is an empty GUID then caller wants a new default flow (do not persist)
         if (id == Guid.Empty)
         {
-            return new FlowModel
+            return new Flow
             {
                 Id = Guid.NewGuid(),
                 Enabled = true
@@ -53,12 +53,12 @@ internal class FlowService(IAutomatumDbContext dbContext) : IFlowService
 
         return flowEntity == null
             ? throw IdNotFoundException(id)
-            : JsonSerializer.Deserialize<FlowModel>(flowEntity.Json, JsonSerializerExtensions.ApiSerializerOptions)
+            : JsonSerializer.Deserialize<Flow>(flowEntity.Json, JsonSerializerExtensions.ApiSerializerOptions)
                 ?? throw CouldNotDeserializeFlowException(flowEntity.Id);
         ;
     }
 
-    public async Task<FlowModel> Create(FlowModel flow, CancellationToken cancellationToken)
+    public async Task<Flow> Create(Flow flow, CancellationToken cancellationToken)
     {
         var dateTime = DateTimeOffset.UtcNow;
 
@@ -88,10 +88,10 @@ internal class FlowService(IAutomatumDbContext dbContext) : IFlowService
             throw;
         }
 
-        return JsonSerializer.Deserialize<FlowModel>(flowEntity.Json, JsonSerializerExtensions.ApiSerializerOptions)!;
+        return JsonSerializer.Deserialize<Flow>(flowEntity.Json, JsonSerializerExtensions.ApiSerializerOptions)!;
     }
 
-    public async Task<FlowModel> Update(FlowModel flow, CancellationToken cancellationToken)
+    public async Task<Flow> Update(Flow flow, CancellationToken cancellationToken)
     {
         var existing = await _dbContext.Flows.SingleOrDefaultAsync(x => x.Id == flow.Id, cancellationToken)
             ?? throw IdNotFoundException(flow.Id);
@@ -113,7 +113,7 @@ internal class FlowService(IAutomatumDbContext dbContext) : IFlowService
             throw OptimisticConcurrencyException(flow.Id);
         }
 
-        return JsonSerializer.Deserialize<FlowModel>(existing.Json, JsonSerializerExtensions.ApiSerializerOptions)!;
+        return JsonSerializer.Deserialize<Flow>(existing.Json, JsonSerializerExtensions.ApiSerializerOptions)!;
     }
 
     public async Task Delete(Guid id, CancellationToken cancellationToken)

@@ -4,13 +4,13 @@ namespace Mekatrol.Automatum.Services;
 
 public interface IFlowService
 {
-    Task<IList<FlowSummaryModel>> GetSummaries(CancellationToken cancellationToken);
+    Task<IList<FlowSummary>> GetSummaries(CancellationToken cancellationToken);
 
-    Task<FlowModel> Get(Guid id, CancellationToken cancellationToken);
+    Task<Flow> Get(Guid id, CancellationToken cancellationToken);
 
-    Task<FlowModel> Create(FlowModel flow, CancellationToken cancellationToken);
+    Task<Flow> Create(Flow flow, CancellationToken cancellationToken);
 
-    Task<FlowModel> Update(FlowModel flow, CancellationToken cancellationToken);
+    Task<Flow> Update(Flow flow, CancellationToken cancellationToken);
 
     Task Delete(Guid id, CancellationToken cancellationToken);
 }

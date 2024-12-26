@@ -1,6 +1,6 @@
 ﻿namespace Mekatrol.Automatum.Models.Flows;
 
-public class OffsetModel
+public class Offset
 {
     public double X { get; set; }
     public double Y { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Mekatrol.Automatum.Models.Flows;
 
-public class BaseModel
+public class Base
 {
     public DateTimeOffset Created { get; set; }
 
