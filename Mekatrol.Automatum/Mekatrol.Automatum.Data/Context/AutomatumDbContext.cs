@@ -1,14 +1,12 @@
 ﻿using Mekatrol.Automatum.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Configuration;
-using System.Runtime.CompilerServices;
+using System.Reflection.Metadata;
 
 namespace Mekatrol.Automatum.Data.Context;
 
 public class AutomatumDbContext(DbContextOptions<AutomatumDbContext> options) : DbContext(options), IAutomatumDbContext
 {
-    public DbSet<Point> Points { get; set; }
+    public DbSet<PointEntity> Points { get; set; }
 
     public DbSet<FlowEntity> Flows { get; set; }
 
@@ -57,5 +55,31 @@ end;
                 .Property(c => c.RowVersion)
                     .HasDefaultValue(1)
                     .IsRowVersion();
+
+        modelBuilder
+            .Entity<FlowEntity>()
+                .Property(c => c.Key)
+                    .IsRequired();
+
+        modelBuilder
+            .Entity<FlowEntity>()
+                .HasIndex(x => x.Key)
+                    .IsUnique();
+
+        modelBuilder
+            .Entity<PointEntity>()
+                .Property(c => c.RowVersion)
+                    .HasDefaultValue(1)
+                    .IsRowVersion();
+
+        modelBuilder
+            .Entity<PointEntity>()
+                .Property(c => c.Key)
+                    .IsRequired();
+
+        modelBuilder
+            .Entity<PointEntity>()
+                .HasIndex(x => x.Key)
+                    .IsUnique();
     }
 }

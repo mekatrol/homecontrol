@@ -1,6 +1,6 @@
 ﻿namespace Mekatrol.Automatum.Data.Entities;
 
-public class JsonEntity
+public class BaseEntity
 {
     public Guid Id { get; set; } = Guid.Empty;
 

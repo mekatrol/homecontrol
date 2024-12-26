@@ -23,6 +23,8 @@ public static class AppServicesExtensions
 
         services.AddFlowService();
 
+        services.AddPointService();
+
         services.AddHttpClientServices(homeAssistantOptions, logger);
 
         services.AddHomeAssistantServices();
@@ -35,6 +37,13 @@ public static class AppServicesExtensions
     public static IServiceCollection AddFlowService(this IServiceCollection services)
     {
         services.AddScoped<IFlowService, FlowService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddPointService(this IServiceCollection services)
+    {
+        services.AddScoped<IPointService, PointService>();
 
         return services;
     }

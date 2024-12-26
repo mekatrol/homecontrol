@@ -1,7 +1,4 @@
-﻿using Mekatrol.Automatum.Data.Context;
-using Mekatrol.Automatum.Services.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Mekatrol.Automatum.Tests.Integration;
 

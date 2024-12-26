@@ -1,6 +1,6 @@
 ﻿namespace Mekatrol.Automatum.Models.Flows;
 
-public class FlowConnection : Base
+public class FlowConnection : BaseModel
 {
     // Connection configiration properties
     public Guid StartBlockId { get; set; } = Guid.Empty;

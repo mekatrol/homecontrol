@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mekatrol.Automatum.Data.Migrations
 {
     [DbContext(typeof(AutomatumDbContext))]
-    [Migration("20241226101820_InitialCreate")]
+    [Migration("20241226121037_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -48,10 +48,13 @@ namespace Mekatrol.Automatum.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Key")
+                        .IsUnique();
+
                     b.ToTable("Flows");
                 });
 
-            modelBuilder.Entity("Mekatrol.Automatum.Data.Entities.Point", b =>
+            modelBuilder.Entity("Mekatrol.Automatum.Data.Entities.PointEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,12 +72,18 @@ namespace Mekatrol.Automatum.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("RowVersion")
-                        .HasColumnType("INTEGER");
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1);
 
                     b.Property<DateTimeOffset>("Updated")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
 
                     b.ToTable("Points");
                 });

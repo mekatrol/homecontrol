@@ -1,5 +1,4 @@
-﻿using Mekatrol.Automatum.Middleware.Exceptions;
-using Mekatrol.Automatum.Models.Flows;
+﻿using Mekatrol.Automatum.Models.Flows;
 using Mekatrol.Automatum.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +9,10 @@ namespace Mekatrol.Automatum.NodeServer.Controllers;
 public class FlowController(ILogger<FlowController> logger, IFlowService flowService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IList<FlowSummary>> Get(CancellationToken cancellationToken)
+    public async Task<IList<Flow>> Get(CancellationToken cancellationToken)
     {
         logger.LogDebug("Getting flows...");
-        var flows = await flowService.GetSummaries(cancellationToken);
+        var flows = await flowService.GetList(cancellationToken);
         return flows;
     }
 

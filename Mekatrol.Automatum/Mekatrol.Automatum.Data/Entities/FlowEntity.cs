@@ -1,5 +1,5 @@
 ﻿namespace Mekatrol.Automatum.Data.Entities;
 
-public class FlowEntity : JsonEntity
+public class FlowEntity : BaseEntity
 {
 }

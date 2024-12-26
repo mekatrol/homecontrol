@@ -9,136 +9,129 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Mekatrol.Automatum.Tests.Integration;
 
 [TestClass]
-public class FlowServiceTest : IntegrationTestBase
+public class PointServiceTest : IntegrationTestBase
 {
-    private const string TestDBName = "automatum.test.flowservice.{0}.db";
+    private const string TestDBName = "automatum.test.pointservice.{0}.db";
 
     private AutomatumDbContext? _dbContext = null;
 
     [TestMethod]
-    public async Task TestNoFlows()
+    public async Task TestNoPoints()
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flowService = services.GetRequiredService<IFlowService>();
+            var pointService = services.GetRequiredService<IPointService>();
 
-            var flows = await flowService.GetList(cancellationToken);
+            var points = await pointService.GetList(cancellationToken);
 
-            // Should be no flows
-            Assert.AreEqual(0, flows.Count);
+            // Should be no points
+            Assert.AreEqual(0, points.Count);
         });
     }
 
     [TestMethod]
-    public async Task TestNewFlowEmptyId()
+    public async Task TestNewPointEmptyId()
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flow = new Flow
+            var point = new Point
             {
                 Label = "label1",
                 Key = "the.key",
-                Blocks = [],
-                Connections = []
+                Description = "The description"
             };
 
-            var flowService = services.GetRequiredService<IFlowService>();
+            var pointService = services.GetRequiredService<IPointService>();
 
-            var createdFlow = await flowService.Create(flow, cancellationToken);
+            var createdPoint = await pointService.Create(point, cancellationToken);
 
-            Assert.AreNotEqual(Guid.Empty, createdFlow.Id);
+            Assert.AreNotEqual(Guid.Empty, createdPoint.Id);
         });
     }
 
     [TestMethod]
-    public async Task TestNewFlowGoodId()
+    public async Task TestNewPointGoodId()
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flow = new Flow
-            {
-                Id = Guid.NewGuid(),
-                Label = "label1",
-                Key = "the.key",
-                Blocks = [],
-                Connections = []
-            };
-
-            var flowService = services.GetRequiredService<IFlowService>();
-
-            var createdFlow = await flowService.Create(flow, cancellationToken);
-
-            Assert.AreEqual(flow.Id, createdFlow.Id);
-        });
-    }
-
-    [TestMethod]
-    public async Task TestUpdateFlowNotFoundId()
-    {
-        await RunTestWithServiceContainer(async (services, cancellationToken) =>
-        {
-            var flow = new Flow
+            var point = new Point
             {
                 Id = Guid.NewGuid(),
-                Label = "label1",
                 Key = "the.key",
-                Blocks = [],
-                Connections = []
+                Label = "label1"
             };
 
-            var flowService = services.GetRequiredService<IFlowService>();
+            var pointService = services.GetRequiredService<IPointService>();
+
+            var createdPoint = await pointService.Create(point, cancellationToken);
+
+            Assert.AreEqual(point.Id, createdPoint.Id);
+        });
+    }
+
+    [TestMethod]
+    public async Task TestUpdatePointNotFoundId()
+    {
+        await RunTestWithServiceContainer(async (services, cancellationToken) =>
+        {
+            var point = new Point
+            {
+                Id = Guid.NewGuid(),
+                Key = "the.key",
+                Label = "label1"
+            };
+
+            var pointService = services.GetRequiredService<IPointService>();
 
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
-                await flowService.Update(flow, cancellationToken);
+                await pointService.Update(point, cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
-            Assert.AreEqual($"A flow with the ID '{flow.Id}' was not found.", ex.Errors[0].ErrorMessage);
+            Assert.AreEqual($"A point with the ID '{point.Id}' was not found.", ex.Errors[0].ErrorMessage);
         });
     }
-    
+
     [TestMethod]
-    public async Task TestUpdateFlowBadId()
+    public async Task TestUpdatePointBadId()
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flow = new Flow
+            var point = new Point
             {
                 Id = Guid.Empty,
                 Label = "label1",
-                Key = "the.key",
-                Blocks = [],
-                Connections = []
+                Key = "the.key"
             };
 
-            var flowService = services.GetRequiredService<IFlowService>();
+            var pointService = services.GetRequiredService<IPointService>();
 
             var ex = await Assert.ThrowsExceptionAsync<BadRequestException>(async () =>
             {
-                await flowService.Update(flow, cancellationToken);
+                await pointService.Update(point, cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
-            Assert.AreEqual($"The ID '{flow.Id}' is not valid.", ex.Errors[0].ErrorMessage);
+            Assert.AreEqual($"The ID '{point.Id}' is not valid.", ex.Errors[0].ErrorMessage);
         });
     }
 
     [TestMethod]
-    public async Task TestDeleteFlowNotFoundId()
+    public async Task TestDeletePointNotFoundId()
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flowService = services.GetRequiredService<IFlowService>();
+            var pointService = services.GetRequiredService<IPointService>();
 
             var id = Guid.NewGuid();
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
-                await flowService.Delete(id, cancellationToken);
+                await pointService.Delete(id, cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
-            Assert.AreEqual($"A flow with the ID '{id}' was not found.", ex.Errors[0].ErrorMessage);
+            Assert.AreEqual($"A point with the ID '{id}' was not found.", ex.Errors[0].ErrorMessage);
         });
     }
 
@@ -151,43 +144,41 @@ public class FlowServiceTest : IntegrationTestBase
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var flow = new Flow
+                var point = new Point
                 {
                     Id = id,
                     Key = "the.key",
-                    Label = "label1",
-                    Blocks = [],
-                    Connections = []
+                    Label = "label1"
                 };
 
-                var flowService = services.GetRequiredService<IFlowService>();
+                var pointService = services.GetRequiredService<IPointService>();
 
-                var createdFlow = await flowService.Create(flow, cancellationToken);
+                var createdPoint = await pointService.Create(point, cancellationToken);
 
-                Assert.AreEqual(id, createdFlow.Id);
+                Assert.AreEqual(id, createdPoint.Id);
             }
 
-            // Clear tracking for previously created flow
+            // Clear tracking for previously created point
             _dbContext?.ChangeTracker.Clear();
 
             // Make sure it exists
-            Assert.IsNotNull(await _dbContext!.Flows.SingleOrDefaultAsync(x => x.Id == id, cancellationToken));
+            Assert.IsNotNull(await _dbContext!.Points.SingleOrDefaultAsync(x => x.Id == id, cancellationToken));
 
-            // Clear tracking for previously fetched flow
+            // Clear tracking for previously fetched point
             _dbContext?.ChangeTracker.Clear();
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var flowService = services.GetRequiredService<IFlowService>();
+                var pointService = services.GetRequiredService<IPointService>();
 
-                await flowService.Delete(id, cancellationToken);
+                await pointService.Delete(id, cancellationToken);
             }
 
-            // Clear tracking for previously deleted flow
+            // Clear tracking for previously deleted point
             _dbContext?.ChangeTracker.Clear();
 
             // Make sure it no longer exists
-            Assert.IsNull(await _dbContext!.Flows.SingleOrDefaultAsync(x => x.Id == id, cancellationToken));
+            Assert.IsNull(await _dbContext!.Points.SingleOrDefaultAsync(x => x.Id == id, cancellationToken));
         });
     }
 
@@ -200,45 +191,41 @@ public class FlowServiceTest : IntegrationTestBase
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var flow = new Flow
+                var point = new Point
                 {
                     Id = id,
                     Key = "the.key",
-                    Label = "label1",
-                    Blocks = [],
-                    Connections = []
+                    Label = "label1"
                 };
 
-                var flowService = services.GetRequiredService<IFlowService>();
+                var pointService = services.GetRequiredService<IPointService>();
 
-                var createdFlow = await flowService.Create(flow, cancellationToken);
+                var createdPoint = await pointService.Create(point, cancellationToken);
 
-                Assert.AreEqual(id, createdFlow.Id);
+                Assert.AreEqual(id, createdPoint.Id);
             }
 
-            // Clear tracking for previously created flow
+            // Clear tracking for previously created point
             _dbContext?.ChangeTracker.Clear();
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var flow = new Flow
+                var point = new Point
                 {
-                    Id = id, // // Will be duplicate ID
+                    Id = id, // Will be duplicate ID
                     Key = "the.key.2",
-                    Label = "label2",
-                    Blocks = [],
-                    Connections = []
+                    Label = "label2"
                 };
 
-                var flowService = services.GetRequiredService<IFlowService>();
+                var pointService = services.GetRequiredService<IPointService>();
 
                 var ex = await Assert.ThrowsExceptionAsync<ConflictException>(async () =>
                 {
-                    await flowService.Create(flow, cancellationToken);
+                    await pointService.Create(point, cancellationToken);
                 });
 
                 Assert.AreEqual(1, ex.Errors.Count);
-                Assert.AreEqual($"A flow with the ID '{id}' already exists.", ex.Errors[0].ErrorMessage);
+                Assert.AreEqual($"A point with the ID '{id}' already exists.", ex.Errors[0].ErrorMessage);
             }
         });
     }
@@ -252,18 +239,18 @@ public class FlowServiceTest : IntegrationTestBase
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var flow = new Flow
+                var point = new Point
                 {
                     Id = Guid.NewGuid(),
                     Key = key,
                     Label = "label1"
                 };
 
-                var flowService = services.GetRequiredService<IFlowService>();
+                var pointService = services.GetRequiredService<IPointService>();
 
-                var createdFlow = await flowService.Create(flow, cancellationToken);
+                var createdPoint = await pointService.Create(point, cancellationToken);
 
-                Assert.AreEqual(key, createdFlow.Key);
+                Assert.AreEqual(key, createdPoint.Key);
             }
 
             // Clear tracking for previously created point
@@ -271,22 +258,22 @@ public class FlowServiceTest : IntegrationTestBase
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var flow = new Flow
+                var point = new Point
                 {
                     Id = Guid.NewGuid(),
                     Key = key,
                     Label = "label2"
                 };
 
-                var flowService = services.GetRequiredService<IFlowService>();
+                var pointService = services.GetRequiredService<IPointService>();
 
                 var ex = await Assert.ThrowsExceptionAsync<ConflictException>(async () =>
                 {
-                    await flowService.Create(flow, cancellationToken);
+                    await pointService.Create(point, cancellationToken);
                 });
 
                 Assert.AreEqual(1, ex.Errors.Count);
-                Assert.AreEqual($"A flow with the key '{key}' already exists.", ex.Errors[0].ErrorMessage);
+                Assert.AreEqual($"A point with the key '{key}' already exists.", ex.Errors[0].ErrorMessage);
             }
         });
     }
@@ -300,66 +287,64 @@ public class FlowServiceTest : IntegrationTestBase
 
             await using var scope = services.CreateAsyncScope();
             
-            var flow = new Flow
+            var point = new Point
             {
                 Id = id,
                 Key = "the.key",
-                Label = "label1",
-                Blocks = [],
-                Connections = []
+                Label = "label1"
             };
 
-            var flowService = services.GetRequiredService<IFlowService>();
+            var pointService = services.GetRequiredService<IPointService>();
 
-            var createdFlow = await flowService.Create(flow, cancellationToken);
+            var createdPoint = await pointService.Create(point, cancellationToken);
 
-            var flowCopy1 = await flowService.Get(flow.Id, cancellationToken);
-            var flowCopy2 = await flowService.Get(flow.Id, cancellationToken);
+            var pointCopy1 = await pointService.Get(point.Id, cancellationToken);
+            var pointCopy2 = await pointService.Get(point.Id, cancellationToken);
 
-            flowCopy1.Label = "label2";
-            flowCopy2.Label = "label3";
+            pointCopy1.Label = "label2";
+            pointCopy2.Label = "label3";
 
-            await flowService.Update(flowCopy1, cancellationToken);
+            await pointService.Update(pointCopy1, cancellationToken);
 
             var ex = await Assert.ThrowsExceptionAsync<ConflictException>(async () =>
             {
-                await flowService.Update(flowCopy2, cancellationToken);
+                await pointService.Update(pointCopy2, cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
-            Assert.AreEqual($"The flow with the ID '{id}' has changed, you need to fetch the latest version and update it.", ex.Errors[0].ErrorMessage);
+            Assert.AreEqual($"The point with the ID '{id}' has changed, you need to fetch the latest version and update it.", ex.Errors[0].ErrorMessage);
         });
     }
 
     [TestMethod]
-    public async Task TestFlowNotFound()
+    public async Task TestPointNotFound()
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flowService = services.GetRequiredService<IFlowService>();
+            var pointService = services.GetRequiredService<IPointService>();
 
             var id = Guid.NewGuid();
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
-                await flowService.Get(id, cancellationToken);
+                await pointService.Get(id, cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
-            Assert.AreEqual($"A flow with the ID '{id}' was not found.", ex.Errors[0].ErrorMessage);
+            Assert.AreEqual($"A point with the ID '{id}' was not found.", ex.Errors[0].ErrorMessage);
         });
     }
 
     [TestMethod]
-    public async Task TestFlowGetEmptyGuid()
+    public async Task TestPointGetEmptyGuid()
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flowService = services.GetRequiredService<IFlowService>();
+            var pointService = services.GetRequiredService<IPointService>();
 
-            var flow = await flowService.Get(Guid.Empty, cancellationToken);
+            var point = await pointService.Get(Guid.Empty, cancellationToken);
 
-            Assert.IsNotNull(flow);
-            Assert.AreNotEqual(Guid.Empty, flow.Id);
+            Assert.IsNotNull(point);
+            Assert.AreNotEqual(Guid.Empty, point.Id);
         });
     }
 
@@ -374,7 +359,7 @@ public class FlowServiceTest : IntegrationTestBase
         await _dbContext.InitializeDatabase();
 
         serviceCollection.AddSingleton<IAutomatumDbContext>(_dbContext);
-        serviceCollection.AddFlowService();
+        serviceCollection.AddPointService();
 
         return serviceCollection;
     }

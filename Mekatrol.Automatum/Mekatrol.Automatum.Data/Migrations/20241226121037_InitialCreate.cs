@@ -36,12 +36,24 @@ namespace Mekatrol.Automatum.Data.Migrations
                     Json = table.Column<string>(type: "TEXT", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    RowVersion = table.Column<int>(type: "INTEGER", nullable: false)
+                    RowVersion = table.Column<int>(type: "INTEGER", rowVersion: true, nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Points", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Flows_Key",
+                table: "Flows",
+                column: "Key",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Points_Key",
+                table: "Points",
+                column: "Key",
+                unique: true);
         }
 
         /// <inheritdoc />

@@ -1,5 +1,5 @@
 ﻿namespace Mekatrol.Automatum.Data.Entities;
 
-public class Point : JsonEntity
+public class PointEntity : BaseEntity
 {
 }
