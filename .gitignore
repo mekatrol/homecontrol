@@ -167,3 +167,6 @@ Mekatrol.Automatum/Mekatrol.Automatum.Tests.Integration/obj
 
 Mekatrol.Automatum/Mekatrol.Automatum.Tests.Unit/bin
 Mekatrol.Automatum/Mekatrol.Automatum.Tests.Unit/obj
+/Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/automatum.db
+/Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/automatum.db-shm
+/Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/automatum.db-wal
