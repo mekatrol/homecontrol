@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
-using System.Net.Http;
 
 namespace Mekatrol.Automatum.Services.Extensions;
 
@@ -22,9 +21,20 @@ public static class AppServicesExtensions
         // Add options as a singleton
         services.AddSingleton(homeAssistantOptions);
 
-        AddHttpClientServices(services, homeAssistantOptions, logger);
+        services.AddFlowService();
 
-        AddHomeAssistantServices(services);
+        services.AddHttpClientServices(homeAssistantOptions, logger);
+
+        services.AddHomeAssistantServices();
+
+        services.AddScoped<IPingService, PingService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddFlowService(this IServiceCollection services)
+    {
+        services.AddScoped<IFlowService, FlowService>();
 
         return services;
     }
@@ -39,11 +49,11 @@ public static class AppServicesExtensions
         // should be configured in appsettings.Development.json
         if (!string.IsNullOrEmpty(supervisorToken))
         {
-            logger.LogInformation("The API supervisor token has been set from the configured environment variable");
+            logger.LogDebug("The API supervisor token has been set from the configured environment variable");
             options.SupervisorToken = supervisorToken;
         }else
         {
-            logger.LogInformation("The API supervisor token was not set from environment variable, will default to appsettings value");
+            logger.LogDebug("The API supervisor token was not set from environment variable, will default to appsettings value");
         }
 
         var handler = new SocketsHttpHandler

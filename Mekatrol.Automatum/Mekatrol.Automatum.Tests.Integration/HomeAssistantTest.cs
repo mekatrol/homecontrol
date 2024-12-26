@@ -8,11 +8,11 @@ using Moq;
 namespace Mekatrol.Automatum.Tests.Integration;
 
 [TestClass]
-public sealed class HomeAssistantTests
+public sealed class HomeAssistantTest
 {
     private readonly IServiceProvider _services;
 
-    public HomeAssistantTests()
+    public HomeAssistantTest()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -22,7 +22,7 @@ public sealed class HomeAssistantTests
             SupervisorToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3MzdiMzlhNzdjODc0YWQwOGQ5ZmIwOTNkMDNjOGNjNCIsImlhdCI6MTczNDkzNzg2OCwiZXhwIjoyMDUwMjk3ODY4fQ.tuKiyqfxRoPo8m97WyGn4R7NrH9RK_l8thJwmcYfeP8"
         };
 
-        var loggerMock = new Mock<ILogger<HomeAssistantTests>>();
+        var loggerMock = new Mock<ILogger<HomeAssistantTest>>();
 
         serviceCollection.AddHttpClientServices(homeAssistantOptions, loggerMock.Object);
         serviceCollection.AddHomeAssistantServices();

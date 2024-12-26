@@ -18,6 +18,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Tests.In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Tests.Unit", "Mekatrol.Automatum.Tests.Unit\Mekatrol.Automatum.Tests.Unit.csproj", "{312478BB-AB74-4AF4-980E-B9F5988E1D93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Data", "Mekatrol.Automatum.Data\Mekatrol.Automatum.Data.csproj", "{DD3391C7-B55D-43C5-8D41-2AD2CAA0F2ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Middleware", "Mekatrol.Automatum.Middleware\Mekatrol.Automatum.Middleware.csproj", "{0885FA12-B243-4B70-BD62-413FCDD67FEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.Common", "Mekatrol.Automatum.Common\Mekatrol.Automatum.Common.csproj", "{81DEC678-5C33-43AB-B8AA-0AC6C318B1D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +50,18 @@ Global
 		{312478BB-AB74-4AF4-980E-B9F5988E1D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{312478BB-AB74-4AF4-980E-B9F5988E1D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{312478BB-AB74-4AF4-980E-B9F5988E1D93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD3391C7-B55D-43C5-8D41-2AD2CAA0F2ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD3391C7-B55D-43C5-8D41-2AD2CAA0F2ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD3391C7-B55D-43C5-8D41-2AD2CAA0F2ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD3391C7-B55D-43C5-8D41-2AD2CAA0F2ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0885FA12-B243-4B70-BD62-413FCDD67FEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0885FA12-B243-4B70-BD62-413FCDD67FEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0885FA12-B243-4B70-BD62-413FCDD67FEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0885FA12-B243-4B70-BD62-413FCDD67FEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DEC678-5C33-43AB-B8AA-0AC6C318B1D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DEC678-5C33-43AB-B8AA-0AC6C318B1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DEC678-5C33-43AB-B8AA-0AC6C318B1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DEC678-5C33-43AB-B8AA-0AC6C318B1D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

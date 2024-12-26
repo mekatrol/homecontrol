@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Mekatrol.Automatum.Data\Mekatrol.Automatum.Data.csproj" />
+    <ProjectReference Include="..\Mekatrol.Automatum.Middleware\Mekatrol.Automatum.Middleware.csproj" />
     <ProjectReference Include="..\Mekatrol.Automatum.Models\Mekatrol.Automatum.Models.csproj" />
   </ItemGroup>
 

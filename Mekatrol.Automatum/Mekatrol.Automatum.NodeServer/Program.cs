@@ -1,8 +1,11 @@
 
+using Mekatrol.Automatum.Data.Context;
+using Mekatrol.Automatum.Middleware.Extensions;
 using Mekatrol.Automatum.Models.Configuration;
 using Mekatrol.Automatum.NodeServer.Extensions;
 using Mekatrol.Automatum.Services.Extensions;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 
@@ -44,7 +47,13 @@ public class Program
                 });
             }
 
+            // Initialise DB context
+            webAppBuilder.Services.AddDbContext<IAutomatumDbContext, AutomatumDbContext>(
+                options => options.UseSqlite("Data Source=automatum.db"),
+                ServiceLifetime.Scoped);
+
             // Add services to the container.
+            webAppBuilder.Services.AddExceptionMiddleware();
             webAppBuilder.Services.AddAppServices(webAppBuilder, builderHelper.Logger);
 
             webAppBuilder.Services.Configure<JsonOptions>(options =>
@@ -71,7 +80,18 @@ public class Program
             app = webAppBuilder.Build();
         }
 
+        // Make sure DB has migrations applied (as well as any seed scripts)
+        await using (var scope = app.Services.CreateAsyncScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<IAutomatumDbContext>();
+            await dbContext.InitializeDatabase();
+        }
+
         app.UseCors(AppCorsPolicy);
+
+        app.UseExceptionMiddleware();
+
+        app.UseStaticFiles();
 
         app.UseSwagger();
 

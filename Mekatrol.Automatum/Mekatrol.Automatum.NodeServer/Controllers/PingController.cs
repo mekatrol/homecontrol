@@ -1,25 +1,17 @@
+using Mekatrol.Automatum.Models;
+using Mekatrol.Automatum.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mekatrol.Automatum.NodeServer.Controllers;
+
 [ApiController]
 [Route("[controller]")]
-public class PingController : ControllerBase
+public class PingController(IPingService pingService, ILogger<PingController> logger) : ControllerBase
 {
-    private readonly ILogger<PingController> _logger;
-
-    public PingController(ILogger<PingController> logger)
-    {
-        _logger = logger;
-    }
-
     [HttpGet(Name = "ping")]
-    public PingPongModel Get()
+    public async Task<PingModel> Get(CancellationToken cancellationToken)
     {
-        return new PingPongModel();
-    }
-
-    public class PingPongModel
-    {
-        public string Message { get; set; } = "Pong";
+        logger.LogDebug("Calling ping service");
+        return await pingService.Ping(cancellationToken);
     }
 }
