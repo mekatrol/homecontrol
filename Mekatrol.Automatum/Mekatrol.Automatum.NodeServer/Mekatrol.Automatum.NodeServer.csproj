@@ -8,10 +8,14 @@
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
+	<Target Name="CreateSwaggerJson">
+		<Exec Command="dotnet swagger tofile --output ./swagger.json $(OutputPath)$(AssemblyName).dll v1" WorkingDirectory="$(ProjectDir)" />
+	</Target>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		  <PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="9.0.0" />
@@ -20,10 +24,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Mekatrol.Automatum.Data\Mekatrol.Automatum.Data.csproj" />
-	  <ProjectReference Include="..\Mekatrol.Automatum.Middleware\Mekatrol.Automatum.Middleware.csproj" />
-	  <ProjectReference Include="..\Mekatrol.Automatum.Models\Mekatrol.Automatum.Models.csproj" />
-	  <ProjectReference Include="..\Mekatrol.Automatum.Services\Mekatrol.Automatum.Services.csproj" />
+		<ProjectReference Include="..\Mekatrol.Automatum.Data\Mekatrol.Automatum.Data.csproj" />
+		<ProjectReference Include="..\Mekatrol.Automatum.Middleware\Mekatrol.Automatum.Middleware.csproj" />
+		<ProjectReference Include="..\Mekatrol.Automatum.Models\Mekatrol.Automatum.Models.csproj" />
+		<ProjectReference Include="..\Mekatrol.Automatum.Services\Mekatrol.Automatum.Services.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup>

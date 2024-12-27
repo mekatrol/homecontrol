@@ -1,7 +1,5 @@
 ﻿using Mekatrol.Automatum.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Mekatrol.Automatum.Data.Context;
 

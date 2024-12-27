@@ -1,5 +1,5 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Mekatrol.Automatum.Services.Implementation;
 
@@ -49,7 +49,6 @@ public class CertificateService : ICertificateService
         var certificate = X509CertificateLoader.LoadPkcs12FromFile(path, password);
         return certificate;
     }
-
 
     public async Task SavePkcs12(string path, string password, X509Certificate2 certificate)
     {

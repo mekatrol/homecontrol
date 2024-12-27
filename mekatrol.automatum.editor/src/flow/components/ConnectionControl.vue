@@ -53,8 +53,8 @@ import {
   BLOCK_IO_SIZE
 } from '../constants';
 import { useThemeStore } from '../stores/theme-store';
-import type { FlowConnection } from '../types/FlowConnection';
 import { useFlowController } from '../types/FlowController';
+import type { FlowConnection } from '@/services/api-generated';
 
 interface Props {
   show?: boolean;

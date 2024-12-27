@@ -1,10 +1,9 @@
-import { type Offset } from '../types/Offset';
-import { BlockSide } from '../types/BlockSide';
-
 /********************************************************************************************************************
  * Parts (control point adjustment) of this code are taken from:
  * https://github.com/node-red/node-red/blob/master/packages/node_modules/%40node-red/editor-client/src/js/view.js
  ********************************************************************************************************************/
+
+import { BlockSide, type Offset } from '@/services/api-generated';
 
 // This algorithm assumes that start point is always the right hand side of the block
 // and the end point is the left hand side of the block. That is, the start

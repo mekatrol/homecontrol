@@ -9,7 +9,7 @@ using System.Text.Json;
 namespace Mekatrol.Automatum.Services.Implementation;
 
 internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbContext)
-    where TModel : BaseModel
+    where TModel : RootEntityModel
     where TEntity : BaseEntity
 {
     public async virtual Task<IList<TModel>> GetList(CancellationToken cancellationToken)
@@ -143,7 +143,6 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
         _dbContext.Set<TEntity>().Remove(existing);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
-
 
     protected readonly IAutomatumDbContext _dbContext = dbContext;
 

@@ -286,7 +286,7 @@ public class PointServiceTest : IntegrationTestBase
             var id = Guid.NewGuid();
 
             await using var scope = services.CreateAsyncScope();
-            
+
             var point = new Point
             {
                 Id = id,

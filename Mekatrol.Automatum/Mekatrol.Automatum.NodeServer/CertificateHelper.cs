@@ -1,8 +1,6 @@
 ﻿using Mekatrol.Automatum.Models.Configuration;
 using Mekatrol.Automatum.NodeServer.Extensions;
 using Mekatrol.Automatum.Services;
-using Mekatrol.Automatum.Services.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 

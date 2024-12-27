@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia';
 import type { BlockTemplate } from '../types/BlockTemplate';
-import { BlockSide } from '../types/BlockSide';
 import { BLOCK_HEIGHT, BLOCK_IO_SIZE, BLOCK_WIDTH } from '../constants';
 import { toRef, type Ref } from 'vue';
-import { InputOutputDirection, InputOutputSignalType, type Flow } from '@/services/api-generated';
+import { InputOutputDirection, InputOutputSignalType, type Flow, BlockSide } from '@/services/api-generated';
 
 const blockTemplates: BlockTemplate[] = [
   {

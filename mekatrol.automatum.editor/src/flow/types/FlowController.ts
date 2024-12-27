@@ -1,16 +1,13 @@
 import { type Ref, ref } from 'vue';
-import type { Offset } from './Offset';
 import { ZOrder } from './ZOrder';
 import { configureFlowPointerEvents, type FlowBlockIOPointerEvent, type FlowBlockPointerEvent } from '../utils/event-emitter';
-import type { FlowConnection } from './FlowConnection';
-import type { Size } from './Size';
-import type { FlowBlock, InputOutput } from '@/services/api-generated';
+import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
 import type { FlowConnecting } from './FlowConnecting';
-import { BlockSide } from './BlockSide';
 import { MARKER_SIZE } from '../constants';
 import { useAppStore } from '../stores/app-store';
 import { useFlowStore } from '../stores/flow-store';
-import type { Flow } from '@/services/api-generated';
+import type { Flow, Offset, BlockSide, Size } from '@/services/api-generated';
+import { v4 as uuidv4 } from 'uuid';
 
 export class FlowController {
   public _key: string;
@@ -265,6 +262,7 @@ export class FlowController {
     const endBlockPin = this._drawingConnectionEndPin.value;
 
     const connection = {
+      id: uuidv4(),
       startBlockId: startBlock.id,
       startPin: startBlockPin,
       endBlockId: endBlock.id,

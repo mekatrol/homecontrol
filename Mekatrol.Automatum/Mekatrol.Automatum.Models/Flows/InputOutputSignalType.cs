@@ -6,4 +6,3 @@ public enum InputOutputSignalType
     Digital,
     PWM // Pulse Width Modulated
 }
-

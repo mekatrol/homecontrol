@@ -26,4 +26,3 @@ public static class JsonSerializerExtensions
         ApiSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     }
 }
-

@@ -1,7 +1,6 @@
 ﻿namespace Mekatrol.Automatum.Models.Flows;
 
-
-public class Flow : BaseModel
+public class Flow : RootEntityModel
 {
     public IList<FlowBlock> Blocks { get; set; } = [];
 

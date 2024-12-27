@@ -1,13 +1,12 @@
 
 using Mekatrol.Automatum.Data.Context;
+using Mekatrol.Automatum.Middleware;
 using Mekatrol.Automatum.Middleware.Extensions;
 using Mekatrol.Automatum.Models.Configuration;
 using Mekatrol.Automatum.NodeServer.Extensions;
 using Mekatrol.Automatum.Services.Extensions;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -33,7 +32,7 @@ public class Program
             webAppBuilder.Configuration.Bind(OriginsOptions.SectionName, originsOptions);
 
             // Try and initialize/load the server certificate
-            X509Certificate2? serverCertificate = await CertificateHelper.InitializeLoadCertificate(builderHelper);
+            var serverCertificate = await CertificateHelper.InitializeLoadCertificate(builderHelper);
 
             // If the certificate was loaded then configure host to use it
             // NOTE: a server certificate is typically not loaded if debugging through Visual Studio
@@ -85,7 +84,10 @@ public class Program
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             webAppBuilder.Services.AddEndpointsApiExplorer();
-            webAppBuilder.Services.AddSwaggerGen();
+            webAppBuilder.Services.AddSwaggerGen(c =>
+            {
+                c.SchemaFilter<NonNullablePropertiesRequiredSchemaFilter>();
+            });
 
             app = webAppBuilder.Build();
         }

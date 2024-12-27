@@ -60,7 +60,8 @@ public static class AppServicesExtensions
         {
             logger.LogDebug("The API supervisor token has been set from the configured environment variable");
             options.SupervisorToken = supervisorToken;
-        }else
+        }
+        else
         {
             logger.LogDebug("The API supervisor token was not set from environment variable, will default to appsettings value");
         }

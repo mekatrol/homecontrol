@@ -1,6 +1,5 @@
 ﻿using Mekatrol.Automatum.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 
 namespace Mekatrol.Automatum.Data.Context;
 
@@ -36,7 +35,7 @@ end;
         {
             var triggerName = $"UpdateRowVersion{tableName}";
 
-            if(triggerNames.Contains(triggerName))
+            if (triggerNames.Contains(triggerName))
             {
                 continue;
             }

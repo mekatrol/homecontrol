@@ -1,12 +1,12 @@
-import { computed, reactive, ref, type Ref, type WritableComputedRef } from 'vue';
+import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
 import { BLOCK_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE, EMPTY_GUID } from '../constants';
 import type { Flow } from '@/services/api-generated';
-import { Api, PersistState } from '@/services/api-generated';
+import { Api } from '@/services/api-generated';
 import { useFlowStore } from './flow-store';
 
 const api = new Api({
-  baseURL: 'https://localhost:7058'
+  baseURL: 'https://localhost:32772'
 });
 
 export const useAppStore = defineStore('app', () => {
@@ -27,7 +27,7 @@ export const useAppStore = defineStore('app', () => {
   };
 
   const saveFlow = async (flow: Flow): Promise<void> => {
-    if (flow.persistState == PersistState.New) {
+    if (flow.id == EMPTY_GUID) {
       await api.flow.post(flow);
       return;
     }

@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { Offset } from '../types/Offset';
+import type { Offset } from '@/services/api-generated';
 
 interface Props {
   x: number;

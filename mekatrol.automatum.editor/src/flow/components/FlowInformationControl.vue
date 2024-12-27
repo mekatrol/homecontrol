@@ -16,6 +16,19 @@
       />
     </div>
     <div class="form-group">
+      <label for="key">Key</label>
+      <input
+        v-model="activeFlow.key"
+        placeholder="<enter flow key>"
+        type="text"
+        id="key"
+        :readonly="validations.flow.key.readonly"
+        :required="validations.flow.key.required"
+        :minlength="validations.flow.key.minLength"
+        :maxlength="validations.flow.key.maxLength"
+      />
+    </div>
+    <div class="form-group">
       <label for="label">Label</label>
       <input
         v-model="activeFlow.label"

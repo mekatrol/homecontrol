@@ -1,5 +1,4 @@
-import type { InputOutput } from '@/services/api-generated';
-import type { Size } from './Size';
+import type { InputOutput, Size } from '@/services/api-generated';
 
 export interface BlockTemplate {
   // The function type, must be unique across all function configurations,

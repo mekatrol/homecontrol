@@ -19,16 +19,16 @@ export enum BlockSide {
 export interface Flow {
   /** @format uuid */
   id: string;
+  key: string;
+  enabled: boolean;
   label: string;
   description: string;
-  enabled: boolean;
+  /** @format date-time */
+  created: string;
+  /** @format date-time */
+  updated: string;
   blocks: FlowBlock[];
   connections: FlowConnection[];
-  persistState: PersistState;
-  /** @format date-time */
-  created?: string | null;
-  /** @format date-time */
-  updated?: string | null;
 }
 
 export interface FlowBlock {
@@ -53,6 +53,8 @@ export interface FlowBlock {
 
 export interface FlowConnection {
   /** @format uuid */
+  id: string;
+  /** @format uuid */
   startBlockId: string;
   /** @format int32 */
   startPin: number;
@@ -61,13 +63,6 @@ export interface FlowConnection {
   /** @format int32 */
   endPin: number;
   selected: boolean;
-}
-
-export interface FlowSummary {
-  /** @format uuid */
-  id: string;
-  label: string;
-  description: string;
 }
 
 export interface InputOutput {
@@ -100,10 +95,22 @@ export interface Offset {
   y: number;
 }
 
-export enum PersistState {
-  New = 'New',
-  Unmodified = 'Unmodified',
-  Modified = 'Modified'
+export interface PingModel {
+  homeAssistantOnline?: boolean | null;
+  databaseOnline: boolean;
+}
+
+export interface Point {
+  /** @format uuid */
+  id: string;
+  key: string;
+  enabled: boolean;
+  label: string;
+  description: string;
+  /** @format date-time */
+  created: string;
+  /** @format date-time */
+  updated: string;
 }
 
 export interface Size {
@@ -241,21 +248,6 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version 1.0
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  data = {
-    /**
-     * No description
-     *
-     * @tags Data
-     * @name ReloadData
-     * @request GET:/data
-     */
-    reloadData: (params: RequestParams = {}) =>
-      this.request<void, any>({
-        path: `/data`,
-        method: 'GET',
-        ...params
-      })
-  };
   flow = {
     /**
      * No description
@@ -265,7 +257,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/flow
      */
     list: (params: RequestParams = {}) =>
-      this.request<FlowSummary[], any>({
+      this.request<Flow[], any>({
         path: `/flow`,
         method: 'GET',
         format: 'json',
@@ -331,6 +323,101 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     delete: (id: string, params: RequestParams = {}) =>
       this.request<void, any>({
         path: `/flow/${id}`,
+        method: 'DELETE',
+        ...params
+      })
+  };
+  ping = {
+    /**
+     * No description
+     *
+     * @tags Ping
+     * @name Ping
+     * @request GET:/Ping
+     */
+    ping: (params: RequestParams = {}) =>
+      this.request<PingModel, any>({
+        path: `/Ping`,
+        method: 'GET',
+        format: 'json',
+        ...params
+      })
+  };
+  point = {
+    /**
+     * No description
+     *
+     * @tags Point
+     * @name List
+     * @request GET:/point
+     */
+    list: (params: RequestParams = {}) =>
+      this.request<Point[], any>({
+        path: `/point`,
+        method: 'GET',
+        format: 'json',
+        ...params
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Point
+     * @name Post
+     * @request POST:/point
+     */
+    post: (data: Point, params: RequestParams = {}) =>
+      this.request<Point, any>({
+        path: `/point`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Point
+     * @name Put
+     * @request PUT:/point
+     */
+    put: (data: Point, params: RequestParams = {}) =>
+      this.request<Point, any>({
+        path: `/point`,
+        method: 'PUT',
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Point
+     * @name Get
+     * @request GET:/point/{id}
+     */
+    get: (id: string, params: RequestParams = {}) =>
+      this.request<Point, any>({
+        path: `/point/${id}`,
+        method: 'GET',
+        format: 'json',
+        ...params
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Point
+     * @name Delete
+     * @request DELETE:/point/{id}
+     */
+    delete: (id: string, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/point/${id}`,
         method: 'DELETE',
         ...params
       })

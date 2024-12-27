@@ -5,7 +5,9 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5FD3F1D7-577A-4059-A60B-B682C05ABE08}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		config.yaml = config.yaml
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mekatrol.Automatum.NodeServer", "Mekatrol.Automatum.NodeServer\Mekatrol.Automatum.NodeServer.csproj", "{9E7A5299-7A00-4BB5-AF2A-CB1D5B47381A}"

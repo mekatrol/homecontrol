@@ -5,4 +5,3 @@ public enum InputOutputDirection
     Input,
     Output
 }
-

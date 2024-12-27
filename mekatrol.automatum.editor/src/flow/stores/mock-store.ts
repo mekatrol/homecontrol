@@ -2,8 +2,7 @@ import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
 import { loadFlowFromJson } from '../utils/flow-persistor';
 import { useFlowStore } from './flow-store';
-import type { FlowBlock } from '@/services/api-generated';
-import type { FlowConnection } from '../types/FlowConnection';
+import type { FlowBlock, FlowConnection } from '@/services/api-generated';
 import type { Flow } from '@/services/api-generated';
 import { EMPTY_GUID } from '../constants';
 
@@ -94,6 +93,7 @@ export const useMockStore = defineStore('mock', () => {
 
     const connections: FlowConnection[] = [
       {
+        id: uuidv4(),
         startBlockId: blocks[0].id,
         startPin: 3,
         endBlockId: blocks[1].id,
@@ -101,6 +101,7 @@ export const useMockStore = defineStore('mock', () => {
         selected: false
       },
       {
+        id: uuidv4(),
         startBlockId: blocks[3].id,
         startPin: 2,
         endBlockId: blocks[2].id,
@@ -108,6 +109,7 @@ export const useMockStore = defineStore('mock', () => {
         selected: false
       },
       {
+        id: uuidv4(),
         startBlockId: blocks[4].id,
         startPin: 1,
         endBlockId: blocks[3].id,
@@ -115,6 +117,7 @@ export const useMockStore = defineStore('mock', () => {
         selected: false
       },
       {
+        id: uuidv4(),
         startBlockId: blocks[2].id,
         startPin: 2,
         endBlockId: blocks[5].id,

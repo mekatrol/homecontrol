@@ -97,7 +97,7 @@ public class FlowServiceTest : IntegrationTestBase
             Assert.AreEqual($"A flow with the ID '{flow.Id}' was not found.", ex.Errors[0].ErrorMessage);
         });
     }
-    
+
     [TestMethod]
     public async Task TestUpdateFlowBadId()
     {
@@ -299,7 +299,7 @@ public class FlowServiceTest : IntegrationTestBase
             var id = Guid.NewGuid();
 
             await using var scope = services.CreateAsyncScope();
-            
+
             var flow = new Flow
             {
                 Id = id,

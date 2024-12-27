@@ -7,7 +7,7 @@ public class FlowBlock
     public string? Label { get; set; }
 
     // Functional properties for execution of flow
-    public string FunctionType { get; set; } = string.Empty;    
+    public string FunctionType { get; set; } = string.Empty;
     public IList<InputOutput> Io { get; set; } = [];
 
     // Visual properties for display in user interface
