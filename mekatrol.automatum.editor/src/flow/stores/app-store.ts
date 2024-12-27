@@ -6,7 +6,7 @@ import { Api } from '@/services/api-generated';
 import { useFlowStore } from './flow-store';
 
 const api = new Api({
-  baseURL: 'https://localhost:32772'
+  baseURL: 'https://localhost:8081'
 });
 
 export const useAppStore = defineStore('app', () => {
