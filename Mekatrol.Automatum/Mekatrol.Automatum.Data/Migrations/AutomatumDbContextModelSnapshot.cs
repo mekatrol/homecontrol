@@ -30,10 +30,6 @@ namespace Mekatrol.Automatum.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -44,9 +40,6 @@ namespace Mekatrol.Automatum.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Key")
-                        .IsUnique();
 
                     b.ToTable("Flows");
                 });
@@ -64,10 +57,6 @@ namespace Mekatrol.Automatum.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -78,9 +67,6 @@ namespace Mekatrol.Automatum.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Key")
-                        .IsUnique();
 
                     b.ToTable("Points");
                 });

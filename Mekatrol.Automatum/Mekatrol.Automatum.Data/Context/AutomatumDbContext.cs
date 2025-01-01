@@ -56,29 +56,9 @@ end;
                     .IsRowVersion();
 
         modelBuilder
-            .Entity<FlowEntity>()
-                .Property(c => c.Key)
-                    .IsRequired();
-
-        modelBuilder
-            .Entity<FlowEntity>()
-                .HasIndex(x => x.Key)
-                    .IsUnique();
-
-        modelBuilder
             .Entity<PointEntity>()
                 .Property(c => c.RowVersion)
                     .HasDefaultValue(1)
                     .IsRowVersion();
-
-        modelBuilder
-            .Entity<PointEntity>()
-                .Property(c => c.Key)
-                    .IsRequired();
-
-        modelBuilder
-            .Entity<PointEntity>()
-                .HasIndex(x => x.Key)
-                    .IsUnique();
     }
 }

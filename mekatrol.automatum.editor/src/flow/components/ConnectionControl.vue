@@ -59,7 +59,7 @@ import type { FlowConnection } from '@/services/api-generated';
 interface Props {
   show?: boolean;
 
-  flowKey: string;
+  flowId: string;
 
   connection: FlowConnection;
 
@@ -86,7 +86,7 @@ const props = withDefaults(defineProps<Props>(), {
   endPointRadius: 5
 });
 
-const flowController = useFlowController(props.flowKey);
+const flowController = useFlowController(props.flowId);
 
 const startInputOutput = computed(() => flowController.getConnectionStartInputOutput(props.connection));
 const startOffset = computed(() => flowController.getConnectionStartOffset(props.connection));

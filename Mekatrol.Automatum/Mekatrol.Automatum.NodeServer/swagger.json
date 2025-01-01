@@ -437,6 +437,7 @@
           "description",
           "enabled",
           "id",
+          "interval",
           "key",
           "label",
           "updated"
@@ -466,6 +467,10 @@
           "updated": {
             "type": "string",
             "format": "date-time"
+          },
+          "interval": {
+            "type": "string",
+            "format": "date-span"
           },
           "blocks": {
             "type": "array",

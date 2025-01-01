@@ -2,6 +2,8 @@
 
 public class Flow : RootEntityModel
 {
+    public TimeSpan Interval { get; set; } = TimeSpan.FromMinutes(1);
+
     public IList<FlowBlock> Blocks { get; set; } = [];
 
     public IList<FlowConnection> Connections { get; set; } = [];

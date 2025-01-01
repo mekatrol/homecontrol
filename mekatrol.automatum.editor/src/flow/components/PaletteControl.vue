@@ -61,7 +61,7 @@ interface Props {
   height: number;
   scrollbarWidth: number;
   gap: number;
-  flowKey: string;
+  flowId: string;
 }
 
 const props = defineProps<Props>();
@@ -163,8 +163,8 @@ const emit = (event: keyof FlowEvents, e: PointerEvent, block: FlowBlock): boole
 };
 
 onMounted(() => {
-  if (props.flowKey) {
-    flowController.value = useFlowController(props.flowKey);
+  if (props.flowId) {
+    flowController.value = useFlowController(props.flowId);
   }
 });
 </script>

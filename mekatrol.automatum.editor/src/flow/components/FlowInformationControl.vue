@@ -4,28 +4,16 @@
     v-if="activeFlow"
   >
     <div class="form-group">
-      <label for="id">ID</label>
+      <label for="interval">Interval</label>
       <input
-        v-model="activeFlow.id"
+        v-model="activeFlow.interval"
+        placeholder="00:01:00"
         type="text"
-        id="id"
-        :readonly="validations.flow.id.readonly"
-        :required="validations.flow.id.required"
-        :minlength="validations.flow.id.minLength"
-        :maxlength="validations.flow.id.maxLength"
-      />
-    </div>
-    <div class="form-group">
-      <label for="key">Key</label>
-      <input
-        v-model="activeFlow.key"
-        placeholder="<enter flow key>"
-        type="text"
-        id="key"
-        :readonly="validations.flow.key.readonly"
-        :required="validations.flow.key.required"
-        :minlength="validations.flow.key.minLength"
-        :maxlength="validations.flow.key.maxLength"
+        id="interval"
+        :readonly="validations.flow.interval.readonly"
+        :required="validations.flow.interval.required"
+        :minlength="validations.flow.interval.minLength"
+        :maxlength="validations.flow.interval.maxLength"
       />
     </div>
     <div class="form-group">

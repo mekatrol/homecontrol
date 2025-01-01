@@ -37,6 +37,7 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
 
             model.Id = Guid.NewGuid();
             model.Enabled = true;
+            model.Key = "a.new.flow";
 
             return model;
         }
@@ -48,8 +49,7 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
         return entity == null
             ? throw IdNotFoundException(id)
             : JsonSerializer.Deserialize<TModel>(entity.Json, JsonSerializerExtensions.ApiSerializerOptions)
-                ?? throw CouldNotDeserializeException(entity.Id);
-        ;
+                ?? throw CouldNotDeserializeException(entity.Id);        
     }
 
     public async virtual Task<TModel> Create(TModel model, CancellationToken cancellationToken)
@@ -69,7 +69,6 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
         var entity = Activator.CreateInstance<TEntity>()!;
 
         entity.Id = model.Id; // If caller specified an empty guid then create a new ID
-        entity.Key = model.Key;
         entity.Json = JsonSerializer.Serialize(model, JsonSerializerExtensions.ApiSerializerOptions);
         entity.Created = dateTime;
         entity.Updated = dateTime;
@@ -87,11 +86,6 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
                 if (ex.InnerException.Message.Contains($"UNIQUE constraint failed: {typeof(TModel).Name}s.{nameof(BaseEntity.Id)}"))
                 {
                     throw IdAlreadyExistsException(model.Id);
-                }
-
-                if (ex.InnerException.Message.Contains($"UNIQUE constraint failed: {typeof(TModel).Name}s.{nameof(BaseEntity.Key)}"))
-                {
-                    throw KeyAlreadyExistsException(model.Key);
                 }
             }
             throw;
@@ -117,7 +111,6 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
 
         model.Updated = DateTimeOffset.UtcNow;
 
-        existing.Key = model.Key;
         existing.Updated = model.Updated;
 
         existing.Json = JsonSerializer.Serialize(model, JsonSerializerExtensions.ApiSerializerOptions);

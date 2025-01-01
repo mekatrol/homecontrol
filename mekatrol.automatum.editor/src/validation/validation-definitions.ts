@@ -8,9 +8,9 @@ export const validations = {
       maxLength: EMPTY_GUID.length,
       required: true
     } as ValidationModel,
-    key: {
-      minLength: 1,
-      maxLength: 200,
+    interval: {
+      minLength: 8,
+      maxLength: 8,
       required: true
     } as ValidationModel,
     label: {

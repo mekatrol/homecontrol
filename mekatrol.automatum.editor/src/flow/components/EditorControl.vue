@@ -22,7 +22,7 @@
         :height="svgHeight"
         :gap="PALETTE_GAP"
         :scrollbarWidth="SCROLLBAR_SIZE"
-        :flow-key="flowKey"
+        :flow-id="flowId"
       />
     </g>
     <g :transform="`translate(${blockPaletteWidth}, 0)`">
@@ -34,7 +34,7 @@
           :width="svgWidth - blockPaletteWidth"
           :height="svgHeight"
           :grid-size="gridSize"
-          :flow-key="flowKey"
+          :flow-id="flowId"
         />
       </ContainerControl>
     </g>
@@ -52,7 +52,7 @@ import { useAppStore } from '../stores/app-store';
 import { PALETTE_GAP, SCROLLBAR_SIZE } from '../constants';
 
 interface Props {
-  flowKey: string;
+  flowId: string;
 }
 
 const props = defineProps<Props>();
@@ -79,8 +79,8 @@ const calculateSvgHeight = () => {
 const flowController = ref<FlowController | undefined>(undefined);
 
 onMounted(() => {
-  if (props.flowKey) {
-    flowController.value = useFlowController(props.flowKey);
+  if (props.flowId) {
+    flowController.value = useFlowController(props.flowId);
   }
   calculateSvgHeight();
 });
@@ -151,8 +151,8 @@ const wireSvgEvents = () => {
 };
 
 onMounted(() => {
-  if (props.flowKey) {
-    flowController.value = useFlowController(props.flowKey);
+  if (props.flowId) {
+    flowController.value = useFlowController(props.flowId);
     calculateSvgHeight();
   }
 
@@ -170,7 +170,7 @@ watch(
 );
 
 watch(
-  () => props.flowKey,
+  () => props.flowId,
   (_oldValue: string, newValue: string) => {
     if (!newValue) {
       flowController.value = undefined;

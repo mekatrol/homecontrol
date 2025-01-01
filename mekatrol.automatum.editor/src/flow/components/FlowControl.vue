@@ -9,25 +9,25 @@
     v-if="flowController"
     v-for="(connection, i) in flowController.flow.connections"
     :key="i"
-    :flow-key="flowKey"
+    :flow-id="flowId"
     :connection="connection"
   />
   <BlockControl
     v-if="flowController"
     v-for="(block, i) in flowController.flow.blocks"
     :key="i"
-    :flow-key="flowKey"
+    :flow-id="flowId"
     :block="block"
   />
   <ConnectingControl
     v-if="flowController && flowController.drawingConnection"
     :connecting="flowController.drawingConnection"
-    :flow-key="flowKey"
+    :flow-id="flowId"
   />
   <BlockControl
     v-if="flowController && flowController.dragBlock && flowController.dragBlock.draggingAsNew"
     :block="flowController.dragBlock"
-    :flow-key="flowKey"
+    :flow-id="flowId"
   />
 </template>
 
@@ -43,7 +43,7 @@ interface Props {
   width: number;
   height: number;
   gridSize: number;
-  flowKey: string;
+  flowId: string;
 }
 
 const props = defineProps<Props>();
@@ -51,13 +51,13 @@ const props = defineProps<Props>();
 const flowController = ref<FlowController | undefined>(undefined);
 
 onMounted(() => {
-  if (props.flowKey) {
-    flowController.value = useFlowController(props.flowKey);
+  if (props.flowId) {
+    flowController.value = useFlowController(props.flowId);
   }
 });
 
 watch(
-  () => props.flowKey,
+  () => props.flowId,
   (_oldValue: string, newValue: string) => {
     if (!newValue) {
       flowController.value = undefined;

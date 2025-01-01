@@ -1260,30 +1260,45 @@ const blockTemplates: BlockTemplate[] = [
 ];
 
 const flows: Record<string, Ref<Flow>> = {};
+const newFlows: Record<string, Flow> = {};
 
 export const useFlowStore = defineStore('flow', () => {
-  const addFlow = (key: string, flow: Flow): Ref<Flow> => {
-    // Does a flow with the specified key already exist?
-    if (key in flows) {
-      throw new Error(`A flow with the key '${key}' has already been added.`);
+  const addFlow = (id: string, flow: Flow, isNew: boolean): Ref<Flow> => {
+    // Does a flow with the specified ID already exist?
+    if (id in flows) {
+      throw new Error(`A flow with the ID '${id}' has already been added.`);
     }
 
-    flows[key] = toRef(flow);
+    flows[id] = toRef(flow);
 
-    return flows[key];
+    // If this is a new flow then we need to keep track of it being new
+    // for when calling the API
+    if (isNew) {
+      newFlows[id] = flow;
+    }
+
+    return flows[id];
   };
 
-  const deleteFlow = (key: string): void => {
-    delete flows[key];
+  const deleteFlow = (id: string): void => {
+    delete flows[id];
   };
 
-  const getFlow = (key: string): Flow | undefined => {
-    if (!(key in flows)) {
+  const removeNewFlow = (id: string): void => {
+    delete newFlows[id];
+  };
+
+  const getFlow = (id: string): Flow | undefined => {
+    if (!(id in flows)) {
       return undefined;
     }
 
-    return flows[key].value;
+    return flows[id].value;
   };
 
-  return { blockTemplates, flows, addFlow, deleteFlow, getFlow };
+  const isNewFlow = (id: string): boolean => {
+    return id in newFlows;
+  };
+
+  return { blockTemplates, flows, addFlow, deleteFlow, getFlow, isNewFlow, removeNewFlow };
 });

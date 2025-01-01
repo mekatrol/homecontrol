@@ -4,7 +4,7 @@
     <div>
       <EditorControl
         v-if="activeFlow"
-        :flow-key="activeFlow.id"
+        :flow-id="activeFlow.id"
       />
     </div>
     <div>

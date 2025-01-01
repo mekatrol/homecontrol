@@ -67,7 +67,7 @@ export interface HandleErrorCallback {
   (apiError: ApiError): boolean;
 }
 
-const handleApiResponseError = (err: unknown, url: string): ApiError => {
+export const handleApiResponseError = (err: unknown, url: string): ApiError => {
   // Convert to axios error type
   const error = err as AxiosError;
 

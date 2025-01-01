@@ -10,7 +10,7 @@ import type { Flow, Offset, BlockSide, Size } from '@/services/api-generated';
 import { v4 as uuidv4 } from 'uuid';
 
 export class FlowController {
-  public _key: string;
+  public _id: string;
   public _flow: Flow;
   public _zOrder: ZOrder;
   public _blockPaletteWidth: number;
@@ -23,15 +23,15 @@ export class FlowController {
   public _dragBlockOffset = ref<Offset>({ x: 0, y: 0 });
   public _dragBlockOriginalPosition = ref<Offset>({ x: 0, y: 0 });
 
-  constructor(key: string, flow: Flow) {
-    this._key = key;
+  constructor(id: string, flow: Flow) {
+    this._id = id;
     this._flow = flow;
     this._zOrder = new ZOrder(flow.blocks);
     this._blockPaletteWidth = useAppStore().blockPaletteWidth;
   }
 
-  public get key() {
-    return this._key;
+  public get id() {
+    return this._id;
   }
 
   public get flow(): Flow {
@@ -517,15 +517,15 @@ export class FlowController {
 const flowControllers: Record<string, FlowController> = {};
 
 // Initialise a new instance of a controller
-export const initFlowController = (key: string, flow: Flow): FlowController => {
-  // Does a controller with the specified key already exist?
-  if (key in flowControllers) {
-    throw new Error(`A controller with the key '${key}' has already been initialised. Did you mean to call useFlowController?`);
+export const initFlowController = (id: string, flow: Flow): FlowController => {
+  // Does a controller with the specified id already exist?
+  if (id in flowControllers) {
+    throw new Error(`A controller with the ID '${id}' has already been initialised. Did you mean to call useFlowController?`);
   }
 
   // Create instance and add to dictionary
-  const flowController = new FlowController(key, flow);
-  flowControllers[key] = flowController;
+  const flowController = new FlowController(id, flow);
+  flowControllers[id] = flowController;
 
   // Pointer events
   configureFlowPointerEvents(flowController);
@@ -534,39 +534,39 @@ export const initFlowController = (key: string, flow: Flow): FlowController => {
   return flowController;
 };
 
-// Get an instance of a flow controller by key
-export const useFlowController = (key: string): FlowController => {
-  if (!key) {
-    throw new Error(`Cannot use flow controller for invalid key '${key}'`);
+// Get an instance of a flow controller by id
+export const useFlowController = (id: string): FlowController => {
+  if (!id) {
+    throw new Error(`Cannot use flow controller for invalid ID '${id}'`);
   }
 
-  // Does a controller with the specified key already exist?
-  if (!(key in flowControllers)) {
+  // Does a controller with the specified id already exist?
+  if (!(id in flowControllers)) {
     const { getFlow } = useFlowStore();
 
     // Create a new empty flow
-    const flow = getFlow(key);
+    const flow = getFlow(id);
 
     if (!flow) {
-      throw new Error(`No flow found with key '${key}'`);
+      throw new Error(`No flow found with ID '${id}'`);
     }
 
     // Create an return new instance
-    return initFlowController(key, flow);
+    return initFlowController(id, flow);
   }
 
   // Return existing instance
-  return flowControllers[key];
+  return flowControllers[id];
 };
 
 // Clean up a flow controller instance
-export const deleteFlowController = (key: string): void => {
-  // Does a controller with the specified key already exist?
-  if (!(key in flowControllers)) {
+export const deleteFlowController = (id: string): void => {
+  // Does a controller with the specified id already exist?
+  if (!(id in flowControllers)) {
     // Doesn't exist so nothing to do
     return;
   }
 
   // Remove the instance
-  delete flowControllers[key];
+  delete flowControllers[id];
 };

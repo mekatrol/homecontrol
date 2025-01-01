@@ -27,6 +27,8 @@ export interface Flow {
   created: string;
   /** @format date-time */
   updated: string;
+  /** @format date-span */
+  interval: string;
   blocks: FlowBlock[];
   connections: FlowConnection[];
 }

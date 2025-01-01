@@ -4,31 +4,50 @@ import { BLOCK_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE, EMPTY_GUID } from '../constan
 import type { Flow } from '@/services/api-generated';
 import { Api } from '@/services/api-generated';
 import { useFlowStore } from './flow-store';
+import type { AxiosError } from 'axios';
+import { handleApiResponseError } from '@/services/http';
 
+// The server API base URL is embedded in a hidden field in the page
+// it is set by the server on page load
+const serverBaseUrlElement = document.getElementById('server-base-url') as HTMLInputElement;
+var serverBaseUrl = serverBaseUrlElement?.value ?? '/api';
+
+// Create an Api singleton to use for calling server APIs
 const api = new Api({
-  baseURL: 'https://localhost:8081'
+  baseURL: serverBaseUrl
 });
 
 export const useAppStore = defineStore('app', () => {
   const isBusyCount = ref(0);
-  const { addFlow } = useFlowStore();
+  const { addFlow, isNewFlow, removeNewFlow } = useFlowStore();
 
   const activeFlow = ref<Flow | undefined>(undefined);
 
   const newFlow = async (makeActive: boolean): Promise<Flow> => {
-    const flow = await api.flow.get(EMPTY_GUID);
-    addFlow(flow.id, flow);
+    try {
+      const flow = await api.flow.get(EMPTY_GUID);
+      addFlow(flow.id, flow, true);
 
-    if (makeActive) {
-      activeFlow.value = flow;
+      if (makeActive) {
+        activeFlow.value = flow;
+      }
+
+      return flow;
+    } catch (e) {
+      const apiError = handleApiResponseError(e, '');
+      console.log(apiError);
+
+      throw e;
     }
-
-    return flow;
   };
 
   const saveFlow = async (flow: Flow): Promise<void> => {
-    if (flow.id == EMPTY_GUID) {
+    if (isNewFlow(flow.id)) {
       await api.flow.post(flow);
+
+      // Remove from new flows list
+      removeNewFlow(flow.id);
+
       return;
     }
 
