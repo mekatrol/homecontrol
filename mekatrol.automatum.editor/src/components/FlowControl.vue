@@ -32,11 +32,11 @@
 </template>
 
 <script setup lang="ts">
-import GridControl from './GridControl.vue';
-import ConnectionControl from './ConnectionControl.vue';
-import ConnectingControl from './ConnectingControl.vue';
-import BlockControl from './BlockControl.vue';
-import { FlowController, useFlowController } from '../types/FlowController';
+import GridControl from '@/components/GridControl.vue';
+import ConnectionControl from '@/components/ConnectionControl.vue';
+import ConnectingControl from '@/components/ConnectingControl.vue';
+import BlockControl from '@/components/BlockControl.vue';
+import { FlowController, useFlowController } from '@/types/FlowController';
 import { onMounted, ref, watch } from 'vue';
 
 interface Props {

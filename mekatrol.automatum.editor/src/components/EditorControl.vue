@@ -42,14 +42,14 @@
 </template>
 
 <script setup lang="ts">
-import PaletteControl from './PaletteControl.vue';
-import FlowControl from './FlowControl.vue';
+import PaletteControl from '@/components/PaletteControl.vue';
+import FlowControl from '@/components/FlowControl.vue';
 import { onMounted, ref, watch } from 'vue';
 import { useScreenSize } from 'vue-boosted';
-import { FlowController, useFlowController } from '../types/FlowController';
-import ContainerControl from './ContainerControl.vue';
-import { useAppStore } from '../stores/app-store';
-import { PALETTE_GAP, SCROLLBAR_SIZE } from '../constants';
+import { FlowController, useFlowController } from '@/types/FlowController';
+import ContainerControl from '@/components/ContainerControl.vue';
+import { useAppStore } from '@/stores/app-store';
+import { PALETTE_GAP, SCROLLBAR_SIZE } from '@/constants';
 
 interface Props {
   flowId: string;

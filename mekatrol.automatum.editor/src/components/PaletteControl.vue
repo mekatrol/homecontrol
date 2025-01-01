@@ -45,15 +45,15 @@
 </template>
 
 <script setup lang="ts">
-import BlockTemplateControl from './BlockTemplateControl.vue';
-import SvgScrollbar from './SvgScrollbar.vue';
-import { useFlowStore } from '../stores/flow-store';
-import { BLOCK_HEIGHT, BLOCK_POINTER_DOWN, BLOCK_POINTER_UP } from '../constants';
-import type { BlockTemplate } from '../types/BlockTemplate';
+import BlockTemplateControl from '@/components/BlockTemplateControl.vue';
+import SvgScrollbar from '@/components/SvgScrollbar.vue';
+import { useFlowStore } from '@/stores/flow-store';
+import { BLOCK_HEIGHT, BLOCK_POINTER_DOWN, BLOCK_POINTER_UP } from '@/constants';
+import type { BlockTemplate } from '@/types/BlockTemplate';
 import { v4 as uuidv4 } from 'uuid';
-import { FlowController, useFlowController } from '../types/FlowController';
+import { FlowController, useFlowController } from '@/types/FlowController';
 import type { FlowBlock } from '@/services/api-generated';
-import { useEmitter, type FlowEvents } from '../utils/event-emitter';
+import { useEmitter, type FlowEvents } from '@/utils/event-emitter';
 import { onMounted, ref } from 'vue';
 
 interface Props {

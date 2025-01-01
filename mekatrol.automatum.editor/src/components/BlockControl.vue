@@ -110,13 +110,13 @@
 </template>
 
 <script setup lang="ts">
-import LabelControl from './LabelControl.vue';
-import MarkerControl from './MarkerControl.vue';
-import InputOutputControl from './InputOutputControl.vue';
-import SvgIcon from './SvgIcon.vue';
-import type { MarkerShape } from '../types/MarkerShape';
+import LabelControl from '@/components/LabelControl.vue';
+import MarkerControl from '@/components/MarkerControl.vue';
+import InputOutputControl from '@/components/InputOutputControl.vue';
+import SvgIcon from '@/components/SvgIcon.vue';
+import type { MarkerShape } from '@/types/MarkerShape';
 import { computed } from 'vue';
-import { useEmitter, type FlowEvents } from '../utils/event-emitter';
+import { useEmitter, type FlowEvents } from '@/utils/event-emitter';
 import {
   MARKER_OFFSET_X,
   MARKER_OFFSET_Y,
@@ -127,9 +127,9 @@ import {
   BLOCK_POINTER_LEAVE,
   BLOCK_POINTER_DOWN,
   BLOCK_POINTER_UP
-} from '../constants';
-import { useThemeStore } from '../stores/theme-store';
-import { leftPointedRect, rightPointedRect } from '../utils/svg-generator';
+} from '@/constants';
+import { useThemeStore } from '@/stores/theme-store';
+import { leftPointedRect, rightPointedRect } from '@/utils/svg-generator';
 import type { FlowBlock } from '@/services/api-generated';
 
 const textGapX = 7;

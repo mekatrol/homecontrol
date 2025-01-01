@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import type { BlockTemplate } from '../types/BlockTemplate';
-import { BLOCK_HEIGHT, BLOCK_IO_SIZE, BLOCK_WIDTH } from '../constants';
+import type { BlockTemplate } from '@/types/BlockTemplate';
+import { BLOCK_HEIGHT, BLOCK_IO_SIZE, BLOCK_WIDTH } from '@/constants';
 import { toRef, type Ref } from 'vue';
 import { InputOutputDirection, InputOutputSignalType, type Flow, BlockSide } from '@/services/api-generated';
 

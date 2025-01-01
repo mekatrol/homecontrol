@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from 'uuid';
-import { loadFlowFromJson } from '../utils/flow-persistor';
-import { useFlowStore } from './flow-store';
+import { loadFlowFromJson } from '@/utils/flow-persistor';
+import { useFlowStore } from '@/stores/flow-store';
 import type { FlowBlock, FlowConnection } from '@/services/api-generated';
 import type { Flow } from '@/services/api-generated';
-import { EMPTY_GUID } from '../constants';
+import { EMPTY_GUID } from '@/constants';
 
 export const useMockStore = defineStore('mock', () => {
   const createMockFlow = (): Flow => {

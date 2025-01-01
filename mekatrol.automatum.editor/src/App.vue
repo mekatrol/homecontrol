@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import AppControl from '@/flow/components/AppControl.vue';
+import AppControl from '@/components/AppControl.vue';
 import { ref } from 'vue';
 
 const showDialog = ref(false);

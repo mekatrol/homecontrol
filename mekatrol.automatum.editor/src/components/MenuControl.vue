@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { useAppStore } from '../stores/app-store';
+import { useAppStore } from '@/stores/app-store';
 
 const appStore = useAppStore();
 

@@ -1,6 +1,6 @@
 import type { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
-import { getApiBaseUrl } from './url';
+import { getApiBaseUrl } from '@/services/url';
 
 export const requestInterceptor = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
   return config;

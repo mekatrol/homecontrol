@@ -18,11 +18,11 @@
 </template>
 
 <script setup lang="ts">
-import MenuControl from './MenuControl.vue';
-import EditorControl from './EditorControl.vue';
-import FlowInformationControl from './FlowInformationControl.vue';
+import MenuControl from '@/components/MenuControl.vue';
+import EditorControl from '@/components/EditorControl.vue';
+import FlowInformationControl from '@/components/FlowInformationControl.vue';
 import { BusyOverlay } from 'vue-boosted';
-import { useAppStore } from '../stores/app-store';
+import { useAppStore } from '@/stores/app-store';
 import { useIntervalTimer } from 'vue-boosted';
 import { storeToRefs } from 'pinia';
 

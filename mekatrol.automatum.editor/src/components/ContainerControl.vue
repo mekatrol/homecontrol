@@ -18,8 +18,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { SCROLLBAR_SIZE } from '../constants';
-import SvgScrollbar from './SvgScrollbar.vue';
+import { SCROLLBAR_SIZE } from '@/constants';
+import SvgScrollbar from '@/components/SvgScrollbar.vue';
 
 interface Props {
   width: number;

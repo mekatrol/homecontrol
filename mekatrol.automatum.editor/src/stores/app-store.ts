@@ -1,10 +1,9 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import { BLOCK_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE, EMPTY_GUID } from '../constants';
+import { BLOCK_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE, EMPTY_GUID } from '@/constants';
 import type { Flow } from '@/services/api-generated';
 import { Api } from '@/services/api-generated';
-import { useFlowStore } from './flow-store';
-import type { AxiosError } from 'axios';
+import { useFlowStore } from '@/stores/flow-store';
 import { handleApiResponseError } from '@/services/http';
 
 // The server API base URL is embedded in a hidden field in the page

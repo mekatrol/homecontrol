@@ -1,5 +1,5 @@
-import { EMPTY_GUID } from '@/flow/constants';
-import type { ValidationModel } from './validation-model';
+import { EMPTY_GUID } from '@/constants';
+import type { ValidationModel } from '@/validation/validation-model';
 
 export const validations = {
   flow: {

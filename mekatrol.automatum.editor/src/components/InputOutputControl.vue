@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { useEmitter, type FlowEvents } from '../utils/event-emitter';
+import { useEmitter, type FlowEvents } from '@/utils/event-emitter';
 import {
   BLOCK_IO_POINTER_MOVE,
   BLOCK_IO_POINTER_OVER,
@@ -30,7 +30,7 @@ import {
   BLOCK_IO_POINTER_LEAVE,
   BLOCK_IO_POINTER_DOWN,
   BLOCK_IO_POINTER_UP
-} from '../constants';
+} from '@/constants';
 import type { FlowBlock, InputOutput } from '@/services/api-generated';
 
 interface Props {

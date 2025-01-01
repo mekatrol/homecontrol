@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { validations } from '@/validation/validation-definitions';
 import { storeToRefs } from 'pinia';
-import { useAppStore } from '../stores/app-store';
+import { useAppStore } from '@/stores/app-store';
 
 const appStore = useAppStore();
 const { activeFlow } = storeToRefs(appStore);

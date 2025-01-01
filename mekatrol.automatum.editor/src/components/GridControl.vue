@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Line } from '../types/Line';
+import type { Line } from '@/types/Line';
 
 interface Props {
   width: number;

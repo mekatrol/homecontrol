@@ -53,11 +53,11 @@
 </template>
 
 <script setup lang="ts">
-import LabelControl from './LabelControl.vue';
-import SvgIcon from './SvgIcon.vue';
+import LabelControl from '@/components/LabelControl.vue';
+import SvgIcon from '@/components/SvgIcon.vue';
 import { computed } from 'vue';
-import { useThemeStore } from '../stores/theme-store';
-import type { BlockTemplate } from '../types/BlockTemplate';
+import { useThemeStore } from '@/stores/theme-store';
+import type { BlockTemplate } from '@/types/BlockTemplate';
 
 const textGapX = 7;
 

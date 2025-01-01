@@ -1,8 +1,8 @@
 import { AxiosError, type AxiosRequestConfig } from 'axios';
-import { axiosApi } from './axios';
+import { axiosApi } from '@/services/axios';
 import { ref } from 'vue';
-import { combinePathWithBaseUrl } from './url';
-import { useAppStore } from '@/flow/stores/app-store';
+import { combinePathWithBaseUrl } from '@/services/url';
+import { useAppStore } from '@/stores/app-store';
 
 const showFailedMessage = (message: string): void => {
   console.error(message);
