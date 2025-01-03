@@ -15,9 +15,10 @@
           <div class="action-bar">
             <button
               value="default"
+              :disabled="!confirmEnabled"
               @click.prevent="emit('confirm')"
             >
-              OK
+              {{ confirmLabel ?? 'OK' }}
             </button>
             <button
               value="cancel"
@@ -36,6 +37,8 @@
 <script setup lang="ts">
 interface Props {
   show: boolean;
+  confirmLabel?: string;
+  confirmEnabled?: boolean;
 }
 
 defineProps<Props>();

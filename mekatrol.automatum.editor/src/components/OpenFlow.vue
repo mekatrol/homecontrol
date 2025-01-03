@@ -5,7 +5,7 @@
       :rows="rows"
       :highlight-hover="true"
       :row-selectable="true"
-      caption="Select a flow"
+      caption="Select a flow to open"
       @row-clicked="rowClicked"
     ></AppTable>
   </div>

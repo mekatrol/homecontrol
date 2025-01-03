@@ -20,8 +20,10 @@
     </div>
     <AppDialog
       :show="showOpenDialog"
+      confirm-label="Open"
+      :confirm-enabled="!!clickedFlow"
       @confirm="onOpenConfirm"
-      @cancel="showOpenDialog = false"
+      @cancel="onOpenCancel"
     >
       <OpenFlow @flow-clicked="onFlowClicked"></OpenFlow>
     </AppDialog>
@@ -46,17 +48,24 @@ const onOpenFlow = () => {
   showOpenDialog.value = true;
 };
 
-const onCloseFlow = () => {
-  if (activeFlow.value) {
-    appStore.closeFlow(activeFlow.value.id);
-  }
-};
-
 const onOpenConfirm = async (): Promise<void> => {
   showOpenDialog.value = false;
 
   if (clickedFlow.value !== undefined) {
     await appStore.openFlow(clickedFlow.value.id);
+  }
+
+  clickedFlow.value = undefined;
+};
+
+const onOpenCancel = async (): Promise<void> => {
+  showOpenDialog.value = false;
+  clickedFlow.value = undefined;
+};
+
+const onCloseFlow = () => {
+  if (activeFlow.value) {
+    appStore.closeFlow(activeFlow.value.id);
   }
 };
 
