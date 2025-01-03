@@ -1,6 +1,7 @@
 import { AxiosError, type AxiosRequestConfig } from 'axios';
 import { ref } from 'vue';
 import { showErrorMessage } from './message';
+import { useAppStore } from '@/stores/app-store';
 
 const serverValidationErrors = ref<ErrorModel[]>([]);
 
@@ -232,4 +233,18 @@ const displayErrorMessage = (error: ApiError, action: string): void => {
 
   // Rethrow message in case called needs info
   throw error;
+};
+
+export const wrapApiCall = async <T>(errorDesc: string, apiCall: () => Promise<T>, errorHandlerCallback?: HandleErrorCallback): Promise<T> => {
+  const appStore = useAppStore();
+  try {
+    appStore.incrementBusy();
+
+    return await apiCall();
+  } catch (err) {
+    const apiError = handleApiError(err, errorDesc, errorHandlerCallback, false);
+    throw apiError;
+  } finally {
+    appStore.decrementBusy();
+  }
 };

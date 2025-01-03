@@ -6,3 +6,8 @@
   --clr-warn: rgb(255, 235, 59);
   --clr-error: rgb(244, 67, 54);
 }
+
+.wrapper {
+  width: min(900px, 100% - 3rem);
+  margin-inline: auto;
+}

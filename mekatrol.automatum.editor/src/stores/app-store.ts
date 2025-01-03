@@ -4,7 +4,7 @@ import { BLOCK_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE, EMPTY_GUID } from '@/constant
 import type { Flow } from '@/services/api-generated';
 import { Api } from '@/services/api-generated';
 import { useFlowStore } from '@/stores/flow-store';
-import { handleApiError, type HandleErrorCallback } from '@/services/http';
+import { handleApiError, wrapApiCall, type HandleErrorCallback } from '@/services/api';
 import type { MessageType } from '@/services/message';
 import { clearMessage, type MessageData } from '@/services/message';
 
@@ -22,7 +22,7 @@ export const useAppStore = defineStore('app', () => {
   const isBusyCount = ref(0);
   const messageData = ref<MessageData | undefined>(undefined);
 
-  const { addFlow, isNewFlow, removeNewFlow } = useFlowStore();
+  const { getFlow, addFlow, deleteFlow, isNewFlow, removeNewFlow } = useFlowStore();
 
   const activeFlow = ref<Flow | undefined>(undefined);
 
@@ -30,37 +30,73 @@ export const useAppStore = defineStore('app', () => {
     clearMessage();
   };
 
-  const newFlow = async (makeActive: boolean, errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
-    try {
-      incrementBusy();
-
-      const flow = await api.flow.get(EMPTY_GUID);
-      addFlow(flow.id, flow, true);
-
-      if (makeActive) {
-        activeFlow.value = flow;
-      }
-
-      return flow;
-    } catch (err) {
-      const apiError = handleApiError(err, 'Create new flow', errorHandlerCallback, false);
-      throw apiError;
-    } finally {
-      decrementBusy();
-    }
+  const getFlowSummaries = async (errorHandlerCallback?: HandleErrorCallback): Promise<Flow[]> => {
+    return await wrapApiCall(
+      'Get flows',
+      async () => {
+        return await api.flow.list();
+      },
+      errorHandlerCallback
+    );
   };
 
-  const saveFlow = async (flow: Flow): Promise<void> => {
-    if (isNewFlow(flow.id)) {
-      await api.flow.post(flow);
+  const newFlow = async (makeActive: boolean, errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
+    return await wrapApiCall(
+      'Create new flow',
+      async () => {
+        const flow = await api.flow.get(EMPTY_GUID);
+        addFlow(flow.id, flow, true);
 
-      // Remove from new flows list
-      removeNewFlow(flow.id);
+        if (makeActive) {
+          activeFlow.value = flow;
+        }
+        return flow;
+      },
+      errorHandlerCallback
+    );
+  };
 
-      return;
+  const saveFlow = async (flow: Flow, errorHandlerCallback?: HandleErrorCallback): Promise<void> => {
+    return await wrapApiCall(
+      `Save flow with ID '${flow.id}'`,
+      async () => {
+        if (isNewFlow(flow.id)) {
+          await api.flow.post(flow);
+
+          // Remove from new flows list
+          removeNewFlow(flow.id);
+
+          return;
+        }
+
+        await api.flow.put(flow);
+      },
+      errorHandlerCallback
+    );
+  };
+
+  const openFlow = async (id: string, errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
+    return await wrapApiCall(
+      `Open flow with ID '${id}'`,
+      async () => {
+        const flow = await api.flow.get(id);
+
+        if (!getFlow(flow.id)) {
+          addFlow(flow.id, flow, false);
+        }
+        activeFlow.value = flow;
+        return flow;
+      },
+      errorHandlerCallback
+    );
+  };
+
+  const closeFlow = (id: string): void => {
+    if (activeFlow.value?.id === id) {
+      activeFlow.value = undefined;
     }
 
-    await api.flow.put(flow);
+    deleteFlow(id);
   };
 
   const isBusy = computed(() => isBusyCount.value > 0);
@@ -90,6 +126,9 @@ export const useAppStore = defineStore('app', () => {
     blockPaletteWidth,
     activeFlow,
     saveFlow,
-    newFlow
+    newFlow,
+    openFlow,
+    closeFlow,
+    getFlowSummaries
   };
 });

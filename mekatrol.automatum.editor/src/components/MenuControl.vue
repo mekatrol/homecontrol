@@ -1,7 +1,7 @@
 <template>
   <div class="menu">
     <div class="menu-item">
-      <button><span class="material-symbols-outlined">folder</span>Open</button>
+      <button @click="onOpenFlow"><span class="material-symbols-outlined">folder</span>Open</button>
     </div>
     <div class="menu-item">
       <button @click="onNewFlow"><span class="material-symbols-outlined">add</span>New</button>
@@ -16,26 +16,57 @@
       v-if="activeFlow"
       class="menu-item"
     >
-      <button><span class="material-symbols-outlined">check_box</span>Enable</button>
+      <button @click="onCloseFlow"><span class="material-symbols-outlined">close</span>Close</button>
     </div>
+    <AppDialog
+      :show="showOpenDialog"
+      @confirm="onOpenConfirm"
+      @cancel="showOpenDialog = false"
+    >
+      <OpenFlow @flow-clicked="onFlowClicked"></OpenFlow>
+    </AppDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useAppStore } from '@/stores/app-store';
+import { ref } from 'vue';
+import AppDialog from './AppDialog.vue';
+import OpenFlow from '@/components/OpenFlow.vue';
+import type { Flow } from '@/services/api-generated';
 
 const appStore = useAppStore();
 
 const { newFlow, saveFlow } = appStore;
 const { activeFlow } = storeToRefs(appStore);
+const showOpenDialog = ref(false);
+
+const onOpenFlow = () => {
+  showOpenDialog.value = true;
+};
+
+const onCloseFlow = () => {
+  if (activeFlow.value) {
+    appStore.closeFlow(activeFlow.value.id);
+  }
+};
+
+const onOpenConfirm = async (): Promise<void> => {
+  showOpenDialog.value = false;
+
+  if (clickedFlow.value !== undefined) {
+    await appStore.openFlow(clickedFlow.value.id);
+  }
+};
+
+const clickedFlow = ref<Flow | undefined>(undefined);
+const onFlowClicked = (flowClicked: Flow): void => {
+  clickedFlow.value = flowClicked;
+};
 
 const onNewFlow = async () => {
-  try {
-    await newFlow(true);
-  } catch (e) {
-    console.error(e);
-  }
+  await newFlow(true);
 };
 
 const onSaveFlow = async () => {
