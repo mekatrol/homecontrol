@@ -15,15 +15,21 @@
     :show="appStore.isBusy"
     full-screen
   />
+  <MessageOverlay
+    :show="!!appStore.messageData"
+    :data="appStore.messageData"
+    full-screen
+  />
 </template>
 
 <script setup lang="ts">
 import MenuControl from '@/components/MenuControl.vue';
 import EditorControl from '@/components/EditorControl.vue';
 import FlowInformationControl from '@/components/FlowInformationControl.vue';
-import { BusyOverlay } from 'vue-boosted';
+import BusyOverlay from '@/components/BusyOverlay.vue';
+import MessageOverlay from '@/components/MessageOverlay.vue';
 import { useAppStore } from '@/stores/app-store';
-import { useIntervalTimer } from 'vue-boosted';
+import { useIntervalTimer } from '@/composables/timer';
 import { storeToRefs } from 'pinia';
 
 const appStore = useAppStore();

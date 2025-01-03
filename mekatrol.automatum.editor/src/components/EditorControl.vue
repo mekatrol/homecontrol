@@ -45,7 +45,7 @@
 import PaletteControl from '@/components/PaletteControl.vue';
 import FlowControl from '@/components/FlowControl.vue';
 import { onMounted, ref, watch } from 'vue';
-import { useScreenSize } from 'vue-boosted';
+import { useScreenSize } from '@/composables/screen-size';
 import { FlowController, useFlowController } from '@/types/FlowController';
 import ContainerControl from '@/components/ContainerControl.vue';
 import { useAppStore } from '@/stores/app-store';

@@ -4,7 +4,9 @@ import { BLOCK_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE, EMPTY_GUID } from '@/constant
 import type { Flow } from '@/services/api-generated';
 import { Api } from '@/services/api-generated';
 import { useFlowStore } from '@/stores/flow-store';
-import { handleApiResponseError } from '@/services/http';
+import { handleApiError, type HandleErrorCallback } from '@/services/http';
+import type { MessageType } from '@/types/message-type';
+import { clearMessage, type MessageData } from '@/services/message';
 
 // The server API base URL is embedded in a hidden field in the page
 // it is set by the server on page load
@@ -18,12 +20,20 @@ const api = new Api({
 
 export const useAppStore = defineStore('app', () => {
   const isBusyCount = ref(0);
+  const messageData = ref<MessageData | undefined>(undefined);
+
   const { addFlow, isNewFlow, removeNewFlow } = useFlowStore();
 
   const activeFlow = ref<Flow | undefined>(undefined);
 
-  const newFlow = async (makeActive: boolean): Promise<Flow> => {
+  const closeMessageOverlay = () => {
+    clearMessage();
+  };
+
+  const newFlow = async (makeActive: boolean, errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
     try {
+      incrementBusy();
+
       const flow = await api.flow.get(EMPTY_GUID);
       addFlow(flow.id, flow, true);
 
@@ -32,11 +42,11 @@ export const useAppStore = defineStore('app', () => {
       }
 
       return flow;
-    } catch (e) {
-      const apiError = handleApiResponseError(e, '');
-      console.log(apiError);
-
-      throw e;
+    } catch (err) {
+      const apiError = handleApiError(err, 'Create new flow', errorHandlerCallback, false);
+      throw apiError;
+    } finally {
+      decrementBusy();
     }
   };
 
@@ -71,5 +81,15 @@ export const useAppStore = defineStore('app', () => {
     return BLOCK_WIDTH + 2 * PALETTE_GAP + SCROLLBAR_SIZE;
   });
 
-  return { isBusy, incrementBusy, decrementBusy, blockPaletteWidth, activeFlow, saveFlow, newFlow };
+  return {
+    isBusy,
+    messageData,
+    closeMessageOverlay,
+    incrementBusy,
+    decrementBusy,
+    blockPaletteWidth,
+    activeFlow,
+    saveFlow,
+    newFlow
+  };
 });

@@ -1,12 +1,6 @@
 import { AxiosError, type AxiosRequestConfig } from 'axios';
-import { axiosApi } from '@/services/axios';
 import { ref } from 'vue';
-import { combinePathWithBaseUrl } from '@/services/url';
-import { useAppStore } from '@/stores/app-store';
-
-const showFailedMessage = (message: string): void => {
-  console.error(message);
-};
+import { showErrorMessage } from './message';
 
 const serverValidationErrors = ref<ErrorModel[]>([]);
 
@@ -39,6 +33,69 @@ export enum ApiErrorType {
   GatewayTimeout = 504
 }
 
+export const apiErrorToDescription = (apiError: ApiErrorType): string => {
+  switch (apiError) {
+    case ApiErrorType.Undefined:
+      return 'Undefined';
+
+    case ApiErrorType.ConnectionFailed:
+      return 'Connection Failed';
+
+    case ApiErrorType.Timeout:
+      return 'Timeout';
+
+    case ApiErrorType.BadRequest:
+      return 'Bad Request';
+
+    case ApiErrorType.Unauthorized:
+      return 'Unauthorized';
+
+    case ApiErrorType.PaymentRequired:
+      return 'Payment Required';
+
+    case ApiErrorType.Forbidden:
+      return 'Forbidden';
+
+    case ApiErrorType.NotFound:
+      return 'Not Found';
+
+    case ApiErrorType.NotAllowed:
+      return 'Not Allowed';
+
+    case ApiErrorType.NotAcceptable:
+      return 'Not Acceptable';
+
+    case ApiErrorType.RequestTimeout:
+      return 'Request Timeout';
+
+    case ApiErrorType.Conflict:
+      return 'Conflict';
+
+    case ApiErrorType.Gone:
+      return 'Gone';
+
+    case ApiErrorType.InternalServerError:
+      return 'Internal Server Error';
+
+    case ApiErrorType.NotImplemented:
+      return 'Not Implemented';
+
+    case ApiErrorType.BadGateway:
+      return 'Bad Gateway';
+
+    case ApiErrorType.ServiceUnavailable:
+      return 'Service Unavailable';
+
+    case ApiErrorType.GatewayTimeout:
+      return 'Gateway Timeout';
+
+    default:
+      // This is not an error code we have specifically coded for so return the
+      // actual error number to help with diagnosis
+      return `Error code: ${apiError}`;
+  }
+};
+
 /**
  * An error from the API is expected to contain a list of ErrorModel objects
  * [
@@ -67,7 +124,7 @@ export interface HandleErrorCallback {
   (apiError: ApiError): boolean;
 }
 
-export const handleApiResponseError = (err: unknown, url: string): ApiError => {
+export const handleApiResponseError = (err: unknown): ApiError => {
   // Convert to axios error type
   const error = err as AxiosError;
 
@@ -84,7 +141,7 @@ export const handleApiResponseError = (err: unknown, url: string): ApiError => {
     // net::ERR_CONNECTION_REFUSED
     // net::ERR_NETWORK
     apiError.errorType = ApiErrorType.ConnectionFailed;
-    apiError.errors = [{ property: null, errorMessage: `Failed to connect to the server at URL '${combinePathWithBaseUrl(url)}'.` }];
+    apiError.errors = [{ property: null, errorMessage: 'Failed to connect to the server.' }];
   }
 
   // Only call this bit if API errors not already set
@@ -127,12 +184,11 @@ export const handleApiResponseError = (err: unknown, url: string): ApiError => {
 
 export const handleApiError = (
   error: unknown,
-  url: string,
-  method: string,
+  action: string,
   errorHandlerCallback?: HandleErrorCallback,
   suppressUnauthorizedError?: boolean
 ): ApiError => {
-  const apiError = handleApiResponseError(error, url);
+  const apiError = handleApiResponseError(error);
 
   // If validation errors have been returned, give them to the validation form
   if (apiError.errorType === ApiErrorType.BadRequest) {
@@ -149,151 +205,31 @@ export const handleApiError = (
 
   // If the caller did not handle the error then display a generic error
   if (!errorHandled) {
-    displayErrorMessage(apiError, method);
+    displayErrorMessage(apiError, action);
   }
 
   // Return error for further processing as needed
   return apiError;
 };
 
-const displayErrorMessage = (error: ApiError, method: string): void => {
+const displayErrorMessage = (error: ApiError, action: string): void => {
   // A HTTP 409 (conflict) indicates update concurrency exception
   if (error.errorType === ApiErrorType.Conflict) {
-    showFailedMessage(
-      `${method} failed because the data has been modified by '${error.errors[0].errorMessage}' since you started editing.` +
+    showErrorMessage(
+      `${action} failed because the data has been modified by '${error.errors[0].errorMessage}' since you started editing.` +
         'Please reload the page and try again. Reloading will reset any changes that you have made.'
     );
   }
 
   // A HTTP 404 (not found)
   else if (error.errorType === ApiErrorType.NotFound) {
-    showFailedMessage(`${method} failed because the item no longer exists.`);
+    showErrorMessage(`${action} failed because the item no longer exists.`);
   } else if (error.errorType === ApiErrorType.BadRequest) {
-    showFailedMessage(`${method} failed with error '${error.errors[0].errorMessage}'.`);
+    showErrorMessage(`${action} failed with error '${error.errors[0].errorMessage}'.`);
   } else {
-    showFailedMessage(`${method} failed. The server may be offline. Please try again later. [Error type: ${error.errorType}]`);
+    showErrorMessage(`${action} failed. The server may be offline. [Error: '${apiErrorToDescription(error.errorType)}']`);
   }
 
   // Rethrow message in case called needs info
   throw error;
-};
-
-export const httpGet = async <T>(url: string, errorHandlerCallback?: HandleErrorCallback, retrying?: boolean): Promise<T> => {
-  const config = {
-    ...defaultConfig
-  };
-
-  // Flag we are waiting
-  const appStore = useAppStore();
-  appStore.incrementBusy();
-
-  try {
-    const response = await axiosApi.get(url, config);
-    return response.data;
-  } catch (err: unknown) {
-    const apiError = handleApiError(err, url, 'GET', errorHandlerCallback, !retrying);
-
-    throw apiError;
-  } finally {
-    appStore.decrementBusy();
-  }
-};
-
-export const httpPost = async <TRequest, TResponse>(
-  requestData: TRequest,
-  url: string,
-  errorHandlerCallback?: HandleErrorCallback,
-  retrying?: boolean
-): Promise<TResponse> => {
-  const config = {
-    ...defaultConfig
-  };
-
-  // Flag we are waiting
-  const appStore = useAppStore();
-  appStore.incrementBusy();
-
-  try {
-    const response = await axiosApi.post<TResponse>(url, requestData, config);
-    return response?.data ?? ({} as TResponse);
-  } catch (err: unknown) {
-    const apiError = handleApiError(err, url, 'POST', errorHandlerCallback, !retrying);
-
-    throw apiError;
-  } finally {
-    appStore.decrementBusy();
-  }
-};
-
-export const httpPut = async <TRequest, TResponse>(
-  requestData: TRequest,
-  url: string,
-  errorHandlerCallback?: HandleErrorCallback,
-  retrying?: boolean
-): Promise<TResponse> => {
-  const config = {
-    ...defaultConfig
-  };
-
-  // Flag we are waiting
-  const appStore = useAppStore();
-  appStore.incrementBusy();
-
-  try {
-    const response = await axiosApi.put<TResponse>(url, requestData, config);
-    return response?.data ?? ({} as TResponse);
-  } catch (err: unknown) {
-    const apiError = handleApiError(err, url, 'PUT', errorHandlerCallback, !retrying);
-
-    throw apiError;
-  } finally {
-    appStore.decrementBusy();
-  }
-};
-
-export const httpPatch = async <TRequest, TResponse>(
-  requestData: TRequest,
-  url: string,
-  errorHandlerCallback?: HandleErrorCallback,
-  retrying?: boolean
-): Promise<TResponse> => {
-  const config = {
-    ...defaultConfig
-  };
-
-  // Flag we are waiting
-  const appStore = useAppStore();
-  appStore.incrementBusy();
-
-  try {
-    const response = await axiosApi.patch<TResponse>(url, requestData, config);
-    return response?.data ?? ({} as TResponse);
-  } catch (err: unknown) {
-    const apiError = handleApiError(err, url, 'PATCH', errorHandlerCallback, !retrying);
-
-    throw apiError;
-  } finally {
-    appStore.decrementBusy();
-  }
-};
-
-export const httpDelete = async (url: string, errorHandlerCallback?: HandleErrorCallback, retrying?: boolean): Promise<boolean> => {
-  const config = {
-    ...defaultConfig
-  };
-
-  // Flag we are waiting
-  const appStore = useAppStore();
-  appStore.incrementBusy();
-
-  try {
-    await axiosApi.delete(url, config);
-    return true;
-  } catch (err: unknown) {
-    const apiError = handleApiError(err, url, 'DELETE', errorHandlerCallback, !retrying);
-
-    throw apiError;
-  } finally {
-    appStore.decrementBusy();
-  }
 };
