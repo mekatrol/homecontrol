@@ -1,1 +1,8 @@
 @use './reset.scss';
+
+:root {
+  --clr-info: rgb(33, 150, 243);
+  --clr-success: rgb(76, 175, 80);
+  --clr-warn: rgb(255, 235, 59);
+  --clr-error: rgb(244, 67, 54);
+}

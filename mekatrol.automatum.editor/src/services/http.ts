@@ -227,7 +227,7 @@ const displayErrorMessage = (error: ApiError, action: string): void => {
   } else if (error.errorType === ApiErrorType.BadRequest) {
     showErrorMessage(`${action} failed with error '${error.errors[0].errorMessage}'.`);
   } else {
-    showErrorMessage(`${action} failed. The server may be offline. [Error: '${apiErrorToDescription(error.errorType)}']`);
+    showErrorMessage(`${action} failed. Error was: '${apiErrorToDescription(error.errorType)}'.`);
   }
 
   // Rethrow message in case called needs info

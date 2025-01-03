@@ -130,21 +130,24 @@ const iconType = computed((): IconDefinition => {
       padding: 0.5rem;
       align-items: center;
       gap: 0.5rem;
+      font-size: 1.2em;
+      font-weight: 700;
 
       &.info {
-        background-color: blue;
+        background-color: var(--clr-info);
       }
 
       &.success {
-        background-color: green;
+        background-color: var(--clr-success);
       }
 
       &.warn {
-        background-color: orange;
+        background-color: var(--clr-warn);
+        color: #222;
       }
 
       &.error {
-        background-color: red;
+        background-color: var(--clr-error);
       }
 
       .title-spacer {
@@ -155,10 +158,13 @@ const iconType = computed((): IconDefinition => {
         background-color: transparent;
         border: none;
         cursor: pointer;
+        color: inherit;
+        padding: 0.2rem;
+        border-radius: 3px;
 
         &:hover {
-          background-color: white;
-          color: green;
+          background-color: #222;
+          color: #eee;
         }
       }
     }
