@@ -1,31 +1,36 @@
 <template>
-  <div :class="`dialog-container ${show ? 'show' : ''}`">
-    <dialog
-      class="app-dialog"
-      :open="show"
-    >
-      <form>
-        <div class="content">
-          <slot></slot>
-        </div>
-        <div class="action-bar">
-          <button
-            value="default"
-            @click.prevent="emit('confirm')"
-          >
-            OK
-          </button>
-          <button
-            value="cancel"
-            formmethod="dialog"
-            @click="emit('cancel')"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </dialog>
-  </div>
+  <Teleport
+    to="body"
+    v-if="show"
+  >
+    <div :class="`dialog-container ${show ? 'show' : ''}`">
+      <dialog
+        class="app-dialog"
+        :open="show"
+      >
+        <form>
+          <div class="content">
+            <slot></slot>
+          </div>
+          <div class="action-bar">
+            <button
+              value="default"
+              @click.prevent="emit('confirm')"
+            >
+              OK
+            </button>
+            <button
+              value="cancel"
+              formmethod="dialog"
+              @click="emit('cancel')"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </dialog>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">

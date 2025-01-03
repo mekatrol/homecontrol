@@ -17,9 +17,19 @@
       </label>
     </p>
   </AppDialog>
+  <AppDialog
+    :show="showDialog1"
+    @confirm="showDialog1 = false"
+    @cancel="showDialog1 = false"
+  >
+    <p>Second dialog</p>
+  </AppDialog>
 
   <p>
     <button @click="showDialog = true">Show the dialog</button>
+  </p>
+  <p>
+    <button @click="showDialog1 = true">Show the dialog 1</button>
   </p>
 </template>
 
@@ -28,5 +38,6 @@ import AppControl from '@/components/AppControl.vue';
 import AppDialog from './components/AppDialog.vue';
 import { ref } from 'vue';
 
-const showDialog = ref(true);
+const showDialog = ref(false);
+const showDialog1 = ref(false);
 </script>
