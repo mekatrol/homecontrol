@@ -36,8 +36,9 @@ import GridControl from '@/components/GridControl.vue';
 import ConnectionControl from '@/components/ConnectionControl.vue';
 import ConnectingControl from '@/components/ConnectingControl.vue';
 import BlockControl from '@/components/BlockControl.vue';
-import { FlowController, useFlowController } from '@/types/FlowController';
 import { onMounted, ref, watch } from 'vue';
+import { useFlowStore } from '@/stores/flow-store';
+import type { FlowController } from '@/types/FlowController';
 
 interface Props {
   width: number;
@@ -48,11 +49,12 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const { getFlowController } = useFlowStore();
 const flowController = ref<FlowController | undefined>(undefined);
 
 onMounted(() => {
   if (props.flowId) {
-    flowController.value = useFlowController(props.flowId);
+    flowController.value = getFlowController(props.flowId)?.value;
   }
 });
 
@@ -64,7 +66,7 @@ watch(
       return;
     }
 
-    flowController.value = useFlowController(newValue);
+    flowController.value = getFlowController(newValue)?.value;
   }
 );
 </script>

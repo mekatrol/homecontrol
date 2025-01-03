@@ -1,13 +1,13 @@
 import type { FlowBlock } from '@/services/api-generated';
 
 export class ZOrder {
-  private _blocks: FlowBlock[];
+  public _blocks: FlowBlock[];
 
   constructor(blocks: FlowBlock[]) {
     this._blocks = blocks;
   }
 
-  private sequenceZOrder = (): void => {
+  public sequenceZOrder = (): void => {
     let nextZOrder = 1;
     this._blocks.forEach((block) => {
       block.zOrder = nextZOrder;
@@ -20,7 +20,7 @@ export class ZOrder {
     this.sequenceZOrder();
   };
 
-  private moveToFront = (selected: FlowBlock): void => {
+  public moveToFront = (selected: FlowBlock): void => {
     if (!selected || !this._blocks) {
       return;
     }
@@ -37,7 +37,7 @@ export class ZOrder {
     this.sort();
   };
 
-  private moveForward = (selected: FlowBlock): void => {
+  public moveForward = (selected: FlowBlock): void => {
     if (!selected || !this._blocks || !this._blocks) {
       return;
     }
@@ -52,7 +52,7 @@ export class ZOrder {
     }
   };
 
-  private moveBackward = (selected: FlowBlock): void => {
+  public moveBackward = (selected: FlowBlock): void => {
     if (!selected || !this._blocks || !this._blocks) {
       return;
     }
@@ -67,7 +67,7 @@ export class ZOrder {
     }
   };
 
-  private moveToBack = (selected: FlowBlock): void => {
+  public moveToBack = (selected: FlowBlock): void => {
     if (!selected || !this._blocks || !this._blocks) {
       return;
     }

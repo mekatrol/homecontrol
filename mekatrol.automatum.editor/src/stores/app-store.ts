@@ -1,10 +1,10 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import { BLOCK_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE, EMPTY_GUID } from '@/constants';
+import { EMPTY_GUID } from '@/constants';
 import type { Flow } from '@/services/api-generated';
 import { Api } from '@/services/api-generated';
 import { useFlowStore } from '@/stores/flow-store';
-import { handleApiError, wrapApiCall, type HandleErrorCallback } from '@/services/api';
+import { wrapApiCall, type HandleErrorCallback } from '@/services/api';
 import type { MessageType } from '@/services/message';
 import { clearMessage, type MessageData } from '@/services/message';
 
@@ -22,7 +22,7 @@ export const useAppStore = defineStore('app', () => {
   const isBusyCount = ref(0);
   const messageData = ref<MessageData | undefined>(undefined);
 
-  const { getFlow, addFlow, deleteFlow, isNewFlow, removeNewFlow } = useFlowStore();
+  const { getFlowController, addFlow, deleteFlow, isNewFlow, removeNewFlow } = useFlowStore();
 
   const activeFlow = ref<Flow | undefined>(undefined);
 
@@ -45,7 +45,7 @@ export const useAppStore = defineStore('app', () => {
       'Create new flow',
       async () => {
         const flow = await api.flow.get(EMPTY_GUID);
-        addFlow(flow.id, flow, true);
+        addFlow(flow, true);
 
         if (makeActive) {
           activeFlow.value = flow;
@@ -81,8 +81,8 @@ export const useAppStore = defineStore('app', () => {
       async () => {
         const flow = await api.flow.get(id);
 
-        if (!getFlow(flow.id)) {
-          addFlow(flow.id, flow, false);
+        if (!getFlowController(flow.id)) {
+          addFlow(flow, false);
         }
         activeFlow.value = flow;
         return flow;
@@ -113,17 +113,12 @@ export const useAppStore = defineStore('app', () => {
     }
   };
 
-  const blockPaletteWidth = computed(() => {
-    return BLOCK_WIDTH + 2 * PALETTE_GAP + SCROLLBAR_SIZE;
-  });
-
   return {
     isBusy,
     messageData,
     closeMessageOverlay,
     incrementBusy,
     decrementBusy,
-    blockPaletteWidth,
     activeFlow,
     saveFlow,
     newFlow,

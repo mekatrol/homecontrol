@@ -46,10 +46,10 @@ import PaletteControl from '@/components/PaletteControl.vue';
 import FlowControl from '@/components/FlowControl.vue';
 import { onMounted, ref, watch } from 'vue';
 import { useScreenSize } from '@/composables/screen-size';
-import { FlowController, useFlowController } from '@/types/FlowController';
 import ContainerControl from '@/components/ContainerControl.vue';
-import { useAppStore } from '@/stores/app-store';
-import { PALETTE_GAP, SCROLLBAR_SIZE } from '@/constants';
+import { BLOCK_PALETTE_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE } from '@/constants';
+import { useFlowStore } from '@/stores/flow-store';
+import type { FlowController } from '@/types/FlowController';
 
 interface Props {
   flowId: string;
@@ -59,7 +59,8 @@ const props = defineProps<Props>();
 
 const gridSize = ref(20);
 const screenSize = useScreenSize();
-const { blockPaletteWidth } = useAppStore();
+const blockPaletteWidth = BLOCK_PALETTE_WIDTH;
+const { getFlowController } = useFlowStore();
 const svg = ref<SVGAElement>();
 const svgWidth = ref(0);
 const svgHeight = ref(0);
@@ -78,16 +79,23 @@ const calculateSvgHeight = () => {
 
 const flowController = ref<FlowController | undefined>(undefined);
 
-onMounted(() => {
-  if (props.flowId) {
-    flowController.value = useFlowController(props.flowId);
+const initFromFlowId = (id: string): void => {
+  if (!id) {
+    flowController.value = undefined;
+    return;
   }
+
+  flowController.value = getFlowController(id)?.value;
 
   // Wire all events
   wireSvgEvents();
 
   // Update SVG height based on current view
   calculateSvgHeight();
+};
+
+onMounted(() => {
+  initFromFlowId(props.flowId);
 });
 
 const pointerMove = (e: PointerEvent) => {
@@ -165,17 +173,7 @@ watch(
 watch(
   () => props.flowId,
   (_oldValue: string, newValue: string) => {
-    if (!newValue) {
-      flowController.value = undefined;
-      return;
-    }
-
-    flowController.value = useFlowController(newValue);
-
-    // Wire all events
-    wireSvgEvents();
-
-    calculateSvgHeight();
+    initFromFlowId(newValue);
   }
 );
 </script>

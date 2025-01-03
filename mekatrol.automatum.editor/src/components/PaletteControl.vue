@@ -49,12 +49,12 @@ import BlockTemplateControl from '@/components/BlockTemplateControl.vue';
 import SvgScrollbar from '@/components/SvgScrollbar.vue';
 import { useFlowStore } from '@/stores/flow-store';
 import { BLOCK_HEIGHT, BLOCK_POINTER_DOWN, BLOCK_POINTER_UP } from '@/constants';
-import type { BlockTemplate } from '@/types/BlockTemplate';
+import type { BlockTemplate } from '@/types/block-template';
 import { v4 as uuidv4 } from 'uuid';
-import { FlowController, useFlowController } from '@/types/FlowController';
 import type { FlowBlock } from '@/services/api-generated';
 import { useEmitter, type FlowEvents } from '@/utils/event-emitter';
 import { onMounted, ref } from 'vue';
+import type { FlowController } from '@/types/FlowController';
 
 interface Props {
   width: number;
@@ -66,7 +66,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const { blockTemplates } = useFlowStore();
+const { blockTemplates, getFlowController } = useFlowStore();
 const flowController = ref<FlowController | undefined>(undefined);
 
 // This is the number of blocks that have been scrolled up
@@ -164,7 +164,7 @@ const emit = (event: keyof FlowEvents, e: PointerEvent, block: FlowBlock): boole
 
 onMounted(() => {
   if (props.flowId) {
-    flowController.value = useFlowController(props.flowId);
+    flowController.value = getFlowController(props.flowId)?.value;
   }
 });
 </script>

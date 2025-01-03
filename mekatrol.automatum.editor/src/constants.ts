@@ -10,6 +10,7 @@ export const MARKER_OFFSET_X = 5;
 export const MARKER_OFFSET_Y = -8;
 export const PALETTE_GAP = 8;
 export const SCROLLBAR_SIZE = 25;
+export const BLOCK_PALETTE_WIDTH = BLOCK_WIDTH + 2 * PALETTE_GAP + SCROLLBAR_SIZE;
 
 /*
  * The various events that a flow and its elements will generate
