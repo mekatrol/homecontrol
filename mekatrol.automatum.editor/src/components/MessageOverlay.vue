@@ -10,6 +10,7 @@
         <div class="title-spacer"></div>
         <button
           class="title-close"
+          title="Close"
           @click="closeMessage"
         >
           <FontAwesomeIcon
@@ -37,7 +38,7 @@ import {
   type IconDefinition
 } from '@fortawesome/free-solid-svg-icons';
 import { useAppStore } from '@/stores/app-store';
-import { MessageType } from '@/types/message-type';
+import { MessageType } from '@/services/message';
 import { computed } from 'vue';
 import type { MessageData } from '@/services/message';
 

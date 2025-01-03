@@ -5,7 +5,7 @@ import type { Flow } from '@/services/api-generated';
 import { Api } from '@/services/api-generated';
 import { useFlowStore } from '@/stores/flow-store';
 import { handleApiError, type HandleErrorCallback } from '@/services/http';
-import type { MessageType } from '@/types/message-type';
+import type { MessageType } from '@/services/message';
 import { clearMessage, type MessageData } from '@/services/message';
 
 // The server API base URL is embedded in a hidden field in the page
