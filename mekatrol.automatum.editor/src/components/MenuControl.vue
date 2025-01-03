@@ -52,6 +52,9 @@ const onOpenConfirm = async (): Promise<void> => {
   showOpenDialog.value = false;
 
   if (clickedFlow.value !== undefined) {
+    if (activeFlow.value) {
+      appStore.closeFlow(activeFlow.value.id);
+    }
     await appStore.openFlow(clickedFlow.value.id);
   }
 
@@ -75,6 +78,10 @@ const onFlowClicked = (flowClicked: Flow): void => {
 };
 
 const onNewFlow = async () => {
+  if (activeFlow.value) {
+    appStore.closeFlow(activeFlow.value.id);
+  }
+
   await newFlow(true);
 };
 

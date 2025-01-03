@@ -82,6 +82,11 @@ onMounted(() => {
   if (props.flowId) {
     flowController.value = useFlowController(props.flowId);
   }
+
+  // Wire all events
+  wireSvgEvents();
+
+  // Update SVG height based on current view
   calculateSvgHeight();
 });
 
@@ -149,18 +154,6 @@ const wireSvgEvents = () => {
     });
   });
 };
-
-onMounted(() => {
-  if (props.flowId) {
-    flowController.value = useFlowController(props.flowId);
-    calculateSvgHeight();
-  }
-
-  // Wire all events
-  wireSvgEvents();
-
-  calculateSvgHeight();
-});
 
 watch(
   () => screenSize.value,
