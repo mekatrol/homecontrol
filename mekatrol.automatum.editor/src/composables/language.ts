@@ -10,7 +10,7 @@ export const useLanguageInfo = (): LanguageInfo => {
 
   // Get base and variant if found
   const base = match?.groups ? match.groups['base'] : '';
-  const variant = match?.groups ? match.groups['variant'] ?? '' : '';
+  const variant = match?.groups ? (match.groups['variant'] ?? '') : '';
 
   // Construct language info
   const languageInfo: LanguageInfo = {

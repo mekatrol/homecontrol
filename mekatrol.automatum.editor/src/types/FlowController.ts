@@ -18,7 +18,7 @@ import {
   DRAGGING_BLOCK_START,
   MARKER_SIZE
 } from '@/constants';
-import type { Flow, Offset, BlockSide, Size } from '@/services/api-generated';
+import type { Flow, Offset, Size } from '@/services/api-generated';
 import { v4 as uuidv4 } from 'uuid';
 
 export class FlowController {
