@@ -88,17 +88,29 @@ export type FlowEvents = {
   connectionPointerLeave: FlowConnectionPointerEvent;
   connectionPointerDown: FlowConnectionPointerEvent;
   connectionPointerUp: FlowConnectionPointerEvent;
+
+  /*
+   * Connecting events
+   */
+  connectingStart: FlowConnecting;
+  connectingEnd: FlowConnection | undefined;
+  connectingEndLocationChange: FlowConnecting;
 };
 
 // We want a single instance for all use (singleton pattern)
 const emitter: Emitter<FlowEvents> = mitt<FlowEvents>();
 
-export const emitPointerEvent = <T>(data: T, event: keyof FlowEvents, e: PointerEvent): boolean => {
+export const emitPointerEvent = <T>(event: keyof FlowEvents, e: PointerEvent, data: T): boolean => {
   emitter.emit(event, {
     data: data,
     pointerEvent: e
   } as FlowConnectingPointerEvent);
   e.preventDefault();
+  return false;
+};
+
+export const emitConnectingEvent = (event: keyof FlowEvents, data: FlowConnecting | FlowConnection | undefined): boolean => {
+  emitter.emit(event, data);
   return false;
 };
 
@@ -144,7 +156,7 @@ export const configureFlowPointerEvents = (flowController: FlowController): void
   });
 
   emitter.on(BLOCK_IO_POINTER_UP, (_e) => {
-    flowController.drawingConnection.value = undefined;
+    flowController.drawingConnection = undefined;
   });
 
   emitter.on(BLOCK_IO_POINTER_DOWN, (e) => {
@@ -152,52 +164,52 @@ export const configureFlowPointerEvents = (flowController: FlowController): void
   });
 
   emitter.on(CONNECTING_POINTER_MOVE, (_e) => {
-    // console.log(`CONNECTING_POINTER_MOVE: ${_e.data.id}`, _e);
+    // console.log(`CONNECTING_POINTER_MOVE: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTING_POINTER_OVER, (_e) => {
-    // console.log(`CONNECTING_POINTER_OVER: ${_e.data.id}`, _e);
+    // console.log(`CONNECTING_POINTER_OVER: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTING_POINTER_ENTER, (_e) => {
-    // console.log(`CONNECTING_POINTER_ENTER: ${_e.data.id}`, _e);
+    // console.log(`CONNECTING_POINTER_ENTER: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTING_POINTER_LEAVE, (_e) => {
-    // console.log(`CONNECTING_POINTER_LEAVE: ${_e.data.id}`, _e);
+    // console.log(`CONNECTING_POINTER_LEAVE: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTING_POINTER_UP, (_e) => {
-    // console.log(`CONNECTING_POINTER_UP: ${_e.data.id}`, _e);
+    // console.log(`CONNECTING_POINTER_UP: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTING_POINTER_DOWN, (e) => {
-    // console.log(`CONNECTING_POINTER_DOWN: ${_e.data.id}`, _e);
+    // console.log(`CONNECTING_POINTER_DOWN: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTION_POINTER_MOVE, (_e) => {
-    // console.log(`CONNECTION_POINTER_MOVE: ${_e.data.id}`, _e);
+    // console.log(`CONNECTION_POINTER_MOVE: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTION_POINTER_OVER, (_e) => {
-    // console.log(`CONNECTION_POINTER_OVER: ${_e.data.id}`, _e);
+    // console.log(`CONNECTION_POINTER_OVER: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTION_POINTER_ENTER, (_e) => {
-    // console.log(`CONNECTION_POINTER_ENTER: ${_e.data.id}`, _e);
+    // console.log(`CONNECTION_POINTER_ENTER: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTION_POINTER_LEAVE, (_e) => {
-    // console.log(`CONNECTION_POINTER_LEAVE: ${_e.data.id}`, _e);
+    // console.log(`CONNECTION_POINTER_LEAVE: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTION_POINTER_UP, (_e) => {
-    // console.log(`CONNECTION_POINTER_UP: ${_e.data.id}`, _e);
+    // console.log(`CONNECTION_POINTER_UP: ${_e.data}`, _e);
   });
 
   emitter.on(CONNECTION_POINTER_DOWN, (e) => {
     flowController.clearSelectedItems();
-    flowController.drawingConnection.value = undefined;
+    flowController.drawingConnection = undefined;
     flowController.selectedConnection = e.data;
   });
 };

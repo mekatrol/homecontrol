@@ -102,6 +102,7 @@ const pointerMove = (e: PointerEvent) => {
   if (!flowController.value) {
     return;
   }
+
   flowController.value.pointerMove(e);
 };
 

@@ -20,8 +20,8 @@
     :block="block"
   />
   <ConnectingControl
-    v-if="flowController && flowController.drawingConnection"
-    :connecting="flowController.drawingConnection"
+    v-if="flowController && connecting"
+    :connecting="connecting"
     :flow-id="flowId"
   />
   <BlockControl
@@ -36,9 +36,12 @@ import GridControl from '@/components/GridControl.vue';
 import ConnectionControl from '@/components/ConnectionControl.vue';
 import ConnectingControl from '@/components/ConnectingControl.vue';
 import BlockControl from '@/components/BlockControl.vue';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useFlowStore } from '@/stores/flow-store';
 import type { FlowController } from '@/types/FlowController';
+import { useEmitter } from '@/utils/event-emitter';
+import { CONNECTING_END, CONNECTING_START } from '@/constants';
+import { type FlowConnecting } from '@/types/FlowConnecting';
 
 interface Props {
   width: number;
@@ -52,21 +55,21 @@ const props = defineProps<Props>();
 const { getFlowController } = useFlowStore();
 const flowController = ref<FlowController | undefined>(undefined);
 
+const connecting = ref<FlowConnecting | undefined>(undefined);
+
+const emitter = useEmitter();
+
+emitter.on(CONNECTING_START, (c) => {
+  connecting.value = c;
+});
+
+emitter.on(CONNECTING_END, (_) => {
+  connecting.value = undefined;
+});
+
 onMounted(() => {
   if (props.flowId) {
     flowController.value = getFlowController(props.flowId)?.value;
   }
 });
-
-watch(
-  () => props.flowId,
-  (_oldValue: string, newValue: string) => {
-    if (!newValue) {
-      flowController.value = undefined;
-      return;
-    }
-
-    flowController.value = getFlowController(newValue)?.value;
-  }
-);
 </script>

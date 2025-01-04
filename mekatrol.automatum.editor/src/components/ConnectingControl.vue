@@ -11,12 +11,12 @@
       :fill-opacity="theme.connectionStyles.fillOpacity"
       :stroke="theme.connectionStyles.stroke"
       :stroke-width="theme.connectionStyles.strokeWidth"
-      @pointermove="(e) => emitPointerEvent(props.connecting, CONNECTING_POINTER_MOVE, e)"
-      @pointerover="(e) => emitPointerEvent(props.connecting, CONNECTING_POINTER_OVER, e)"
-      @pointerenter="(e) => emitPointerEvent(props.connecting, CONNECTING_POINTER_ENTER, e)"
-      @pointerleave="(e) => emitPointerEvent(props.connecting, CONNECTING_POINTER_LEAVE, e)"
-      @pointerdown="(e) => emitPointerEvent(props.connecting, CONNECTING_POINTER_DOWN, e)"
-      @pointerup="(e) => emitPointerEvent(props.connecting, CONNECTING_POINTER_UP, e)"
+      @pointermove="(e) => emitPointerEvent(CONNECTING_POINTER_MOVE, e, props.connecting)"
+      @pointerover="(e) => emitPointerEvent(CONNECTING_POINTER_OVER, e, props.connecting)"
+      @pointerenter="(e) => emitPointerEvent(CONNECTING_POINTER_ENTER, e, props.connecting)"
+      @pointerleave="(e) => emitPointerEvent(CONNECTING_POINTER_LEAVE, e, props.connecting)"
+      @pointerdown="(e) => emitPointerEvent(CONNECTING_POINTER_DOWN, e, props.connecting)"
+      @pointerup="(e) => emitPointerEvent(CONNECTING_POINTER_UP, e, props.connecting)"
       zOrder="100"
     />
 
@@ -45,8 +45,8 @@
 <script setup lang="ts">
 import { generateCubicBezierPoints } from '@/utils/cubic-spline';
 import { cubicBezierToSvg } from '@/utils/svg-generator';
-import { computed } from 'vue';
-import { emitPointerEvent } from '@/utils/event-emitter';
+import { computed, ref } from 'vue';
+import { emitPointerEvent, useEmitter } from '@/utils/event-emitter';
 import {
   CONNECTING_POINTER_MOVE,
   CONNECTING_POINTER_OVER,
@@ -54,10 +54,13 @@ import {
   CONNECTING_POINTER_LEAVE,
   CONNECTING_POINTER_DOWN,
   CONNECTING_POINTER_UP,
-  BLOCK_IO_SIZE
+  BLOCK_IO_SIZE,
+  CONNECTING_END_LOCATION_CHANGE,
+  CONNECTING_START
 } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
 import type { FlowConnecting } from '@/types/FlowConnecting';
+import type { FlowBlock, InputOutput, Offset } from '@/services/api-generated';
 
 interface Props {
   show?: boolean;
@@ -87,16 +90,21 @@ const props = withDefaults(defineProps<Props>(), {
   endPointRadius: 5
 });
 
-const startInputOutput = computed(() => props.connecting.startBlock.io.find((io) => io.pin === props.connecting.startPin)!);
+const getStartIo = (connecting: FlowConnecting): InputOutput => {
+  return connecting.startBlock.io.find((io) => io.pin === connecting.startPin)!;
+};
 
-const startOffset = computed(() => {
+const calculateStartOffset = (connecting: FlowConnecting): Offset => {
   return {
-    x: props.connecting.startBlock.offset.x + startInputOutput.value.offset.x + BLOCK_IO_SIZE,
-    y: props.connecting.startBlock.offset.y + startInputOutput.value.offset.y + BLOCK_IO_SIZE / 2
+    x: connecting.startBlock.offset.x + getStartIo(connecting).offset.x + BLOCK_IO_SIZE,
+    y: connecting.startBlock.offset.y + getStartIo(connecting).offset.y + BLOCK_IO_SIZE / 2
   };
-});
+};
 
-const endOffset = computed(() => props.connecting.endLocation);
+const startInputOutput = computed(() => getStartIo(props.connecting));
+
+const startOffset = ref<Offset>(calculateStartOffset(props.connecting));
+const endOffset = ref<Offset>(props.connecting.endLocation);
 
 const svg = computed(() => {
   const points = generateCubicBezierPoints(startOffset.value, endOffset.value, startInputOutput.value.side);
@@ -104,6 +112,17 @@ const svg = computed(() => {
 });
 
 const { theme } = useThemeStore();
+
+const emitter = useEmitter();
+
+emitter.on(CONNECTING_START, (e) => {
+  startOffset.value = calculateStartOffset(e!);
+  endOffset.value = startOffset.value;
+});
+
+emitter.on(CONNECTING_END_LOCATION_CHANGE, (e) => {
+  endOffset.value = e!.endLocation;
+});
 </script>
 
 <style scoped lang="scss">

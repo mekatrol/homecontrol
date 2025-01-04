@@ -1,9 +1,9 @@
 import { type Ref, ref } from 'vue';
 import { ZOrder } from '@/types/ZOrder';
-import { configureFlowPointerEvents, type FlowBlockIOPointerEvent, type FlowBlockPointerEvent } from '@/utils/event-emitter';
+import { configureFlowPointerEvents, emitConnectingEvent, type FlowBlockIOPointerEvent, type FlowBlockPointerEvent } from '@/utils/event-emitter';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
 import type { FlowConnecting } from '@/types/FlowConnecting';
-import { BLOCK_PALETTE_WIDTH, MARKER_SIZE } from '@/constants';
+import { BLOCK_PALETTE_WIDTH, CONNECTING_END, CONNECTING_END_LOCATION_CHANGE, CONNECTING_START, MARKER_SIZE } from '@/constants';
 import type { Flow, Offset, BlockSide, Size } from '@/services/api-generated';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,8 +13,8 @@ export class FlowController {
   public _flow: Flow;
   public _zOrder: ZOrder;
   public _blockPaletteWidth: number;
-  public _drawingConnection = ref<FlowConnecting | undefined>(undefined);
-  public _drawingConnectionEndBlock = ref<FlowBlock | undefined>(undefined);
+  public _drawingConnection: FlowConnecting | undefined = undefined;
+  public _drawingConnectionEndBlock: FlowBlock | undefined = undefined;
   public _drawingConnectionEndPin = ref<number | undefined>(undefined);
   public _selectedConnection = ref<FlowConnection | undefined>(undefined);
   public _selectedBlock = ref<FlowBlock | undefined>(undefined);
@@ -48,8 +48,12 @@ export class FlowController {
     return this._dragBlockOffset;
   }
 
-  public get drawingConnection(): Ref<FlowConnecting | undefined> {
+  public get drawingConnection(): FlowConnecting | undefined {
     return this._drawingConnection;
+  }
+
+  public set drawingConnection(connection: FlowConnecting | undefined) {
+    this._drawingConnection = connection;
   }
 
   public get selectedBlock(): FlowBlock | undefined {
@@ -95,8 +99,8 @@ export class FlowController {
     this.clearSelectedConnection();
 
     // Clear drawing connection
-    this._drawingConnection.value = undefined;
-    this._drawingConnectionEndBlock.value = undefined;
+    this._drawingConnection = undefined;
+    this._drawingConnectionEndBlock = undefined;
     this._drawingConnectionEndPin.value = undefined;
   }
 
@@ -168,7 +172,7 @@ export class FlowController {
     this._dragBlock.value = undefined;
 
     // Clear drawing connection
-    this._drawingConnection.value = undefined;
+    this._drawingConnection = undefined;
   }
 
   public blockIOPointerDown(e: FlowBlockIOPointerEvent) {
@@ -181,7 +185,9 @@ export class FlowController {
       cssClasses: ''
     } as FlowConnecting;
 
-    this._drawingConnection.value = connecting;
+    this._drawingConnection = connecting;
+
+    emitConnectingEvent(CONNECTING_START, this._drawingConnection);
   }
 
   public dragBlockMove = (e: PointerEvent): void => {
@@ -215,11 +221,11 @@ export class FlowController {
   };
 
   public dragConnectionMove = (e: PointerEvent): void => {
-    if (!this._drawingConnection.value) return;
+    if (!this._drawingConnection) return;
 
     // Get starting io
-    const startBlock = this._drawingConnection.value.startBlock;
-    const startInputOutput = startBlock.io.find((io) => io.pin === this._drawingConnection.value!.startPin)!;
+    const startBlock = this._drawingConnection.startBlock;
+    const startInputOutput = startBlock.io.find((io) => io.pin === this._drawingConnection!.startPin)!;
 
     // Is there an element at the pointer position (that is not the drawing connection)
     const hitInputOutputs = this.getHitInputOutputs(e).filter(
@@ -232,31 +238,33 @@ export class FlowController {
     const [block, inputOutput] = hitInputOutputs.length > 0 ? hitInputOutputs[0] : [];
 
     // Set values (may be undefined)
-    this._drawingConnectionEndBlock.value = block;
+    this._drawingConnectionEndBlock = block;
     this._drawingConnectionEndPin.value = inputOutput?.pin;
 
     // Update end offset to pointer offset
-    this._drawingConnection.value.endLocation = { x: e.offsetX - this._blockPaletteWidth, y: e.offsetY };
+    this._drawingConnection.endLocation = { x: e.offsetX - this._blockPaletteWidth, y: e.offsetY };
+
+    emitConnectingEvent(CONNECTING_END_LOCATION_CHANGE, this._drawingConnection);
 
     if (!block || !inputOutput) {
       // Clear any existing styles / hit info
-      this._drawingConnection.value.cssClasses = '';
+      this._drawingConnection.cssClasses = '';
 
       return;
     }
 
     // Set css extra if is hovering over valid io (connection is compatible for io types)
-    this._drawingConnection.value.cssClasses = inputOutput && this.canConnect(inputOutput, startInputOutput) ? 'valid-end-point' : '';
+    this._drawingConnection.cssClasses = inputOutput && this.canConnect(inputOutput, startInputOutput) ? 'valid-end-point' : '';
   };
 
-  public dragConnectionCreateConnection = (): void => {
-    if (!this._drawingConnection.value || !this._drawingConnectionEndPin.value) {
-      return;
+  public dragConnectionCreateConnection = (): FlowConnection | undefined => {
+    if (!this._drawingConnection || !this._drawingConnectionEndPin.value) {
+      return undefined;
     }
 
-    const startBlock = this._drawingConnection.value.startBlock;
-    const startBlockPin = this._drawingConnection.value?.startPin;
-    const endBlock = this._drawingConnectionEndBlock.value!;
+    const startBlock = this._drawingConnection.startBlock;
+    const startBlockPin = this._drawingConnection?.startPin;
+    const endBlock = this._drawingConnectionEndBlock!;
     const endBlockPin = this._drawingConnectionEndPin.value;
 
     const connection = {
@@ -268,6 +276,7 @@ export class FlowController {
     } as FlowConnection;
 
     this._flow.connections.push(connection);
+    return connection;
   };
 
   public canConnect = (from: InputOutput, to: InputOutput): boolean => {
@@ -414,8 +423,12 @@ export class FlowController {
   public pointerUp = (e: PointerEvent): void => {
     this._dragBlock.value = undefined;
 
-    if (this._drawingConnection.value && this._drawingConnectionEndPin.value) {
-      this.dragConnectionCreateConnection();
+    if (this._drawingConnection && this._drawingConnectionEndPin.value) {
+      const connection = this.dragConnectionCreateConnection();
+      emitConnectingEvent(CONNECTING_END, connection);
+    } else {
+      // No connection was made
+      emitConnectingEvent(CONNECTING_END, undefined);
     }
 
     if (e.target instanceof Element) {
@@ -426,12 +439,12 @@ export class FlowController {
     }
 
     // Clear drawing connection
-    this._drawingConnection.value = undefined;
+    this._drawingConnection = undefined;
   };
 
   public pointerMove = (e: PointerEvent): void => {
     // Is there a connection being drawn
-    if (this._drawingConnection.value) {
+    if (this._drawingConnection) {
       this.dragConnectionMove(e);
       return;
     }
@@ -440,7 +453,7 @@ export class FlowController {
 
   public pointerLeave = (_: PointerEvent): void => {
     this._dragBlock.value = undefined;
-    this._drawingConnection.value = undefined;
+    this._drawingConnection = undefined;
   };
 
   public keyPress = (_e: KeyboardEvent): void => {

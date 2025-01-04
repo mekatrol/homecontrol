@@ -46,6 +46,15 @@ export const CONNECTION_POINTER_LEAVE = 'connectionPointerLeave';
 export const CONNECTION_POINTER_DOWN = 'connectionPointerDown';
 export const CONNECTION_POINTER_UP = 'connectionPointerUp';
 
+// Fired when a new connection is starting
+export const CONNECTING_START = 'connectingStart';
+
+// Fired a new connection is finished
+export const CONNECTING_END = 'connectingEnd';
+
+// Fired when the mouse is moving for a new connection
+export const CONNECTING_END_LOCATION_CHANGE = 'connectingEndLocationChange';
+
 /* Field sizing */
 export const FIELD_FLOW_LABEL_MIN_LENGTH = 5;
 export const FIELD_FLOW_LABEL_MAX_LENGTH = 100;
