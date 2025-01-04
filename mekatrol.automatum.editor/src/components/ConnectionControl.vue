@@ -20,7 +20,7 @@
 
     <rect
       :x="startOffset.x"
-      :y="startOffset.y"
+      :y="startOffset.y - BLOCK_IO_SIZE / 2"
       rx="2"
       ry="2"
       :width="BLOCK_IO_SIZE"
@@ -29,7 +29,7 @@
 
     <rect
       :x="endOffset.x"
-      :y="endOffset.y"
+      :y="endOffset.y - BLOCK_IO_SIZE / 2"
       rx="2"
       ry="2"
       :width="BLOCK_IO_SIZE"
