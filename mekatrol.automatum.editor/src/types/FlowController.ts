@@ -1,4 +1,3 @@
-import { type Ref, ref } from 'vue';
 import { ZOrder } from '@/types/ZOrder';
 import {
   configureFlowPointerEvents,
@@ -21,8 +20,6 @@ import {
 } from '@/constants';
 import type { Flow, Offset, BlockSide, Size } from '@/services/api-generated';
 import { v4 as uuidv4 } from 'uuid';
-
-export interface FlowState {}
 
 export class FlowController {
   public _flow: Flow;
