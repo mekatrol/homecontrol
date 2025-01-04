@@ -159,7 +159,7 @@ export class FlowController {
     this._dragBlockOffset = { x: e.pointerEvent.offsetX - e.data.offset.x, y: e.pointerEvent.offsetY - e.data.offset.y };
     this._dragBlockOriginalPosition = { x: e.data.offset.x, y: e.data.offset.y };
 
-    emitDraggingBlockEvent(DRAGGING_BLOCK_START, this._dragBlock);
+    emitDraggingBlockEvent(this._flow.id, DRAGGING_BLOCK_START, this._dragBlock);
   }
 
   public blockPointerUp(e: FlowBlockPointerEvent) {
@@ -183,7 +183,7 @@ export class FlowController {
     // Clear drawing connection
     this._drawingConnection = undefined;
 
-    emitDraggingBlockEvent(DRAGGING_BLOCK_END, undefined);
+    emitDraggingBlockEvent(this._flow.id, DRAGGING_BLOCK_END, undefined);
   }
 
   public blockIOPointerDown(e: FlowBlockIOPointerEvent) {
@@ -198,7 +198,7 @@ export class FlowController {
 
     this._drawingConnection = connecting;
 
-    emitConnectingEvent(CONNECTING_START, this._drawingConnection);
+    emitConnectingEvent(this._flow.id, CONNECTING_START, this._drawingConnection);
   }
 
   public dragBlockMove = (e: PointerEvent): void => {
@@ -230,7 +230,7 @@ export class FlowController {
       block.dragLocationHasBeenValid = true;
     }
 
-    emitDraggingBlockEvent(DRAGGING_BLOCK_MOVE, block);
+    emitDraggingBlockEvent(this._flow.id, DRAGGING_BLOCK_MOVE, block);
   };
 
   public dragConnectionMove = (e: PointerEvent): void => {
@@ -257,7 +257,7 @@ export class FlowController {
     // Update end offset to pointer offset
     this._drawingConnection.endLocation = { x: e.offsetX - this._blockPaletteWidth, y: e.offsetY };
 
-    emitConnectingEvent(CONNECTING_END_LOCATION_CHANGE, this._drawingConnection);
+    emitConnectingEvent(this._flow.id, CONNECTING_END_LOCATION_CHANGE, this._drawingConnection);
 
     if (!block || !inputOutput) {
       // Clear any existing styles / hit info
@@ -438,10 +438,10 @@ export class FlowController {
 
     if (this._drawingConnection && this._drawingConnectionEndPin) {
       const connection = this.dragConnectionCreateConnection();
-      emitConnectingEvent(CONNECTING_END, connection);
+      emitConnectingEvent(this._flow.id, CONNECTING_END, connection);
     } else {
       // No connection was made
-      emitConnectingEvent(CONNECTING_END, undefined);
+      emitConnectingEvent(this._flow.id, CONNECTING_END, undefined);
     }
 
     if (e.target instanceof Element) {

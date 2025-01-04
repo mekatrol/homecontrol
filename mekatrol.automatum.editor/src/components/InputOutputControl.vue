@@ -34,6 +34,7 @@ import {
 import type { FlowBlock, InputOutput } from '@/services/api-generated';
 
 interface Props {
+  flowId: string;
   block: FlowBlock;
   inputOutput: InputOutput;
   fillColor?: string;
@@ -49,7 +50,7 @@ const props = withDefaults(defineProps<Props>(), {
   strokeWidth: '2px'
 });
 
-const emitter = useEmitter();
+const emitter = useEmitter(props.flowId);
 
 const emit = (event: keyof FlowEvents, e: PointerEvent): boolean => {
   emitter.emit(event, {

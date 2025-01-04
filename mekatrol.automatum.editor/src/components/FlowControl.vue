@@ -60,7 +60,7 @@ const dragBlock = ref<FlowBlock | undefined>(undefined);
 
 const connecting = ref<FlowConnecting | undefined>(undefined);
 
-const emitter = useEmitter();
+const emitter = useEmitter(props.flowId);
 
 emitter.on(DRAGGING_BLOCK_START, (b) => {
   dragBlock.value = b;

@@ -3,6 +3,7 @@ import { toRef, type Ref } from 'vue';
 import { type Flow } from '@/services/api-generated';
 import { blockTemplates } from '@/types/block-template';
 import { initFlowController, type FlowController } from '@/types/FlowController';
+import { removeFlowEmitter } from '@/utils/event-emitter';
 
 const flows: Record<string, Ref<FlowController>> = {};
 const newFlows: Record<string, FlowController> = {};
@@ -30,6 +31,7 @@ export const useFlowStore = defineStore('flow', () => {
   };
 
   const deleteFlow = (id: string): void => {
+    removeFlowEmitter(id);
     delete flows[id];
   };
 

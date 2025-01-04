@@ -11,12 +11,12 @@
       :fill-opacity="theme.connectionStyles.fillOpacity"
       :stroke="theme.connectionStyles.stroke"
       :stroke-width="theme.connectionStyles.strokeWidth"
-      @pointermove="(e) => emitPointerEvent(CONNECTING_POINTER_MOVE, e, props.connecting)"
-      @pointerover="(e) => emitPointerEvent(CONNECTING_POINTER_OVER, e, props.connecting)"
-      @pointerenter="(e) => emitPointerEvent(CONNECTING_POINTER_ENTER, e, props.connecting)"
-      @pointerleave="(e) => emitPointerEvent(CONNECTING_POINTER_LEAVE, e, props.connecting)"
-      @pointerdown="(e) => emitPointerEvent(CONNECTING_POINTER_DOWN, e, props.connecting)"
-      @pointerup="(e) => emitPointerEvent(CONNECTING_POINTER_UP, e, props.connecting)"
+      @pointermove="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_MOVE, e, props.connecting)"
+      @pointerover="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_OVER, e, props.connecting)"
+      @pointerenter="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_ENTER, e, props.connecting)"
+      @pointerleave="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_LEAVE, e, props.connecting)"
+      @pointerdown="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_DOWN, e, props.connecting)"
+      @pointerup="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_UP, e, props.connecting)"
       zOrder="100"
     />
 
@@ -60,9 +60,11 @@ import {
 } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
 import type { FlowConnecting } from '@/types/FlowConnecting';
-import type { FlowBlock, InputOutput, Offset } from '@/services/api-generated';
+import type { InputOutput, Offset } from '@/services/api-generated';
 
 interface Props {
+  flowId: string;
+
   show?: boolean;
 
   connecting: FlowConnecting;
@@ -113,7 +115,7 @@ const svg = computed(() => {
 
 const { theme } = useThemeStore();
 
-const emitter = useEmitter();
+const emitter = useEmitter(props.flowId);
 
 emitter.on(CONNECTING_START, (e) => {
   startOffset.value = calculateStartOffset(e!);

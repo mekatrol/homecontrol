@@ -24,7 +24,8 @@ import {
   CONNECTION_POINTER_LEAVE,
   CONNECTION_POINTER_MOVE,
   CONNECTION_POINTER_OVER,
-  CONNECTION_POINTER_UP
+  CONNECTION_POINTER_UP,
+  EMPTY_GUID
 } from '@/constants';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
 import type { FlowConnecting } from '@/types/FlowConnecting';
@@ -104,10 +105,27 @@ export type FlowEvents = {
   draggingBlockMove: FlowBlock;
 };
 
-// We want a single instance for all use (singleton pattern)
-const emitter: Emitter<FlowEvents> = mitt<FlowEvents>();
+// We need a flow emitter per flow (use ID as key)
+const emitters: Record<string, Emitter<FlowEvents>> = {};
 
-export const emitPointerEvent = <T>(event: keyof FlowEvents, e: PointerEvent, data: T): boolean => {
+export const getFlowEmitter = (flowId: string): Emitter<FlowEvents> => {
+  if (flowId in emitters) {
+    return emitters[flowId];
+  }
+
+  const emitter = mitt<FlowEvents>();
+
+  emitters[flowId] = emitter;
+
+  return emitter;
+};
+
+export const removeFlowEmitter = (flowId: string): void => {
+  delete emitters[flowId];
+};
+
+export const emitPointerEvent = <T>(flowId: string, event: keyof FlowEvents, e: PointerEvent, data: T): boolean => {
+  const emitter = getFlowEmitter(flowId);
   emitter.emit(event, {
     data: data,
     pointerEvent: e
@@ -116,12 +134,14 @@ export const emitPointerEvent = <T>(event: keyof FlowEvents, e: PointerEvent, da
   return false;
 };
 
-export const emitConnectingEvent = (event: keyof FlowEvents, connecting: FlowConnecting | FlowConnection | undefined): boolean => {
+export const emitConnectingEvent = (flowId: string, event: keyof FlowEvents, connecting: FlowConnecting | FlowConnection | undefined): boolean => {
+  const emitter = getFlowEmitter(flowId);
   emitter.emit(event, connecting);
   return false;
 };
 
-export const emitBlockEvent = (event: keyof FlowEvents, e: PointerEvent, block: FlowBlock): boolean => {
+export const emitBlockEvent = (flowId: string, event: keyof FlowEvents, e: PointerEvent, block: FlowBlock): boolean => {
+  const emitter = getFlowEmitter(flowId);
   emitter.emit(event, {
     data: block,
     pointerEvent: e
@@ -131,13 +151,14 @@ export const emitBlockEvent = (event: keyof FlowEvents, e: PointerEvent, block: 
   return false;
 };
 
-export const emitDraggingBlockEvent = (event: keyof FlowEvents, connecting: FlowBlock | undefined): boolean => {
+export const emitDraggingBlockEvent = (flowId: string, event: keyof FlowEvents, connecting: FlowBlock | undefined): boolean => {
+  const emitter = getFlowEmitter(flowId);
   emitter.emit(event, connecting);
   return false;
 };
 
 export const configureFlowPointerEvents = (flowController: FlowController): void => {
-  const emitter = useEmitter();
+  const emitter = getFlowEmitter(flowController.flow.id);
 
   emitter.on(BLOCK_POINTER_ENTER, (_e: FlowBlockPointerEvent) => {
     // console.log(`block pointer enter: ${e.data.id}`, e);
@@ -236,6 +257,6 @@ export const configureFlowPointerEvents = (flowController: FlowController): void
   });
 };
 
-export const useEmitter = (): Emitter<FlowEvents> => {
-  return emitter;
+export const useEmitter = (flowId: string): Emitter<FlowEvents> => {
+  return getFlowEmitter(flowId);
 };

@@ -100,6 +100,7 @@
     <InputOutputControl
       v-for="inputOutput in io"
       :key="inputOutput.pin"
+      :flow-id="flowId"
       :block="block"
       :inputOutput="inputOutput"
       :fill-color="theme.blockIOStyles.fill"
@@ -137,6 +138,7 @@ const textGapX = 7;
 const textGapY = 5;
 
 interface Props {
+  flowId: string;
   block: FlowBlock;
 }
 
@@ -220,7 +222,7 @@ const iconBorderPath = computed(() => {
   return `M ${iconSize.value + 1.5} ${0.5} l 0 ${iconSize.value - 1}`;
 });
 
-const emitter = useEmitter();
+const emitter = useEmitter(props.flowId);
 
 emitter.on(DRAGGING_BLOCK_MOVE, (b) => {
   if (b.id === props.block.id) {

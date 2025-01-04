@@ -100,7 +100,7 @@ const svg = computed(() => {
   return cubicBezierToSvg(points);
 });
 
-const emitter = useEmitter();
+const emitter = useEmitter(props.flowId);
 const emit = (event: keyof FlowEvents, e: PointerEvent): boolean => {
   emitter.emit(event, {
     data: props.connection,
