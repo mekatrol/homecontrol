@@ -3,8 +3,8 @@
   <main>
     <div>
       <EditorControl
-        v-if="activeFlow"
-        :flow-id="activeFlow.id"
+        v-if="activeFlowController"
+        :flow-controller="activeFlowController"
       />
     </div>
     <div>
@@ -29,22 +29,11 @@ import FlowInformationControl from '@/components/FlowInformationControl.vue';
 import BusyOverlay from '@/components/BusyOverlay.vue';
 import MessageOverlay from '@/components/MessageOverlay.vue';
 import { useAppStore } from '@/stores/app-store';
-import { useIntervalTimer } from '@/composables/timer';
-import { storeToRefs } from 'pinia';
+import { useActiveFlowController } from '@/composables/active-flow-controller';
 
 const appStore = useAppStore();
 
-const { activeFlow } = storeToRefs(appStore);
-
-appStore.incrementBusy();
-
-// TODO: This is just for development to see delay, remove when really loading from server
-useIntervalTimer(async () => {
-  appStore.decrementBusy();
-
-  // Return false to stop timer, else true to continue running.
-  return false;
-}, 500);
+const activeFlowController = useActiveFlowController();
 </script>
 
 <style scoped lang="scss">

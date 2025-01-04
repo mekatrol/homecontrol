@@ -61,6 +61,7 @@ import {
 import { useThemeStore } from '@/stores/theme-store';
 import type { FlowConnecting } from '@/types/flow-connecting';
 import type { InputOutput, Offset } from '@/services/api-generated';
+import { useActiveFlowController } from '@/composables/active-flow-controller';
 
 interface Props {
   flowId: string;
@@ -115,16 +116,24 @@ const svg = computed(() => {
 
 const { theme } = useThemeStore();
 
-const emitter = useEmitter(props.flowId);
+const initEmitter = () => {
+  if (!activeFlowController.value) {
+    return;
+  }
 
-emitter.on(CONNECTING_START, (e) => {
-  startOffset.value = calculateStartOffset(e!);
-  endOffset.value = startOffset.value;
-});
+  const emitter = useEmitter(props.flowId);
 
-emitter.on(CONNECTING_END_LOCATION_CHANGE, (e) => {
-  endOffset.value = e!.endLocation;
-});
+  emitter.on(CONNECTING_START, (e) => {
+    startOffset.value = calculateStartOffset(e!);
+    endOffset.value = startOffset.value;
+  });
+
+  emitter.on(CONNECTING_END_LOCATION_CHANGE, (e) => {
+    endOffset.value = e!.endLocation;
+  });
+};
+
+const activeFlowController = useActiveFlowController(initEmitter, initEmitter);
 </script>
 
 <style scoped lang="scss">

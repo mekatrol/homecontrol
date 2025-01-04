@@ -54,6 +54,12 @@
       :svg-strokeWidth="theme.blockIconStyles.svg.strokeWidth"
       :background-fill="iconStyles.fill"
       :background-opacity="iconStyles.opacity"
+      @pointermove="(e) => emit(BLOCK_POINTER_MOVE, e)"
+      @pointerover="(e) => emit(BLOCK_POINTER_OVER, e)"
+      @pointerenter="(e) => emit(BLOCK_POINTER_ENTER, e)"
+      @pointerleave="(e) => emit(BLOCK_POINTER_LEAVE, e)"
+      @pointerdown="(e) => emit(BLOCK_POINTER_DOWN, e)"
+      @pointerup="(e) => emit(BLOCK_POINTER_UP, e)"
     />
 
     <!-- Icon border -->
@@ -100,7 +106,6 @@
     <InputOutputControl
       v-for="inputOutput in io"
       :key="inputOutput.pin"
-      :flow-id="flowId"
       :block="block"
       :inputOutput="inputOutput"
       :fill-color="theme.blockIOStyles.fill"
@@ -117,7 +122,7 @@ import InputOutputControl from '@/components/InputOutputControl.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
 import type { MarkerShape } from '@/types/marker-shape';
 import { computed, ref } from 'vue';
-import { useEmitter, type FlowEvents } from '@/utils/event-emitter';
+import { emitBlockEvent, useEmitter, type FlowEvents } from '@/utils/event-emitter';
 import {
   MARKER_OFFSET_X,
   MARKER_OFFSET_Y,
@@ -133,12 +138,12 @@ import {
 import { useThemeStore } from '@/stores/theme-store';
 import { leftPointedRect, rightPointedRect } from '@/utils/svg-generator';
 import type { FlowBlock, Offset } from '@/services/api-generated';
+import { useActiveFlowController } from '@/composables/active-flow-controller';
 
 const textGapX = 7;
 const textGapY = 5;
 
 interface Props {
-  flowId: string;
   block: FlowBlock;
 }
 
@@ -222,29 +227,33 @@ const iconBorderPath = computed(() => {
   return `M ${iconSize.value + 1.5} ${0.5} l 0 ${iconSize.value - 1}`;
 });
 
-const emitter = useEmitter(props.flowId);
-
-emitter.on(DRAGGING_BLOCK_MOVE, (b) => {
-  if (b.id === props.block.id) {
-    // This block is being dragged from the palette
-
-    // Make copy of offset to trigger reactive event
-    const offset = { x: b.offset.x, y: b.offset.y };
-    blockOffset.value = offset;
-  }
-});
-
-const emit = (event: keyof FlowEvents, e: PointerEvent): boolean => {
-  if (props.block) {
-    emitter.emit(event, {
-      data: props.block,
-      pointerEvent: e
-    });
+const initEmitter = () => {
+  if (!activeFlowController.value) {
+    return;
   }
 
-  e.preventDefault();
-  return false;
+  const emitter = useEmitter(activeFlowController.value.flow.id);
+
+  emitter.on(DRAGGING_BLOCK_MOVE, (b) => {
+    if (b.id === props.block.id) {
+      // This block is being dragged from the palette
+
+      // Make copy of offset to trigger reactive event
+      const offset = { x: b.offset.x, y: b.offset.y };
+      blockOffset.value = offset;
+    }
+  });
 };
+
+const emit = (event: keyof FlowEvents, e: PointerEvent) => {
+  if (!activeFlowController.value) {
+    return;
+  }
+
+  emitBlockEvent(activeFlowController.value.flow.id, event, e, props.block);
+};
+
+const activeFlowController = useActiveFlowController(initEmitter, initEmitter);
 
 const markers = computed((): MarkerShape[] => {
   if (!props.block) {

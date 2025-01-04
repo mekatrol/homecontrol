@@ -22,7 +22,6 @@
         :height="svgHeight"
         :gap="PALETTE_GAP"
         :scrollbarWidth="SCROLLBAR_SIZE"
-        :flow-id="flowId"
       />
     </g>
     <g :transform="`translate(${blockPaletteWidth}, 0)`">
@@ -34,7 +33,6 @@
           :width="svgWidth - blockPaletteWidth"
           :height="svgHeight"
           :grid-size="gridSize"
-          :flow-id="flowId"
         />
       </ContainerControl>
     </g>
@@ -44,23 +42,15 @@
 <script setup lang="ts">
 import PaletteControl from '@/components/PaletteControl.vue';
 import FlowControl from '@/components/FlowControl.vue';
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useScreenSize } from '@/composables/screen-size';
 import ContainerControl from '@/components/ContainerControl.vue';
 import { BLOCK_PALETTE_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE } from '@/constants';
-import { useFlowStore } from '@/stores/flow-store';
-import type { FlowController } from '@/types/flow-controller';
-
-interface Props {
-  flowId: string;
-}
-
-const props = defineProps<Props>();
+import { useActiveFlowController } from '@/composables/active-flow-controller';
 
 const gridSize = ref(20);
 const screenSize = useScreenSize();
 const blockPaletteWidth = BLOCK_PALETTE_WIDTH;
-const { getFlowController } = useFlowStore();
 const svg = ref<SVGAElement>();
 const svgWidth = ref(0);
 const svgHeight = ref(0);
@@ -77,15 +67,10 @@ const calculateSvgHeight = () => {
   svgHeight.value = parentDiv.clientHeight;
 };
 
-const flowController = ref<FlowController | undefined>(undefined);
-
-const initFromFlowId = (id: string): void => {
-  if (!id) {
-    flowController.value = undefined;
+const initFromFlowController = (): void => {
+  if (!activeFlowController.value) {
     return;
   }
-
-  flowController.value = getFlowController(id)?.value;
 
   // Wire all events
   wireSvgEvents();
@@ -94,58 +79,56 @@ const initFromFlowId = (id: string): void => {
   calculateSvgHeight();
 };
 
-onMounted(() => {
-  initFromFlowId(props.flowId);
-});
+const activeFlowController = useActiveFlowController(initFromFlowController, initFromFlowController);
 
 const pointerMove = (e: PointerEvent) => {
-  if (!flowController.value) {
+  if (!activeFlowController.value) {
     return;
   }
 
-  flowController.value.pointerMove(e);
+  activeFlowController.value.pointerMove(e);
 };
 
 const pointerLeave = (e: PointerEvent) => {
-  if (!flowController.value) {
+  if (!activeFlowController.value) {
     return;
   }
-  flowController.value.pointerLeave(e);
+  activeFlowController.value.pointerLeave(e);
 };
 
 const pointerDown = (e: PointerEvent) => {
-  if (!flowController.value) {
+  if (!activeFlowController.value) {
     return;
   }
-  flowController.value.pointerDown(e);
+  activeFlowController.value.pointerDown(e);
 };
 
 const pointerUp = (e: PointerEvent) => {
-  if (!flowController.value) {
+  if (!activeFlowController.value) {
     return;
   }
-  flowController.value.pointerUp(e);
+  activeFlowController.value.pointerUp(e);
 };
 
 const keyPress = (e: KeyboardEvent) => {
-  if (!flowController.value) {
+  if (!activeFlowController.value) {
     return;
   }
-  flowController.value.keyPress(e);
+  activeFlowController.value.keyPress(e);
 };
 
 const keyDown = (e: KeyboardEvent) => {
-  if (!flowController.value) {
+  if (!activeFlowController.value) {
     return;
   }
-  flowController.value.keyDown(e);
+  activeFlowController.value.keyDown(e);
 };
 
 const keyUp = (e: KeyboardEvent) => {
-  if (!flowController.value) {
+  if (!activeFlowController.value) {
     return;
   }
-  flowController.value.keyUp(e);
+  activeFlowController.value.keyUp(e);
 };
 
 const focus = (_e: FocusEvent): void => {
@@ -168,13 +151,6 @@ watch(
   () => screenSize.value,
   () => {
     calculateSvgHeight();
-  }
-);
-
-watch(
-  () => props.flowId,
-  (_oldValue: string, newValue: string) => {
-    initFromFlowId(newValue);
   }
 );
 </script>

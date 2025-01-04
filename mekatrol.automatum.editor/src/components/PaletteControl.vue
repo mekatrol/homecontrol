@@ -53,21 +53,21 @@ import type { BlockTemplate } from '@/types/block-template';
 import { v4 as uuidv4 } from 'uuid';
 import type { FlowBlock } from '@/services/api-generated';
 import { emitBlockEvent } from '@/utils/event-emitter';
-import { onMounted, ref } from 'vue';
-import type { FlowController } from '@/types/flow-controller';
+import { ref } from 'vue';
+import { useActiveFlowController } from '@/composables/active-flow-controller';
 
 interface Props {
   width: number;
   height: number;
   scrollbarWidth: number;
   gap: number;
-  flowId: string;
 }
 
 const props = defineProps<Props>();
 
-const { blockTemplates, getFlowController } = useFlowStore();
-const flowController = ref<FlowController | undefined>(undefined);
+const { blockTemplates } = useFlowStore();
+
+const activeFlowController = useActiveFlowController();
 
 // This is the number of blocks that have been scrolled up
 const yScroll = ref(0);
@@ -106,21 +106,18 @@ const wheel = (e: WheelEvent) => {
 };
 
 const palettePointerMove = (e: PointerEvent) => {
-  if (!flowController.value) {
-    return;
-  }
-
-  flowController.value.pointerMove(e);
+  activeFlowController.value?.pointerMove(e);
 };
 
 const palettePointerUp = (e: PointerEvent) => {
-  if (!flowController.value) {
-    return;
-  }
-  flowController.value.pointerUp(e);
+  activeFlowController.value?.pointerUp(e);
 };
 
 const pointerDown = (e: PointerEvent, blockTemplate: BlockTemplate, x: number, y: number): void => {
+  if (!activeFlowController.value) {
+    return;
+  }
+
   const block: FlowBlock = {
     offset: { x: x - props.width, y: y },
     functionType: blockTemplate.type,
@@ -135,25 +132,19 @@ const pointerDown = (e: PointerEvent, blockTemplate: BlockTemplate, x: number, y
     draggingAsNew: true
   };
 
-  emitBlockEvent(props.flowId, BLOCK_POINTER_DOWN, e, block);
+  emitBlockEvent(activeFlowController.value.flow.id, BLOCK_POINTER_DOWN, e, block);
 };
 
 const pointerUp = (e: PointerEvent) => {
-  if (!flowController.value || !flowController.value.dragBlock) {
+  if (!activeFlowController.value?.dragBlock) {
     return;
   }
 
-  emitBlockEvent(props.flowId, BLOCK_POINTER_UP, e, flowController.value.dragBlock);
+  emitBlockEvent(activeFlowController.value.flow.id, BLOCK_POINTER_UP, e, activeFlowController.value?.dragBlock);
 };
 
 const focus = (_e: FocusEvent): void => {
   // Do nothing, and SVG element won't raise keyboard events unless it has
   // a focus event handler
 };
-
-onMounted(() => {
-  if (props.flowId) {
-    flowController.value = getFlowController(props.flowId)?.value;
-  }
-});
 </script>

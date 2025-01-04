@@ -1,15 +1,14 @@
 import { defineStore } from 'pinia';
-import { toRef, type Ref } from 'vue';
 import { type Flow } from '@/services/api-generated';
 import { blockTemplates } from '@/types/block-template';
 import { initFlowController, type FlowController } from '@/types/flow-controller';
 import { removeFlowEmitter } from '@/utils/event-emitter';
 
-const flows: Record<string, Ref<FlowController>> = {};
+const flows: Record<string, FlowController> = {};
 const newFlows: Record<string, FlowController> = {};
 
 export const useFlowStore = defineStore('flow', () => {
-  const addFlow = (flow: Flow, isNew: boolean): Ref<FlowController> => {
+  const addFlow = (flow: Flow, isNew: boolean): FlowController => {
     // Does a flow with the specified ID already exist?
     if (flow.id in flows) {
       throw new Error(`A flow with the ID '${flow.id}' has already been added.`);
@@ -17,9 +16,7 @@ export const useFlowStore = defineStore('flow', () => {
 
     const flowController = initFlowController(flow);
 
-    const flowControllerRef = toRef<FlowController>(flowController);
-
-    flows[flow.id] = flowControllerRef;
+    flows[flow.id] = flowController;
 
     // If this is a new flow then we need to keep track of it being new
     // for when calling the API
@@ -39,7 +36,7 @@ export const useFlowStore = defineStore('flow', () => {
     delete newFlows[id];
   };
 
-  const getFlowController = (id: string): Ref<FlowController> | undefined => {
+  const getFlowController = (id: string): FlowController | undefined => {
     if (!(id in flows)) {
       return undefined;
     }

@@ -1,6 +1,6 @@
 <template>
   <!-- Spline path -->
-  <g v-if="show">
+  <g v-if="show && activeFlowController">
     <path
       :class="`flow-connection ${connection.selected ? 'selected' : ''}`"
       focusable="true"
@@ -42,7 +42,7 @@
 import { generateCubicBezierPoints } from '@/utils/cubic-spline';
 import { cubicBezierToSvg } from '@/utils/svg-generator';
 import { computed } from 'vue';
-import { useEmitter, type FlowConnectionPointerEvent, type FlowEvents } from '@/utils/event-emitter';
+import { emitConnectionEvent, type FlowEvents } from '@/utils/event-emitter';
 import {
   CONNECTION_POINTER_MOVE,
   CONNECTION_POINTER_OVER,
@@ -54,12 +54,10 @@ import {
 } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
 import type { FlowConnection } from '@/services/api-generated';
-import { useFlowStore } from '@/stores/flow-store';
+import { useActiveFlowController } from '@/composables/active-flow-controller';
 
 interface Props {
   show?: boolean;
-
-  flowId: string;
 
   connection: FlowConnection;
 
@@ -86,29 +84,25 @@ const props = withDefaults(defineProps<Props>(), {
   endPointRadius: 5
 });
 
-const { getFlowController } = useFlowStore();
+const startInputOutput = computed(() => activeFlowController.value!.getConnectionStartInputOutput(props.connection));
+const startOffset = computed(() => activeFlowController.value!.getConnectionStartOffset(props.connection));
 
-const flowController = getFlowController(props.flowId);
-
-const startInputOutput = computed(() => flowController!.value!.getConnectionStartInputOutput(props.connection));
-const startOffset = computed(() => flowController!.value!.getConnectionStartOffset(props.connection));
-
-const endOffset = computed(() => flowController!.value!.getConnectionEndOffset(props.connection));
+const endOffset = computed(() => activeFlowController.value!.getConnectionEndOffset(props.connection));
 
 const svg = computed(() => {
   const points = generateCubicBezierPoints(startOffset.value, endOffset.value, startInputOutput.value.side);
   return cubicBezierToSvg(points);
 });
 
-const emitter = useEmitter(props.flowId);
 const emit = (event: keyof FlowEvents, e: PointerEvent): boolean => {
-  emitter.emit(event, {
-    data: props.connection,
-    pointerEvent: e
-  } as FlowConnectionPointerEvent);
-  e.preventDefault();
-  return false;
+  if (!activeFlowController.value) {
+    return false;
+  }
+
+  return emitConnectionEvent(activeFlowController.value.flow.id, event, e, props.connection);
 };
+
+const activeFlowController = useActiveFlowController();
 
 const { theme } = useThemeStore();
 </script>

@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { useEmitter, type FlowEvents } from '@/utils/event-emitter';
+import { emitIOEvent, type FlowEvents } from '@/utils/event-emitter';
 import {
   BLOCK_IO_POINTER_MOVE,
   BLOCK_IO_POINTER_OVER,
@@ -32,9 +32,9 @@ import {
   BLOCK_IO_POINTER_UP
 } from '@/constants';
 import type { FlowBlock, InputOutput } from '@/services/api-generated';
+import { useActiveFlowController } from '@/composables/active-flow-controller';
 
 interface Props {
-  flowId: string;
   block: FlowBlock;
   inputOutput: InputOutput;
   fillColor?: string;
@@ -50,15 +50,14 @@ const props = withDefaults(defineProps<Props>(), {
   strokeWidth: '2px'
 });
 
-const emitter = useEmitter(props.flowId);
+const activeFlowController = useActiveFlowController();
 
 const emit = (event: keyof FlowEvents, e: PointerEvent): boolean => {
-  emitter.emit(event, {
-    inputOutput: props.inputOutput,
-    data: props.block,
-    pointerEvent: e
-  });
-  e.preventDefault();
+  if (!activeFlowController.value) {
+    return false;
+  }
+
+  emitIOEvent(activeFlowController.value.flow.id, event, e, props.inputOutput, props.block);
   return false;
 };
 </script>

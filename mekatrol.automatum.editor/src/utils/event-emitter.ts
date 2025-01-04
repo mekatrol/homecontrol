@@ -157,6 +157,29 @@ export const emitDraggingBlockEvent = (flowId: string, event: keyof FlowEvents, 
   return false;
 };
 
+export const emitIOEvent = (flowId: string, event: keyof FlowEvents, e: PointerEvent, io: InputOutput, block: FlowBlock): boolean => {
+  const emitter = getFlowEmitter(flowId);
+
+  emitter.emit(event, {
+    inputOutput: io,
+    data: block,
+    pointerEvent: e
+  });
+  e.preventDefault();
+  return false;
+};
+
+export const emitConnectionEvent = (flowId: string, event: keyof FlowEvents, e: PointerEvent, connection: FlowConnection): boolean => {
+  const emitter = getFlowEmitter(flowId);
+
+  emitter.emit(event, {
+    data: connection,
+    pointerEvent: e
+  });
+  e.preventDefault();
+  return false;
+};
+
 export const configureFlowPointerEvents = (flowController: FlowController): void => {
   const emitter = getFlowEmitter(flowController.flow.id);
 

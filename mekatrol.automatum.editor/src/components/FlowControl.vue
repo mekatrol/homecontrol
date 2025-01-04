@@ -6,28 +6,27 @@
   />
 
   <ConnectionControl
-    v-if="flowController"
-    v-for="(connection, i) in flowController.flow.connections"
+    v-if="activeFlowController"
+    v-for="(connection, i) in activeFlowController.flow.connections"
     :key="i"
-    :flow-id="flowId"
     :connection="connection"
   />
   <BlockControl
-    v-if="flowController"
-    v-for="(block, i) in flowController.flow.blocks"
+    v-if="activeFlowController"
+    v-for="(block, i) in activeFlowController.flow.blocks"
     :key="i"
-    :flow-id="flowId"
+    :flow-id="activeFlowController.flow.id"
     :block="block"
   />
   <ConnectingControl
-    v-if="flowController && connecting"
+    v-if="activeFlowController && connecting"
     :connecting="connecting"
-    :flow-id="flowId"
+    :flow-id="activeFlowController.flow.id"
   />
   <BlockControl
-    v-if="dragBlock"
+    v-if="activeFlowController && dragBlock"
     :block="dragBlock"
-    :flow-id="flowId"
+    :flow-id="activeFlowController.flow.id"
   />
 </template>
 
@@ -36,55 +35,51 @@ import GridControl from '@/components/GridControl.vue';
 import ConnectionControl from '@/components/ConnectionControl.vue';
 import ConnectingControl from '@/components/ConnectingControl.vue';
 import BlockControl from '@/components/BlockControl.vue';
-import { onMounted, ref } from 'vue';
-import { useFlowStore } from '@/stores/flow-store';
-import type { FlowController } from '@/types/flow-controller';
+import { ref } from 'vue';
 import { useEmitter } from '@/utils/event-emitter';
 import { CONNECTING_END, CONNECTING_START, DRAGGING_BLOCK_END, DRAGGING_BLOCK_MOVE, DRAGGING_BLOCK_START } from '@/constants';
 import { type FlowConnecting } from '@/types/flow-connecting';
 import type { FlowBlock } from '@/services/api-generated';
+import { useActiveFlowController } from '@/composables/active-flow-controller';
 
 interface Props {
   width: number;
   height: number;
   gridSize: number;
-  flowId: string;
 }
 
-const props = defineProps<Props>();
-
-const { getFlowController } = useFlowStore();
-const flowController = ref<FlowController | undefined>(undefined);
+defineProps<Props>();
 
 const dragBlock = ref<FlowBlock | undefined>(undefined);
 
 const connecting = ref<FlowConnecting | undefined>(undefined);
 
-const emitter = useEmitter(props.flowId);
-
-emitter.on(DRAGGING_BLOCK_START, (b) => {
-  dragBlock.value = b;
-});
-
-emitter.on(DRAGGING_BLOCK_END, (b) => {
-  dragBlock.value = b;
-});
-
-emitter.on(DRAGGING_BLOCK_MOVE, (b) => {
-  dragBlock.value = b;
-});
-
-emitter.on(CONNECTING_START, (c) => {
-  connecting.value = c;
-});
-
-emitter.on(CONNECTING_END, (_) => {
-  connecting.value = undefined;
-});
-
-onMounted(() => {
-  if (props.flowId) {
-    flowController.value = getFlowController(props.flowId)?.value;
+const initEmitter = () => {
+  if (!activeFlowController.value) {
+    return;
   }
-});
+  const emitter = useEmitter(activeFlowController.value.flow.id);
+
+  emitter.on(DRAGGING_BLOCK_START, (b) => {
+    dragBlock.value = b;
+  });
+
+  emitter.on(DRAGGING_BLOCK_END, (b) => {
+    dragBlock.value = b;
+  });
+
+  emitter.on(DRAGGING_BLOCK_MOVE, (b) => {
+    dragBlock.value = b;
+  });
+
+  emitter.on(CONNECTING_START, (c) => {
+    connecting.value = c;
+  });
+
+  emitter.on(CONNECTING_END, (_) => {
+    connecting.value = undefined;
+  });
+};
+
+const activeFlowController = useActiveFlowController(initEmitter, initEmitter);
 </script>
