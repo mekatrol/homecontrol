@@ -17,7 +17,7 @@ export class FlowController {
   public _drawingConnectionEndBlock: FlowBlock | undefined = undefined;
   public _drawingConnectionEndPin = ref<number | undefined>(undefined);
   public _selectedConnection = ref<FlowConnection | undefined>(undefined);
-  public _selectedBlock = ref<FlowBlock | undefined>(undefined);
+  public _selectedBlock: FlowBlock | undefined = undefined;
   public _dragBlock = ref<FlowBlock | undefined>(undefined);
   public _dragBlockOffset: Offset = { x: 0, y: 0 };
   public _dragBlockOriginalPosition: Offset = { x: 0, y: 0 };
@@ -49,7 +49,7 @@ export class FlowController {
   }
 
   public get selectedBlock(): FlowBlock | undefined {
-    return this._selectedBlock.value;
+    return this._selectedBlock;
   }
 
   public set selectedBlock(block: FlowBlock | undefined) {
@@ -61,7 +61,7 @@ export class FlowController {
     }
 
     block.selected = true;
-    this._selectedBlock.value = block;
+    this._selectedBlock = block;
   }
 
   public get selectedConnection(): FlowConnection | undefined {
@@ -110,7 +110,7 @@ export class FlowController {
 
   public clearSelectedBlock = (): void => {
     // Clear selected node
-    this._selectedBlock.value = undefined;
+    this._selectedBlock = undefined;
 
     if (!this._flow.blocks) {
       return;
@@ -121,11 +121,11 @@ export class FlowController {
   };
 
   public moveBlockZOrder = (action: string): void => {
-    if (!this._selectedBlock.value || !this._flow || !this._flow.blocks) {
+    if (!this._selectedBlock || !this._flow || !this._flow.blocks) {
       return;
     }
 
-    this._zOrder.moveBlockZOrder(action, this._selectedBlock.value);
+    this._zOrder.moveBlockZOrder(action, this._selectedBlock);
   };
 
   public blockLocationIsInvalid(block: FlowBlock): boolean {
@@ -137,7 +137,7 @@ export class FlowController {
     (e.pointerEvent.target as SVGElement).setPointerCapture(e.pointerEvent.pointerId);
 
     this.clearSelectedItems();
-    this._selectedBlock.value = e.data;
+    this._selectedBlock = e.data;
     this._dragBlock.value = e.data;
     this._dragBlock.value.zBoost = 0;
     this._dragBlock.value.z = this._dragBlock.value.zOrder;
@@ -458,7 +458,7 @@ export class FlowController {
 
   public keyUp = (e: KeyboardEvent): void => {
     if (e.key === 'Delete') {
-      if (this._selectedBlock.value) {
+      if (this._selectedBlock) {
         this.deleteSelectedBlock();
       } else if (this._selectedConnection.value) {
         this.deleteSelectedConnection();
@@ -468,21 +468,19 @@ export class FlowController {
 
   public deleteSelectedBlock = (): void => {
     // Can only delete the selected node if a node is actually selected
-    if (!this._selectedBlock.value) {
+    if (!this._selectedBlock) {
       return;
     }
 
     // Delete any connections to this block
-    const connections = this._flow.connections.filter(
-      (c) => c.startBlockId === this._selectedBlock.value!.id || c.endBlockId === this._selectedBlock.value!.id
-    );
+    const connections = this._flow.connections.filter((c) => c.startBlockId === this._selectedBlock!.id || c.endBlockId === this._selectedBlock!.id);
 
     connections.forEach((c) => {
       this.deleteConnection(c);
     });
 
     // Delete selected block
-    this.deleteBlock(this._selectedBlock.value);
+    this.deleteBlock(this._selectedBlock);
 
     // Clear any selections
     this.clearSelectedItems();
