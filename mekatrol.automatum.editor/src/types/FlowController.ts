@@ -19,8 +19,8 @@ export class FlowController {
   public _selectedConnection = ref<FlowConnection | undefined>(undefined);
   public _selectedBlock = ref<FlowBlock | undefined>(undefined);
   public _dragBlock = ref<FlowBlock | undefined>(undefined);
-  public _dragBlockOffset = ref<Offset>({ x: 0, y: 0 });
-  public _dragBlockOriginalPosition = ref<Offset>({ x: 0, y: 0 });
+  public _dragBlockOffset: Offset = { x: 0, y: 0 };
+  public _dragBlockOriginalPosition: Offset = { x: 0, y: 0 };
 
   constructor(flow: Flow) {
     this._flow = flow;
@@ -38,14 +38,6 @@ export class FlowController {
 
   public get dragBlock(): Ref<FlowBlock | undefined> {
     return this._dragBlock;
-  }
-
-  public get dragBlockOriginalPosition(): Ref<Offset> {
-    return this._dragBlockOriginalPosition;
-  }
-
-  public get dragBlockOffset(): Ref<Offset> {
-    return this._dragBlockOffset;
   }
 
   public get drawingConnection(): FlowConnecting | undefined {
@@ -149,8 +141,8 @@ export class FlowController {
     this._dragBlock.value = e.data;
     this._dragBlock.value.zBoost = 0;
     this._dragBlock.value.z = this._dragBlock.value.zOrder;
-    this._dragBlockOffset.value = { x: e.pointerEvent.offsetX - e.data.offset.x, y: e.pointerEvent.offsetY - e.data.offset.y };
-    this._dragBlockOriginalPosition.value = { x: e.data.offset.x, y: e.data.offset.y };
+    this._dragBlockOffset = { x: e.pointerEvent.offsetX - e.data.offset.x, y: e.pointerEvent.offsetY - e.data.offset.y };
+    this._dragBlockOriginalPosition = { x: e.data.offset.x, y: e.data.offset.y };
   }
 
   public blockPointerUp(e: FlowBlockPointerEvent) {
@@ -197,8 +189,8 @@ export class FlowController {
     const block = this._dragBlock.value;
 
     // Calculate new offset
-    const x = e.offsetX - this._dragBlockOffset.value.x;
-    const y = e.offsetY - this._dragBlockOffset.value.y;
+    const x = e.offsetX - this._dragBlockOffset.x;
+    const y = e.offsetY - this._dragBlockOffset.y;
 
     // X can be less than MARKER_SIZE unless it is a new block that has not yet been at a valid offset
     if (block.draggingAsNew && !block.dragLocationHasBeenValid) {
