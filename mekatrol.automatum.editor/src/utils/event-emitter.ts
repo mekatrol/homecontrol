@@ -93,6 +93,15 @@ export type FlowEvents = {
 // We want a single instance for all use (singleton pattern)
 const emitter: Emitter<FlowEvents> = mitt<FlowEvents>();
 
+export const emitPointerEvent = <T>(data: T, event: keyof FlowEvents, e: PointerEvent): boolean => {
+  emitter.emit(event, {
+    data: data,
+    pointerEvent: e
+  } as FlowConnectingPointerEvent);
+  e.preventDefault();
+  return false;
+};
+
 export const configureFlowPointerEvents = (flowController: FlowController): void => {
   const emitter = useEmitter();
 
