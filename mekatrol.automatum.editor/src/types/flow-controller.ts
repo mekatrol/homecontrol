@@ -1,4 +1,4 @@
-import { ZOrder } from '@/types/ZOrder';
+import { ZOrder } from '@/types/z-order';
 import {
   configureFlowPointerEvents,
   emitConnectingEvent,
@@ -7,7 +7,7 @@ import {
   type FlowBlockPointerEvent
 } from '@/utils/event-emitter';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
-import type { FlowConnecting } from '@/types/FlowConnecting';
+import type { FlowConnecting } from '@/types/flow-connecting';
 import {
   BLOCK_PALETTE_WIDTH,
   CONNECTING_END,

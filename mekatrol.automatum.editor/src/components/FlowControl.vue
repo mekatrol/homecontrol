@@ -38,10 +38,10 @@ import ConnectingControl from '@/components/ConnectingControl.vue';
 import BlockControl from '@/components/BlockControl.vue';
 import { onMounted, ref } from 'vue';
 import { useFlowStore } from '@/stores/flow-store';
-import type { FlowController } from '@/types/FlowController';
+import type { FlowController } from '@/types/flow-controller';
 import { useEmitter } from '@/utils/event-emitter';
 import { CONNECTING_END, CONNECTING_START, DRAGGING_BLOCK_END, DRAGGING_BLOCK_MOVE, DRAGGING_BLOCK_START } from '@/constants';
-import { type FlowConnecting } from '@/types/FlowConnecting';
+import { type FlowConnecting } from '@/types/flow-connecting';
 import type { FlowBlock } from '@/services/api-generated';
 
 interface Props {

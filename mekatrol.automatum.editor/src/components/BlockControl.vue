@@ -115,7 +115,7 @@ import LabelControl from '@/components/LabelControl.vue';
 import MarkerControl from '@/components/MarkerControl.vue';
 import InputOutputControl from '@/components/InputOutputControl.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
-import type { MarkerShape } from '@/types/MarkerShape';
+import type { MarkerShape } from '@/types/marker-shape';
 import { computed, ref } from 'vue';
 import { useEmitter, type FlowEvents } from '@/utils/event-emitter';
 import {

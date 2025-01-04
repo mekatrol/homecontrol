@@ -1,5 +1,5 @@
 import { useFlowStore } from '@/stores/flow-store';
-import type { FlowController } from '@/types/FlowController';
+import type { FlowController } from '@/types/flow-controller';
 import { type Ref } from 'vue';
 
 export const useFlowController = (id: string): Ref<FlowController> => {

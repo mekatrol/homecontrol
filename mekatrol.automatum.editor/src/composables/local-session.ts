@@ -1,4 +1,4 @@
-import { stringToBoolean } from '@/services/conversionService';
+import { stringToBoolean } from '@/services/conversion-service';
 
 export interface LocalSessionValue<T> {
   setting: T | null;

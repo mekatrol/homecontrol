@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { stringToBoolean, booleanToString } from '@/services/conversionService';
+import { stringToBoolean, booleanToString } from '@/services/conversion-service';
 
 describe('stringToBoolean', () => {
   it('no string returns false', () => {

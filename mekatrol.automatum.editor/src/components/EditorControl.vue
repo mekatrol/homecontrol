@@ -49,7 +49,7 @@ import { useScreenSize } from '@/composables/screen-size';
 import ContainerControl from '@/components/ContainerControl.vue';
 import { BLOCK_PALETTE_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE } from '@/constants';
 import { useFlowStore } from '@/stores/flow-store';
-import type { FlowController } from '@/types/FlowController';
+import type { FlowController } from '@/types/flow-controller';
 
 interface Props {
   flowId: string;

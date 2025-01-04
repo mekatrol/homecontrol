@@ -1,5 +1,5 @@
 import type { Offset, Size } from '@/services/api-generated';
-import type { Shape } from '@/types/Shape';
+import type { Shape } from '@/types/shape';
 
 export type MarkerShape = {
   offset: Offset;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { friendlyCodeToNumberCode, htmlEncodings } from '@/services/htmlEncodings';
+import { friendlyCodeToNumberCode, htmlEncodings } from '@/services/html-encodings';
 
 describe('unicode hex value matches unicode of value property', () => {
   htmlEncodings

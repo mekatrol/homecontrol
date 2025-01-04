@@ -54,7 +54,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { FlowBlock } from '@/services/api-generated';
 import { emitBlockEvent } from '@/utils/event-emitter';
 import { onMounted, ref } from 'vue';
-import type { FlowController } from '@/types/FlowController';
+import type { FlowController } from '@/types/flow-controller';
 
 interface Props {
   width: number;

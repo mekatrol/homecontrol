@@ -59,7 +59,7 @@ import {
   CONNECTING_START
 } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
-import type { FlowConnecting } from '@/types/FlowConnecting';
+import type { FlowConnecting } from '@/types/flow-connecting';
 import type { InputOutput, Offset } from '@/services/api-generated';
 
 interface Props {

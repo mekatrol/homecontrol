@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { toRef, type Ref } from 'vue';
 import { type Flow } from '@/services/api-generated';
 import { blockTemplates } from '@/types/block-template';
-import { initFlowController, type FlowController } from '@/types/FlowController';
+import { initFlowController, type FlowController } from '@/types/flow-controller';
 import { removeFlowEmitter } from '@/utils/event-emitter';
 
 const flows: Record<string, Ref<FlowController>> = {};

@@ -1,5 +1,5 @@
 import mitt, { type Emitter } from 'mitt';
-import { type FlowController } from '@/types/FlowController';
+import { type FlowController } from '@/types/flow-controller';
 import {
   BLOCK_IO_POINTER_DOWN,
   BLOCK_IO_POINTER_ENTER,
@@ -28,7 +28,7 @@ import {
   EMPTY_GUID
 } from '@/constants';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
-import type { FlowConnecting } from '@/types/FlowConnecting';
+import type { FlowConnecting } from '@/types/flow-connecting';
 
 export interface FlowPointerEvent<T> {
   data: T;

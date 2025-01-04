@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Shape } from '@/types/Shape';
+import type { Shape } from '@/types/shape';
 
 interface Props {
   shape: Shape;
