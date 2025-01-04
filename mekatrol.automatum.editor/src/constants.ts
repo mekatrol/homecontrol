@@ -55,6 +55,15 @@ export const CONNECTING_END = 'connectingEnd';
 // Fired when the mouse is moving for a new connection
 export const CONNECTING_END_LOCATION_CHANGE = 'connectingEndLocationChange';
 
+// Fired when dragging block has starting
+export const DRAGGING_BLOCK_START = 'draggingBlockStart';
+
+// Fired dragging block has finished
+export const DRAGGING_BLOCK_END = 'draggingBlockEnd';
+
+// Fired when dragging block moved
+export const DRAGGING_BLOCK_MOVE = 'draggingBlockMove';
+
 /* Field sizing */
 export const FIELD_FLOW_LABEL_MIN_LENGTH = 5;
 export const FIELD_FLOW_LABEL_MAX_LENGTH = 100;

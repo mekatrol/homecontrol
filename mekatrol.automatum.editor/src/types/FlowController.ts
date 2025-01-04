@@ -1,9 +1,24 @@
 import { type Ref, ref } from 'vue';
 import { ZOrder } from '@/types/ZOrder';
-import { configureFlowPointerEvents, emitConnectingEvent, type FlowBlockIOPointerEvent, type FlowBlockPointerEvent } from '@/utils/event-emitter';
+import {
+  configureFlowPointerEvents,
+  emitConnectingEvent,
+  emitDraggingBlockEvent,
+  type FlowBlockIOPointerEvent,
+  type FlowBlockPointerEvent
+} from '@/utils/event-emitter';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
 import type { FlowConnecting } from '@/types/FlowConnecting';
-import { BLOCK_PALETTE_WIDTH, CONNECTING_END, CONNECTING_END_LOCATION_CHANGE, CONNECTING_START, MARKER_SIZE } from '@/constants';
+import {
+  BLOCK_PALETTE_WIDTH,
+  CONNECTING_END,
+  CONNECTING_END_LOCATION_CHANGE,
+  CONNECTING_START,
+  DRAGGING_BLOCK_END,
+  DRAGGING_BLOCK_MOVE,
+  DRAGGING_BLOCK_START,
+  MARKER_SIZE
+} from '@/constants';
 import type { Flow, Offset, BlockSide, Size } from '@/services/api-generated';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -16,9 +31,9 @@ export class FlowController {
   public _drawingConnection: FlowConnecting | undefined = undefined;
   public _drawingConnectionEndBlock: FlowBlock | undefined = undefined;
   public _drawingConnectionEndPin: number | undefined = undefined;
-  public _selectedConnection = ref<FlowConnection | undefined>(undefined);
+  public _selectedConnection: FlowConnection | undefined = undefined;
   public _selectedBlock: FlowBlock | undefined = undefined;
-  public _dragBlock = ref<FlowBlock | undefined>(undefined);
+  public _dragBlock: FlowBlock | undefined = undefined;
   public _dragBlockOffset: Offset = { x: 0, y: 0 };
   public _dragBlockOriginalPosition: Offset = { x: 0, y: 0 };
 
@@ -36,7 +51,7 @@ export class FlowController {
     return this._flow;
   }
 
-  public get dragBlock(): Ref<FlowBlock | undefined> {
+  public get dragBlock(): FlowBlock | undefined {
     return this._dragBlock;
   }
 
@@ -65,7 +80,7 @@ export class FlowController {
   }
 
   public get selectedConnection(): FlowConnection | undefined {
-    return this._selectedConnection.value;
+    return this._selectedConnection;
   }
 
   public set selectedConnection(connection: FlowConnection | undefined) {
@@ -77,7 +92,7 @@ export class FlowController {
     }
 
     connection.selected = true;
-    this._selectedConnection.value = connection;
+    this._selectedConnection = connection;
   }
 
   public clearSelectedItems(): void {
@@ -98,7 +113,7 @@ export class FlowController {
 
   public clearSelectedConnection = (): void => {
     // Clear selected node
-    this._selectedConnection.value = undefined;
+    this._selectedConnection = undefined;
 
     if (!this._flow.connections) {
       return;
@@ -138,33 +153,37 @@ export class FlowController {
 
     this.clearSelectedItems();
     this._selectedBlock = e.data;
-    this._dragBlock.value = e.data;
-    this._dragBlock.value.zBoost = 0;
-    this._dragBlock.value.z = this._dragBlock.value.zOrder;
+    this._dragBlock = e.data;
+    this._dragBlock.zBoost = 0;
+    this._dragBlock.z = this._dragBlock.zOrder;
     this._dragBlockOffset = { x: e.pointerEvent.offsetX - e.data.offset.x, y: e.pointerEvent.offsetY - e.data.offset.y };
     this._dragBlockOriginalPosition = { x: e.data.offset.x, y: e.data.offset.y };
+
+    emitDraggingBlockEvent(DRAGGING_BLOCK_START, this._dragBlock);
   }
 
   public blockPointerUp(e: FlowBlockPointerEvent) {
     (e.pointerEvent.target as SVGElement).releasePointerCapture(e.pointerEvent.pointerId);
 
     // Restore drag block boost if a block is being dragged
-    if (this._dragBlock.value) {
-      this._dragBlock.value.zBoost = 0;
-      this._dragBlock.value.z = this._dragBlock.value.zOrder;
+    if (this._dragBlock) {
+      this._dragBlock.zBoost = 0;
+      this._dragBlock.z = this._dragBlock.zOrder;
 
       // Is this a new block?
-      if (this._dragBlock.value.draggingAsNew && !this.blockLocationIsInvalid(this._dragBlock.value)) {
-        this._flow.blocks.push(this._dragBlock.value);
-        this._dragBlock.value.draggingAsNew = false;
+      if (this._dragBlock.draggingAsNew && !this.blockLocationIsInvalid(this._dragBlock)) {
+        this._flow.blocks.push(this._dragBlock);
+        this._dragBlock.draggingAsNew = false;
       }
     }
 
     // Clear drag block
-    this._dragBlock.value = undefined;
+    this._dragBlock = undefined;
 
     // Clear drawing connection
     this._drawingConnection = undefined;
+
+    emitDraggingBlockEvent(DRAGGING_BLOCK_END, undefined);
   }
 
   public blockIOPointerDown(e: FlowBlockIOPointerEvent) {
@@ -183,10 +202,10 @@ export class FlowController {
   }
 
   public dragBlockMove = (e: PointerEvent): void => {
-    if (!this._dragBlock.value) return;
+    if (!this._dragBlock) return;
 
     // Just for code readability
-    const block = this._dragBlock.value;
+    const block = this._dragBlock;
 
     // Calculate new offset
     const x = e.offsetX - this._dragBlockOffset.x;
@@ -210,6 +229,8 @@ export class FlowController {
     if (!block.dragLocationInvalid) {
       block.dragLocationHasBeenValid = true;
     }
+
+    emitDraggingBlockEvent(DRAGGING_BLOCK_MOVE, block);
   };
 
   public dragConnectionMove = (e: PointerEvent): void => {
@@ -413,7 +434,7 @@ export class FlowController {
   };
 
   public pointerUp = (e: PointerEvent): void => {
-    this._dragBlock.value = undefined;
+    this._dragBlock = undefined;
 
     if (this._drawingConnection && this._drawingConnectionEndPin) {
       const connection = this.dragConnectionCreateConnection();
@@ -444,7 +465,7 @@ export class FlowController {
   };
 
   public pointerLeave = (_: PointerEvent): void => {
-    this._dragBlock.value = undefined;
+    this._dragBlock = undefined;
     this._drawingConnection = undefined;
   };
 
@@ -460,7 +481,7 @@ export class FlowController {
     if (e.key === 'Delete') {
       if (this._selectedBlock) {
         this.deleteSelectedBlock();
-      } else if (this._selectedConnection.value) {
+      } else if (this._selectedConnection) {
         this.deleteSelectedConnection();
       }
     }
@@ -488,12 +509,12 @@ export class FlowController {
 
   public deleteSelectedConnection = (): void => {
     // Can only delete the selected connection if a connection is actually selected
-    if (!this._selectedConnection.value) {
+    if (!this._selectedConnection) {
       return;
     }
 
     // Delete selected connection
-    this.deleteConnection(this._selectedConnection.value);
+    this.deleteConnection(this._selectedConnection);
 
     // Clear any selections
     this.clearSelectedItems();

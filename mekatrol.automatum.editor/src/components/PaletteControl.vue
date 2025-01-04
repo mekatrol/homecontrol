@@ -52,7 +52,7 @@ import { BLOCK_HEIGHT, BLOCK_POINTER_DOWN, BLOCK_POINTER_UP } from '@/constants'
 import type { BlockTemplate } from '@/types/block-template';
 import { v4 as uuidv4 } from 'uuid';
 import type { FlowBlock } from '@/services/api-generated';
-import { useEmitter, type FlowEvents } from '@/utils/event-emitter';
+import { emitBlockEvent, useEmitter, type FlowEvents } from '@/utils/event-emitter';
 import { onMounted, ref } from 'vue';
 import type { FlowController } from '@/types/FlowController';
 
@@ -109,6 +109,7 @@ const palettePointerMove = (e: PointerEvent) => {
   if (!flowController.value) {
     return;
   }
+
   flowController.value.pointerMove(e);
 };
 
@@ -134,7 +135,7 @@ const pointerDown = (e: PointerEvent, blockTemplate: BlockTemplate, x: number, y
     draggingAsNew: true
   };
 
-  emit(BLOCK_POINTER_DOWN, e, block);
+  emitBlockEvent(BLOCK_POINTER_DOWN, e, block);
 };
 
 const pointerUp = (e: PointerEvent) => {
@@ -142,24 +143,12 @@ const pointerUp = (e: PointerEvent) => {
     return;
   }
 
-  emit(BLOCK_POINTER_UP, e, flowController.value.dragBlock);
+  emitBlockEvent(BLOCK_POINTER_UP, e, flowController.value.dragBlock);
 };
 
 const focus = (_e: FocusEvent): void => {
   // Do nothing, and SVG element won't raise keyboard events unless it has
   // a focus event handler
-};
-
-const emitter = useEmitter();
-
-const emit = (event: keyof FlowEvents, e: PointerEvent, block: FlowBlock): boolean => {
-  emitter.emit(event, {
-    data: block,
-    pointerEvent: e
-  });
-
-  e.preventDefault();
-  return false;
 };
 
 onMounted(() => {

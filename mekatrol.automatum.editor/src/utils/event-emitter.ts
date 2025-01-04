@@ -95,6 +95,13 @@ export type FlowEvents = {
   connectingStart: FlowConnecting;
   connectingEnd: FlowConnection | undefined;
   connectingEndLocationChange: FlowConnecting;
+
+  /*
+   * Block dragging events
+   */
+  draggingBlockStart: FlowBlock;
+  draggingBlockEnd: FlowBlock | undefined;
+  draggingBlockMove: FlowBlock;
 };
 
 // We want a single instance for all use (singleton pattern)
@@ -109,8 +116,23 @@ export const emitPointerEvent = <T>(event: keyof FlowEvents, e: PointerEvent, da
   return false;
 };
 
-export const emitConnectingEvent = (event: keyof FlowEvents, data: FlowConnecting | FlowConnection | undefined): boolean => {
-  emitter.emit(event, data);
+export const emitConnectingEvent = (event: keyof FlowEvents, connecting: FlowConnecting | FlowConnection | undefined): boolean => {
+  emitter.emit(event, connecting);
+  return false;
+};
+
+export const emitBlockEvent = (event: keyof FlowEvents, e: PointerEvent, block: FlowBlock): boolean => {
+  emitter.emit(event, {
+    data: block,
+    pointerEvent: e
+  });
+
+  e.preventDefault();
+  return false;
+};
+
+export const emitDraggingBlockEvent = (event: keyof FlowEvents, connecting: FlowBlock | undefined): boolean => {
+  emitter.emit(event, connecting);
   return false;
 };
 

@@ -1,7 +1,7 @@
 <template>
   <g
     v-if="block"
-    :transform="`translate(${block.offset.x},${block.offset.y})`"
+    :transform="`translate(${blockOffset.x},${blockOffset.y})`"
     :class="block.draggingAsNew ? 'dragging-new' : ''"
   >
     <rect
@@ -115,7 +115,7 @@ import MarkerControl from '@/components/MarkerControl.vue';
 import InputOutputControl from '@/components/InputOutputControl.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
 import type { MarkerShape } from '@/types/MarkerShape';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useEmitter, type FlowEvents } from '@/utils/event-emitter';
 import {
   MARKER_OFFSET_X,
@@ -126,11 +126,12 @@ import {
   BLOCK_POINTER_ENTER,
   BLOCK_POINTER_LEAVE,
   BLOCK_POINTER_DOWN,
-  BLOCK_POINTER_UP
+  BLOCK_POINTER_UP,
+  DRAGGING_BLOCK_MOVE
 } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
 import { leftPointedRect, rightPointedRect } from '@/utils/svg-generator';
-import type { FlowBlock } from '@/services/api-generated';
+import type { FlowBlock, Offset } from '@/services/api-generated';
 
 const textGapX = 7;
 const textGapY = 5;
@@ -142,6 +143,8 @@ interface Props {
 const props = defineProps<Props>();
 
 const io = props.block.io;
+
+const blockOffset = ref<Offset>(props.block.offset);
 
 interface Styles {
   opacity: string;
@@ -218,6 +221,16 @@ const iconBorderPath = computed(() => {
 });
 
 const emitter = useEmitter();
+
+emitter.on(DRAGGING_BLOCK_MOVE, (b) => {
+  if (b.id === props.block.id) {
+    // This block is being dragged from the palette
+
+    // Make copy of offset to trigger reactive event
+    const offset = { x: b.offset.x, y: b.offset.y };
+    blockOffset.value = offset;
+  }
+});
 
 const emit = (event: keyof FlowEvents, e: PointerEvent): boolean => {
   if (props.block) {

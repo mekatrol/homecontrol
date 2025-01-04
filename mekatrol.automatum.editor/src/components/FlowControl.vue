@@ -25,8 +25,8 @@
     :flow-id="flowId"
   />
   <BlockControl
-    v-if="flowController && flowController.dragBlock && flowController.dragBlock.draggingAsNew"
-    :block="flowController.dragBlock"
+    v-if="dragBlock"
+    :block="dragBlock"
     :flow-id="flowId"
   />
 </template>
@@ -40,8 +40,9 @@ import { onMounted, ref } from 'vue';
 import { useFlowStore } from '@/stores/flow-store';
 import type { FlowController } from '@/types/FlowController';
 import { useEmitter } from '@/utils/event-emitter';
-import { CONNECTING_END, CONNECTING_START } from '@/constants';
+import { CONNECTING_END, CONNECTING_START, DRAGGING_BLOCK_END, DRAGGING_BLOCK_MOVE, DRAGGING_BLOCK_START } from '@/constants';
 import { type FlowConnecting } from '@/types/FlowConnecting';
+import type { FlowBlock } from '@/services/api-generated';
 
 interface Props {
   width: number;
@@ -55,9 +56,23 @@ const props = defineProps<Props>();
 const { getFlowController } = useFlowStore();
 const flowController = ref<FlowController | undefined>(undefined);
 
+const dragBlock = ref<FlowBlock | undefined>(undefined);
+
 const connecting = ref<FlowConnecting | undefined>(undefined);
 
 const emitter = useEmitter();
+
+emitter.on(DRAGGING_BLOCK_START, (b) => {
+  dragBlock.value = b;
+});
+
+emitter.on(DRAGGING_BLOCK_END, (b) => {
+  dragBlock.value = b;
+});
+
+emitter.on(DRAGGING_BLOCK_MOVE, (b) => {
+  dragBlock.value = b;
+});
 
 emitter.on(CONNECTING_START, (c) => {
   connecting.value = c;
