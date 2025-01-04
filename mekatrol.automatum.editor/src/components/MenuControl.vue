@@ -25,7 +25,10 @@
       @confirm="onOpenConfirm"
       @cancel="onOpenCancel"
     >
-      <OpenFlow @flow-clicked="onFlowClicked"></OpenFlow>
+      <OpenFlow
+        @flow-clicked="onFlowClicked"
+        @flow-clicked-close="onFlowClickedClose"
+      ></OpenFlow>
     </AppDialog>
   </div>
 </template>
@@ -73,8 +76,14 @@ const onCloseFlow = () => {
 };
 
 const clickedFlow = ref<Flow | undefined>(undefined);
+
 const onFlowClicked = (flowClicked: Flow): void => {
   clickedFlow.value = flowClicked;
+};
+
+const onFlowClickedClose = async (flowClicked: Flow): Promise<void> => {
+  clickedFlow.value = flowClicked;
+  await onOpenConfirm();
 };
 
 const onNewFlow = async () => {

@@ -31,6 +31,7 @@
         role="row"
         :class="`${highlightHover ? 'highlight-hover' : ''} ${rowSelectable ? 'selectable' : ''} ${i === selectedRow ? 'selected' : ''}`"
         @click="selectRow(i)"
+        @dblclick="confirmRow(i)"
       >
         <td
           v-for="(cell, i) in row.cells"
@@ -61,6 +62,7 @@ defineProps<Props>();
 
 const emit = defineEmits<{
   (e: 'row-clicked', row: number): void;
+  (e: 'row-clicked-close', row: number): void;
 }>();
 
 const selectedRow = ref<number | undefined>(undefined);
@@ -68,6 +70,11 @@ const selectedRow = ref<number | undefined>(undefined);
 const selectRow = (i: number): void => {
   selectedRow.value = i;
   emit('row-clicked', i);
+};
+
+const confirmRow = (i: number) => {
+  selectedRow.value = i;
+  emit('row-clicked-close', i);
 };
 </script>
 

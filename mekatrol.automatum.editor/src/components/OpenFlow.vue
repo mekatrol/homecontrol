@@ -7,6 +7,7 @@
       :row-selectable="true"
       caption="Select a flow to open"
       @row-clicked="rowClicked"
+      @row-clicked-close="rowClickedClose"
     ></AppTable>
   </div>
 </template>
@@ -25,10 +26,15 @@ const flowSummaries = ref<Flow[]>([]);
 
 const emit = defineEmits<{
   (e: 'flow-clicked', flow: Flow): void;
+  (e: 'flow-clicked-close', flow: Flow): void;
 }>();
 
 const rowClicked = (i: number): void => {
   emit('flow-clicked', flowSummaries.value[i]);
+};
+
+const rowClickedClose = (i: number): void => {
+  emit('flow-clicked-close', flowSummaries.value[i]);
 };
 
 const headers: TableHeader[] = [
