@@ -15,7 +15,7 @@ export class FlowController {
   public _blockPaletteWidth: number;
   public _drawingConnection: FlowConnecting | undefined = undefined;
   public _drawingConnectionEndBlock: FlowBlock | undefined = undefined;
-  public _drawingConnectionEndPin = ref<number | undefined>(undefined);
+  public _drawingConnectionEndPin: number | undefined = undefined;
   public _selectedConnection = ref<FlowConnection | undefined>(undefined);
   public _selectedBlock: FlowBlock | undefined = undefined;
   public _dragBlock = ref<FlowBlock | undefined>(undefined);
@@ -93,7 +93,7 @@ export class FlowController {
     // Clear drawing connection
     this._drawingConnection = undefined;
     this._drawingConnectionEndBlock = undefined;
-    this._drawingConnectionEndPin.value = undefined;
+    this._drawingConnectionEndPin = undefined;
   }
 
   public clearSelectedConnection = (): void => {
@@ -231,7 +231,7 @@ export class FlowController {
 
     // Set values (may be undefined)
     this._drawingConnectionEndBlock = block;
-    this._drawingConnectionEndPin.value = inputOutput?.pin;
+    this._drawingConnectionEndPin = inputOutput?.pin;
 
     // Update end offset to pointer offset
     this._drawingConnection.endLocation = { x: e.offsetX - this._blockPaletteWidth, y: e.offsetY };
@@ -250,14 +250,14 @@ export class FlowController {
   };
 
   public dragConnectionCreateConnection = (): FlowConnection | undefined => {
-    if (!this._drawingConnection || !this._drawingConnectionEndPin.value) {
+    if (!this._drawingConnection || !this._drawingConnectionEndPin) {
       return undefined;
     }
 
     const startBlock = this._drawingConnection.startBlock;
     const startBlockPin = this._drawingConnection?.startPin;
     const endBlock = this._drawingConnectionEndBlock!;
-    const endBlockPin = this._drawingConnectionEndPin.value;
+    const endBlockPin = this._drawingConnectionEndPin;
 
     const connection = {
       id: uuidv4(),
@@ -415,7 +415,7 @@ export class FlowController {
   public pointerUp = (e: PointerEvent): void => {
     this._dragBlock.value = undefined;
 
-    if (this._drawingConnection && this._drawingConnectionEndPin.value) {
+    if (this._drawingConnection && this._drawingConnectionEndPin) {
       const connection = this.dragConnectionCreateConnection();
       emitConnectingEvent(CONNECTING_END, connection);
     } else {
