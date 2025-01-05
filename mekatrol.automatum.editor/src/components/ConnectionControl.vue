@@ -42,7 +42,7 @@
 import { generateCubicBezierPoints } from '@/utils/cubic-spline';
 import { cubicBezierToSvg } from '@/utils/svg-generator';
 import { computed } from 'vue';
-import { emitConnectionEvent, type FlowEvents } from '@/utils/event-emitter';
+import { emitConnectionEvent, type FlowEvents } from '@/services/event-emitter';
 import {
   CONNECTION_POINTER_MOVE,
   CONNECTION_POINTER_OVER,

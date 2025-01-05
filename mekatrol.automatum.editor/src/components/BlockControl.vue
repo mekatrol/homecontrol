@@ -123,7 +123,7 @@ import InputOutputControl from '@/components/InputOutputControl.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
 import type { MarkerShape } from '@/types/marker-shape';
 import { computed, ref } from 'vue';
-import { emitBlockEvent, useEmitter, type FlowEvents } from '@/utils/event-emitter';
+import { emitBlockEvent, useEmitter, type FlowEvents } from '@/services/event-emitter';
 import {
   MARKER_OFFSET_X,
   MARKER_OFFSET_Y,

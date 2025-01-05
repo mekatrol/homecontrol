@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { emitIOEvent, type FlowEvents } from '@/utils/event-emitter';
+import { emitIOEvent, type FlowEvents } from '@/services/event-emitter';
 import {
   BLOCK_IO_POINTER_MOVE,
   BLOCK_IO_POINTER_OVER,

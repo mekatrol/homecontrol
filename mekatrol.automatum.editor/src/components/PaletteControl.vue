@@ -52,7 +52,7 @@ import { BLOCK_HEIGHT, BLOCK_POINTER_DOWN, BLOCK_POINTER_UP } from '@/constants'
 import type { BlockTemplate } from '@/types/block-template';
 import { v4 as uuidv4 } from 'uuid';
 import type { FlowBlock } from '@/services/api-generated';
-import { emitBlockEvent } from '@/utils/event-emitter';
+import { emitBlockEvent } from '@/services/event-emitter';
 import { ref } from 'vue';
 import { useActiveFlowController } from '@/composables/active-flow-controller';
 

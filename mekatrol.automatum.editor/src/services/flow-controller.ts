@@ -5,7 +5,7 @@ import {
   emitDraggingBlockEvent,
   type FlowBlockIOPointerEvent,
   type FlowBlockPointerEvent
-} from '@/utils/event-emitter';
+} from '@/services/event-emitter';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
 import type { FlowConnecting } from '@/types/flow-connecting';
 import {

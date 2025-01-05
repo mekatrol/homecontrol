@@ -46,7 +46,7 @@
 import { generateCubicBezierPoints } from '@/utils/cubic-spline';
 import { cubicBezierToSvg } from '@/utils/svg-generator';
 import { computed, ref } from 'vue';
-import { emitPointerEvent, useEmitter } from '@/utils/event-emitter';
+import { emitPointerEvent, useEmitter } from '@/services/event-emitter';
 import {
   CONNECTING_POINTER_MOVE,
   CONNECTING_POINTER_OVER,
