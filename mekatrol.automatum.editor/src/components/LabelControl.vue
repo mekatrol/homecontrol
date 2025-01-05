@@ -35,7 +35,7 @@ interface Props {
     | undefined;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   // Default text color to current color
   color: 'currentColor',
 

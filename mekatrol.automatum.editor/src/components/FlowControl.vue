@@ -6,16 +6,14 @@
   />
 
   <ConnectionControl
-    v-if="activeFlowController"
-    v-for="(connection, i) in activeFlowController.flow.connections"
+    v-for="(connection, i) in activeFlowController?.flow.connections"
     :key="i"
     :connection="connection"
   />
   <BlockControl
-    v-if="activeFlowController"
-    v-for="(block, i) in activeFlowController.flow.blocks"
+    v-for="(block, i) in activeFlowController?.flow.blocks"
     :key="i"
-    :flow-id="activeFlowController.flow.id"
+    :flow-id="activeFlowController?.flow.id"
     :block="block"
   />
   <ConnectingControl

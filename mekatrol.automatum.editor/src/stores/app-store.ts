@@ -5,13 +5,12 @@ import type { Flow } from '@/services/api-generated';
 import { Api } from '@/services/api-generated';
 import { useFlowStore } from '@/stores/flow-store';
 import { wrapApiCall, type HandleErrorCallback } from '@/services/api';
-import type { MessageType } from '@/services/message';
 import { clearMessage, type MessageData } from '@/services/message';
 
 // The server API base URL is embedded in a hidden field in the page
 // it is set by the server on page load
 const serverBaseUrlElement = document.getElementById('server-base-url') as HTMLInputElement;
-var serverBaseUrl = serverBaseUrlElement?.value ?? '/api';
+const serverBaseUrl = serverBaseUrlElement?.value ?? '/api';
 
 // Create an Api singleton to use for calling server APIs
 const api = new Api({

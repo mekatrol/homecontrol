@@ -138,7 +138,7 @@ export const useMockStore = defineStore('mock', () => {
     // Load elements from JSON
     const flow = loadFlowFromJson(JSON.stringify(mockFlow));
 
-    const json = JSON.stringify(flow);
+    // const json = JSON.stringify(flow);
     // console.log(json);
 
     return flow;

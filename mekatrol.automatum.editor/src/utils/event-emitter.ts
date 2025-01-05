@@ -24,8 +24,7 @@ import {
   CONNECTION_POINTER_LEAVE,
   CONNECTION_POINTER_MOVE,
   CONNECTION_POINTER_OVER,
-  CONNECTION_POINTER_UP,
-  EMPTY_GUID
+  CONNECTION_POINTER_UP
 } from '@/constants';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
 import type { FlowConnecting } from '@/types/flow-connecting';
@@ -249,7 +248,7 @@ export const configureFlowPointerEvents = (flowController: FlowController): void
     // console.log(`CONNECTING_POINTER_UP: ${_e.data}`, _e);
   });
 
-  emitter.on(CONNECTING_POINTER_DOWN, (e) => {
+  emitter.on(CONNECTING_POINTER_DOWN, (_e) => {
     // console.log(`CONNECTING_POINTER_DOWN: ${_e.data}`, _e);
   });
 

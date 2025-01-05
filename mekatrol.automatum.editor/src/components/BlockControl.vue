@@ -90,17 +90,18 @@
     />
 
     <!-- Block markers -->
-    <MarkerControl
-      v-if="!isIOBlock"
-      v-for="(marker, i) in markers"
-      :key="i"
-      :x="marker.offset.x"
-      :y="marker.offset.y"
-      :shape="marker.shape"
-      :size="MARKER_SIZE"
-      :fill-color="marker.fillColor"
-      :stroke-color="marker.strokeColor"
-    />
+    <div v-if="!isIOBlock">
+      <MarkerControl
+        v-for="(marker, i) in markers"
+        :key="i"
+        :x="marker.offset.x"
+        :y="marker.offset.y"
+        :shape="marker.shape"
+        :size="MARKER_SIZE"
+        :fill-color="marker.fillColor"
+        :stroke-color="marker.strokeColor"
+      />
+    </div>
 
     <!-- Block io -->
     <InputOutputControl
@@ -196,14 +197,6 @@ const iconStyles = computed((): Styles => {
     opacity: props.block.dragLocationInvalid ? '20%' : theme.blockIconStyles.background.opacity,
     fill: props.block.dragLocationInvalid ? 'darkred' : theme.blockIconStyles.background.fill,
     stroke: theme.blockIconStyles.svg.stroke
-  };
-});
-
-const labelStyles = computed((): Styles => {
-  return {
-    opacity: props.block.dragLocationInvalid ? '100%' : theme.blockStyles.fillOpacity,
-    fill: props.block.dragLocationInvalid ? 'red' : theme.blockStyles.fill,
-    stroke: props.block.dragLocationInvalid ? 'red' : theme.blockStyles.stroke
   };
 });
 

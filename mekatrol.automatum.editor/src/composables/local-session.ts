@@ -57,7 +57,7 @@ class BoolLocalSessionValue extends BaseLocalSessionValue<boolean> {
 
   setValue(value: boolean): void {
     // Update local storage
-    localStorage.setItem(this.key, !!value ? 'true' : 'false');
+    localStorage.setItem(this.key, value ? 'true' : 'false');
   }
 }
 

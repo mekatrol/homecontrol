@@ -17,7 +17,7 @@
 
     <!-- icon placeholder -->
     <g
-      ref="icon"
+      ref="iconPath"
       :stroke="svgStroke"
       :stroke-width="svgStrokeWidth"
       :opacity="svgFillOpacity"
@@ -65,7 +65,7 @@ const props = withDefaults(defineProps<Props>(), {
   backgroundOpacity: '50%'
 });
 
-const icon = ref(null);
+const iconPath = ref(null);
 const fetchIcon = async () => {
   const iconUri = `/function-icons/${props.icon}.svg`;
   const imageUri = `/function-icons/${props.icon}.png`;
@@ -74,7 +74,7 @@ const fetchIcon = async () => {
   const errorSvg = `<image href="${imageUri}" height="${props.size}" :width="${props.size}" />`;
 
   // Get SVG container on the current Vue component
-  const svgContainer = icon.value! as SVGGElement;
+  const svgContainer = iconPath.value! as SVGGElement;
 
   // Clear contents
   svgContainer.innerHTML = '';
