@@ -54,7 +54,6 @@ import { v4 as uuidv4 } from 'uuid';
 import type { FlowBlock } from '@/services/api-generated';
 import { ref } from 'vue';
 import { useActiveFlowController } from '@/composables/active-flow-controller';
-import { useFlowEmitter } from '@/composables/flow-emitter';
 
 interface Props {
   width: number;
@@ -68,7 +67,6 @@ const props = defineProps<Props>();
 const { blockTemplates } = useFlowStore();
 
 const activeFlowController = useActiveFlowController();
-const emitter = useFlowEmitter(activeFlowController);
 
 // This is the number of blocks that have been scrolled up
 const yScroll = ref(0);
@@ -115,7 +113,7 @@ const palettePointerUp = (e: PointerEvent) => {
 };
 
 const pointerDown = (e: PointerEvent, blockTemplate: BlockTemplate, x: number, y: number): void => {
-  if (!emitter.value) {
+  if (!activeFlowController.value) {
     return;
   }
 
@@ -133,15 +131,15 @@ const pointerDown = (e: PointerEvent, blockTemplate: BlockTemplate, x: number, y
     draggingAsNew: true
   };
 
-  emitter.value.emitBlockPointerDown(e, block);
+  activeFlowController.value.emitter.emitBlockPointerDown(e, block);
 };
 
 const pointerUp = (e: PointerEvent) => {
-  if (!emitter.value || !activeFlowController.value?.dragBlock) {
+  if (!activeFlowController.value || !activeFlowController.value.dragBlock) {
     return;
   }
 
-  emitter.value.emitBlockPointerUp(e, activeFlowController.value.dragBlock);
+  activeFlowController.value.emitter.emitBlockPointerUp(e, activeFlowController.value.dragBlock);
 };
 
 const focus = (_e: FocusEvent): void => {

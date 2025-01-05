@@ -9,12 +9,12 @@
       :fill-opacity="theme.connectionStyles.fillOpacity"
       :stroke="theme.connectionStyles.stroke"
       :stroke-width="`${connection.selected ? theme.connectionStyles.strokeWidthSelected : theme.connectionStyles.strokeWidth}`"
-      @pointermove="(e) => emitter!.emitConnectionPointerMove(e, connection)"
-      @pointerover="(e) => emitter!.emitConnectionPointerOver(e, connection)"
-      @pointerenter="(e) => emitter!.emitConnectionPointerEnter(e, connection)"
-      @pointerleave="(e) => emitter!.emitConnectionPointerLeave(e, connection)"
-      @pointerdown="(e) => emitter!.emitConnectionPointerDown(e, connection)"
-      @pointerup="(e) => emitter!.emitConnectionPointerUp(e, connection)"
+      @pointermove="(e) => activeFlowController!.emitter.emitConnectionPointerMove(e, connection)"
+      @pointerover="(e) => activeFlowController!.emitter.emitConnectionPointerOver(e, connection)"
+      @pointerenter="(e) => activeFlowController!.emitter.emitConnectionPointerEnter(e, connection)"
+      @pointerleave="(e) => activeFlowController!.emitter.emitConnectionPointerLeave(e, connection)"
+      @pointerdown="(e) => activeFlowController!.emitter.emitConnectionPointerDown(e, connection)"
+      @pointerup="(e) => activeFlowController!.emitter.emitConnectionPointerUp(e, connection)"
       zOrder="100"
     />
 
@@ -46,7 +46,6 @@ import { BLOCK_IO_SIZE } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
 import type { FlowConnection } from '@/services/api-generated';
 import { useActiveFlowController } from '@/composables/active-flow-controller';
-import { useFlowEmitter } from '@/composables/flow-emitter';
 
 interface Props {
   show?: boolean;
@@ -86,7 +85,6 @@ const svg = computed(() => {
 });
 
 const activeFlowController = useActiveFlowController();
-const emitter = useFlowEmitter(activeFlowController);
 
 const { theme } = useThemeStore();
 </script>

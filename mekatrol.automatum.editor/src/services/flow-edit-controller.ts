@@ -1,5 +1,5 @@
 import { ZOrder } from '@/types/z-order';
-import { FlowEventEmitter, getFlowEmitter, type FlowBlockIoPointerEvent, type FlowBlockPointerEvent } from '@/services/event-emitter';
+import { FlowEventEmitter, getFlowEmitter, type FlowBlockIoPointerEvent, type FlowBlockPointerEvent } from '@/services/flow-event-emitter';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
 import type { FlowConnecting } from '@/types/flow-connecting';
 import type { Flow, Offset, Size } from '@/services/api-generated';
@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { BLOCK_PALETTE_WIDTH, MARKER_SIZE } from '@/constants';
 
 export class FlowController {
+  public _emitter: FlowEventEmitter;
   public _flow: Flow;
   public _zOrder: ZOrder;
   public _blockPaletteWidth: number;
@@ -25,37 +26,9 @@ export class FlowController {
     this._blockPaletteWidth = BLOCK_PALETTE_WIDTH;
 
     // Configure flow events
-    const emitter = getFlowEmitter(flow.id);
-    this.configureFlowPointerEvents(emitter);
+    this._emitter = getFlowEmitter(flow.id);
+    this.configureFlowPointerEvents();
   }
-
-  public configureFlowPointerEvents = (emitter: FlowEventEmitter): void => {
-    emitter.onBlockPointerDown((e) => {
-      this.blockPointerDown(e);
-    });
-
-    emitter.onBlockPointerUp((e) => {
-      this.blockPointerUp(e);
-    });
-
-    emitter.onBlockPointerMove((e) => {
-      this.dragBlockMove(e.pointerEvent);
-    });
-
-    emitter.onBlockIoPointerUp((_e) => {
-      this.drawingConnection = undefined;
-    });
-
-    emitter.onBlockIoPointerDown((e) => {
-      this.blockIoPointerDown(e);
-    });
-
-    emitter.onConnectionPointerDown((e) => {
-      this.clearSelectedItems();
-      this.drawingConnection = undefined;
-      this.selectedConnection = e.data;
-    });
-  };
 
   public get id() {
     return this._flow.id;
@@ -63,6 +36,10 @@ export class FlowController {
 
   public get flow(): Flow {
     return this._flow;
+  }
+
+  public get emitter(): FlowEventEmitter {
+    return this._emitter;
   }
 
   public get dragBlock(): FlowBlock | undefined {
@@ -553,5 +530,33 @@ export class FlowController {
   public deleteConnection = (connection: FlowConnection): void => {
     // Filter connections to the set without the connection
     this._flow.connections = this._flow.connections.filter((c) => c != connection);
+  };
+
+  public configureFlowPointerEvents = (): void => {
+    this._emitter.onBlockPointerDown((e) => {
+      this.blockPointerDown(e);
+    });
+
+    this._emitter.onBlockPointerUp((e) => {
+      this.blockPointerUp(e);
+    });
+
+    this._emitter.onBlockPointerMove((e) => {
+      this.dragBlockMove(e.pointerEvent);
+    });
+
+    this._emitter.onBlockIoPointerUp((_e) => {
+      this.drawingConnection = undefined;
+    });
+
+    this._emitter.onBlockIoPointerDown((e) => {
+      this.blockIoPointerDown(e);
+    });
+
+    this._emitter.onConnectionPointerDown((e) => {
+      this.clearSelectedItems();
+      this.drawingConnection = undefined;
+      this.selectedConnection = e.data;
+    });
   };
 }

@@ -1,17 +1,16 @@
 import type { Flow } from '@/services/api-generated';
 import { useAppStore } from '@/stores/app-store';
 import { useFlowStore } from '@/stores/flow-store';
-import type { FlowController } from '@/services/flow-controller';
+import type { FlowController } from '@/services/flow-edit-controller';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch, type Ref } from 'vue';
-import { getFlowEmitter, type FlowEventEmitter } from '@/services/event-emitter';
 
 // Use singleton instance
 const activeFlowController = ref<FlowController>();
 
 export const useActiveFlowController = (
-  onComponentMounted?: ((controller: FlowController | undefined, emitter: FlowEventEmitter | undefined) => void) | undefined,
-  onControllerChanged?: ((controller: FlowController | undefined, emitter: FlowEventEmitter | undefined) => void) | undefined
+  onComponentMounted?: ((controller: FlowController | undefined) => void) | undefined,
+  onControllerChanged?: ((controller: FlowController | undefined) => void) | undefined
 ): Ref<FlowController | undefined> => {
   const flowStore = useFlowStore();
   const appStore = useAppStore();
@@ -20,7 +19,7 @@ export const useActiveFlowController = (
   onMounted(() => {
     if (!activeFlow.value) {
       if (onComponentMounted) {
-        onComponentMounted(undefined, undefined);
+        onComponentMounted(undefined);
       }
       return;
     }
@@ -28,10 +27,8 @@ export const useActiveFlowController = (
     const flowController = flowStore.getFlowController(activeFlow.value.id);
     activeFlowController.value = flowController;
 
-    const flowEmitter = getFlowEmitter(activeFlow.value.id);
-
     if (onComponentMounted) {
-      onComponentMounted(flowController, flowEmitter);
+      onComponentMounted(flowController);
     }
   });
 
@@ -42,7 +39,7 @@ export const useActiveFlowController = (
         activeFlowController.value = undefined;
 
         if (onControllerChanged) {
-          onControllerChanged(undefined, undefined);
+          onControllerChanged(undefined);
         }
         return;
       }
@@ -50,9 +47,8 @@ export const useActiveFlowController = (
       const flowController = flowStore.getFlowController(flow.id)!;
       activeFlowController.value = flowController;
 
-      const flowEmitter = getFlowEmitter(flowController.flow.id);
       if (onControllerChanged) {
-        onControllerChanged(flowController, flowEmitter);
+        onControllerChanged(flowController);
       }
     }
   );

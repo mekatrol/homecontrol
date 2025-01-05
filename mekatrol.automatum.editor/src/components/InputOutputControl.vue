@@ -10,12 +10,12 @@
     :fill="fillColor"
     :stroke="strokeColor"
     :stroke-width="strokeWidth"
-    @pointermove="(e) => emitter!.emitBlockIoPointerMove(e, inputOutput, block)"
-    @pointerover="(e) => emitter!.emitBlockIoPointerOver(e, inputOutput, block)"
-    @pointerenter="(e) => emitter!.emitBlockIoPointerEnter(e, inputOutput, block)"
-    @pointerleave="(e) => emitter!.emitBlockIoPointerLeave(e, inputOutput, block)"
-    @pointerdown="(e) => emitter!.emitBlockIoPointerDown(e, inputOutput, block)"
-    @pointerup="(e) => emitter!.emitBlockIoPointerUp(e, inputOutput, block)"
+    @pointermove="(e) => activeFlowController!.emitter.emitBlockIoPointerMove(e, inputOutput, block)"
+    @pointerover="(e) => activeFlowController!.emitter.emitBlockIoPointerOver(e, inputOutput, block)"
+    @pointerenter="(e) => activeFlowController!.emitter.emitBlockIoPointerEnter(e, inputOutput, block)"
+    @pointerleave="(e) => activeFlowController!.emitter.emitBlockIoPointerLeave(e, inputOutput, block)"
+    @pointerdown="(e) => activeFlowController!.emitter.emitBlockIoPointerDown(e, inputOutput, block)"
+    @pointerup="(e) => activeFlowController!.emitter.emitBlockIoPointerUp(e, inputOutput, block)"
   >
     ></rect
   >
@@ -24,7 +24,6 @@
 <script setup lang="ts">
 import type { FlowBlock, InputOutput } from '@/services/api-generated';
 import { useActiveFlowController } from '@/composables/active-flow-controller';
-import { useFlowEmitter } from '@/composables/flow-emitter';
 
 interface Props {
   block: FlowBlock;
@@ -43,7 +42,6 @@ withDefaults(defineProps<Props>(), {
 });
 
 const activeFlowController = useActiveFlowController();
-const emitter = useFlowEmitter(activeFlowController);
 </script>
 
 <style>

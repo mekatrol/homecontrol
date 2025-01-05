@@ -11,12 +11,12 @@
       :fill-opacity="theme.connectionStyles.fillOpacity"
       :stroke="theme.connectionStyles.stroke"
       :stroke-width="theme.connectionStyles.strokeWidth"
-      @pointermove="(e) => emitter!.emitConnectingPointerMove(e, connecting)"
-      @pointerover="(e) => emitter!.emitConnectingPointerOver(e, connecting)"
-      @pointerenter="(e) => emitter!.emitConnectingPointerEnter(e, connecting)"
-      @pointerleave="(e) => emitter!.emitConnectingPointerLeave(e, connecting)"
-      @pointerdown="(e) => emitter!.emitConnectingPointerDown(e, connecting)"
-      @pointerup="(e) => emitter!.emitConnectingPointerUp(e, connecting)"
+      @pointermove="(e) => activeFlowController!.emitter.emitConnectingPointerMove(e, connecting)"
+      @pointerover="(e) => activeFlowController!.emitter.emitConnectingPointerOver(e, connecting)"
+      @pointerenter="(e) => activeFlowController!.emitter.emitConnectingPointerEnter(e, connecting)"
+      @pointerleave="(e) => activeFlowController!.emitter.emitConnectingPointerLeave(e, connecting)"
+      @pointerdown="(e) => activeFlowController!.emitter.emitConnectingPointerDown(e, connecting)"
+      @pointerup="(e) => activeFlowController!.emitter.emitConnectingPointerUp(e, connecting)"
       zOrder="100"
     />
 
@@ -51,9 +51,7 @@ import { useThemeStore } from '@/stores/theme-store';
 import type { FlowConnecting } from '@/types/flow-connecting';
 import type { InputOutput, Offset } from '@/services/api-generated';
 import { useActiveFlowController } from '@/composables/active-flow-controller';
-import { useFlowEmitter } from '@/composables/flow-emitter';
-import type { FlowController } from '@/services/flow-controller';
-import type { FlowEventEmitter } from '@/services/event-emitter';
+import type { FlowController } from '@/services/flow-edit-controller';
 
 interface Props {
   flowId: string;
@@ -108,23 +106,22 @@ const svg = computed(() => {
 
 const { theme } = useThemeStore();
 
-const initEmitter = (_flowController: FlowController | undefined, emitter: FlowEventEmitter | undefined) => {
-  if (!emitter) {
+const initEmitter = (flowController: FlowController | undefined) => {
+  if (!flowController) {
     return;
   }
 
-  emitter.onConnectingStart((e) => {
+  flowController.emitter.onConnectingStart((e) => {
     startOffset.value = calculateStartOffset(e.data!);
     endOffset.value = startOffset.value;
   });
 
-  emitter.onConnectingUpdate((e) => {
+  flowController.emitter.onConnectingUpdate((e) => {
     endOffset.value = e.data!.endLocation;
   });
 };
 
 const activeFlowController = useActiveFlowController(initEmitter, initEmitter);
-const emitter = useFlowEmitter(activeFlowController);
 </script>
 
 <style scoped lang="scss">

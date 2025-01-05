@@ -47,8 +47,7 @@ import { useScreenSize } from '@/composables/screen-size';
 import ContainerControl from '@/components/ContainerControl.vue';
 import { BLOCK_PALETTE_WIDTH, PALETTE_GAP, SCROLLBAR_SIZE } from '@/constants';
 import { useActiveFlowController } from '@/composables/active-flow-controller';
-import type { FlowController } from '@/services/flow-controller';
-import type { FlowEventEmitter } from '@/services/event-emitter';
+import type { FlowController } from '@/services/flow-edit-controller';
 
 const gridSize = ref(20);
 const screenSize = useScreenSize();
@@ -69,7 +68,7 @@ const calculateSvgHeight = () => {
   svgHeight.value = parentDiv.clientHeight;
 };
 
-const initFromFlowController = (_flowController: FlowController | undefined, _emitter: FlowEventEmitter | undefined): void => {
+const initFromFlowController = (_flowController: FlowController | undefined): void => {
   if (!activeFlowController.value) {
     return;
   }

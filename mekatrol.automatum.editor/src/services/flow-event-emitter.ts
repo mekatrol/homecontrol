@@ -22,22 +22,22 @@ const CONNECTION_POINTER_DOWN = 'connectionPointerDown';
 const CONNECTION_POINTER_UP = 'connectionPointerUp';
 
 // Fired when a new connection is starting
-export const CONNECTING_START = 'connectingStart';
+const CONNECTING_START = 'connectingStart';
 
 // Fired a new connection is finished
-export const CONNECTING_END = 'connectingEnd';
+const CONNECTING_END = 'connectingEnd';
 
 // Fired when the mouse is moving for a new connection
-export const CONNECTING_UPDATE = 'connectingUpdate';
+const CONNECTING_UPDATE = 'connectingUpdate';
 
 // Fired when dragging block has starting
-export const DRAGGING_BLOCK_START = 'draggingBlockStart';
+const DRAGGING_BLOCK_START = 'draggingBlockStart';
 
 // Fired dragging block has finished
-export const DRAGGING_BLOCK_END = 'draggingBlockEnd';
+const DRAGGING_BLOCK_END = 'draggingBlockEnd';
 
 // Fired when dragging block moved
-export const DRAGGING_BLOCK_MOVE = 'draggingBlockMove';
+const DRAGGING_BLOCK_MOVE = 'draggingBlockMove';
 
 export interface FlowEventData<T> {
   data: T;
@@ -47,23 +47,25 @@ export interface FlowPointerEvent<T> extends FlowEventData<T> {
   pointerEvent: PointerEvent;
 }
 
-// An event from a flow block
+// A block pointer event
 export interface FlowBlockPointerEvent extends FlowPointerEvent<FlowBlock> {}
 
-// A pointer event from a flow block io (includes the block that the io is attached to)
+// A block IO pointer event
 export interface FlowBlockIoPointerEvent extends FlowBlockPointerEvent {
   inputOutput: InputOutput;
 }
 
-// A pointer event from a flow connection
+// A flow connection pointer event
 export interface FlowConnectionPointerEvent extends FlowPointerEvent<FlowConnection> {}
 
-// A pointer event from a flow connecting
+// A flow connecting pointer event
 export interface FlowConnectingPointerEvent extends FlowPointerEvent<FlowConnecting> {}
 
+// A flow connecting event
 export interface FlowConnectingEvent extends FlowEventData<FlowConnecting | undefined> {}
 
-export interface FlowBlockDraggingEvent extends FlowEventData<FlowBlock | undefined> {}
+// A block drag event
+export interface FlowBlockDragEvent extends FlowEventData<FlowBlock | undefined> {}
 
 export type FlowEventType = {
   /*
@@ -106,9 +108,9 @@ export type FlowEventType = {
   /*
    * Block dragging events
    */
-  draggingBlockStart: FlowBlockDraggingEvent;
-  draggingBlockEnd: FlowBlockDraggingEvent;
-  draggingBlockMove: FlowBlockDraggingEvent;
+  draggingBlockStart: FlowBlockDragEvent;
+  draggingBlockEnd: FlowBlockDragEvent;
+  draggingBlockMove: FlowBlockDragEvent;
 };
 
 // We need a flow emitter per flow (use ID as key)
@@ -204,7 +206,7 @@ export class FlowEventEmitter {
     this.emitDraggingBlockEvent(DRAGGING_BLOCK_START, dragBlock);
   }
 
-  public onBlockDragStart(handler: Handler<FlowBlockDraggingEvent>) {
+  public onBlockDragStart(handler: Handler<FlowBlockDragEvent>) {
     this._emitter.on(DRAGGING_BLOCK_START, (e) => {
       handler(e);
     });
@@ -214,7 +216,7 @@ export class FlowEventEmitter {
     this.emitDraggingBlockEvent(DRAGGING_BLOCK_END, undefined);
   }
 
-  public onBlockDragEnd(handler: Handler<FlowBlockDraggingEvent>) {
+  public onBlockDragEnd(handler: Handler<FlowBlockDragEvent>) {
     this._emitter.on(DRAGGING_BLOCK_END, (e) => {
       handler(e);
     });
@@ -224,7 +226,7 @@ export class FlowEventEmitter {
     this.emitDraggingBlockEvent(DRAGGING_BLOCK_MOVE, dragBlock);
   }
 
-  public onBlockDragMove(handler: Handler<FlowBlockDraggingEvent>) {
+  public onBlockDragMove(handler: Handler<FlowBlockDragEvent>) {
     this._emitter.on(DRAGGING_BLOCK_MOVE, (e) => {
       handler(e);
     });
