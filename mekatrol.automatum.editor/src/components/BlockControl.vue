@@ -216,7 +216,7 @@ const initEmitter = (_flowController: FlowController | undefined, emitter: FlowE
     return;
   }
 
-  emitter.onDraggingBlockMove((e) => {
+  emitter.onBlockDragMove((e) => {
     if (e.data!.id === props.block.id) {
       // This block is being dragged from the palette
 

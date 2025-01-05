@@ -57,15 +57,15 @@ const initEmitter = (_flowController: FlowController | undefined, emitter: FlowE
     return;
   }
 
-  emitter.onDraggingBlockStart((e) => {
+  emitter.onBlockDragStart((e) => {
     dragBlock.value = e.data;
   });
 
-  emitter.onDraggingBlockEnd((e) => {
+  emitter.onBlockDragEnd((e) => {
     dragBlock.value = e.data;
   });
 
-  emitter.onDraggingBlockMove((e) => {
+  emitter.onBlockDragMove((e) => {
     dragBlock.value = e.data;
   });
 
