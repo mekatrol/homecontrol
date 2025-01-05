@@ -53,9 +53,10 @@ import type { BlockTemplate } from '@/types/block-template';
 import { v4 as uuidv4 } from 'uuid';
 import type { FlowBlock } from '@/services/api-generated';
 import { ref } from 'vue';
-import { useActiveFlowController } from '@/composables/active-flow-controller';
+import { useFlowController } from '@/composables/flow-controller';
 
 interface Props {
+  flowId: string;
   width: number;
   height: number;
   scrollbarWidth: number;
@@ -66,7 +67,7 @@ const props = defineProps<Props>();
 
 const { blockTemplates } = useFlowStore();
 
-const activeFlowController = useActiveFlowController();
+const activeFlowController = useFlowController(props.flowId);
 
 // This is the number of blocks that have been scrolled up
 const yScroll = ref(0);

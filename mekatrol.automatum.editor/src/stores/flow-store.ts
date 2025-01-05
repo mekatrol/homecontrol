@@ -3,22 +3,32 @@ import { type Flow } from '@/services/api-generated';
 import { blockTemplates } from '@/types/block-template';
 import { FlowController } from '@/services/flow-edit-controller';
 import { removeFlowEmitter } from '@/services/flow-event-emitter';
+import { ref, type Ref } from 'vue';
 
-const flowControllers: Record<string, FlowController> = {};
+const flowControllers: Record<string, Ref<FlowController | undefined>> = {};
 const newFlowControllers: Record<string, FlowController> = {};
 
 export const useFlowStore = defineStore('flow', () => {
-  const addFlow = (flow: Flow, isNew: boolean): FlowController => {
-    // Does a flow with the specified ID already exist?
+  const addFlowController = (flow: Flow, isNew: boolean): Ref<FlowController | undefined> => {
+    let flowControllerRef: Ref<FlowController | undefined>;
+
     if (flow.id in flowControllers) {
-      throw new Error(`A flow with the ID '${flow.id}' has already been added.`);
+      flowControllerRef = flowControllers[flow.id];
+
+      // Does a flow controller with the specified flow ID already exist?
+      if (flowControllerRef.value !== undefined) {
+        throw new Error(`A flow controller with the flow ID '${flow.id}' has already been added.`);
+      }
+    } else {
+      // Else add a new empty one
+      flowControllerRef = addEmptyController(flow.id);
     }
 
     // Create new instance of flow controller
     const flowController = new FlowController(flow);
 
-    // Add to flow controller dictionary
-    flowControllers[flow.id] = flowController;
+    // Update the value
+    flowControllerRef.value = flowController;
 
     // If this is a new flow then we need to keep track of it being new
     // for when calling the server API for post/put
@@ -26,29 +36,43 @@ export const useFlowStore = defineStore('flow', () => {
       newFlowControllers[flow.id] = flowController;
     }
 
-    return flowControllers[flow.id];
+    return flowControllerRef;
   };
 
-  const deleteFlow = (id: string): void => {
-    removeFlowEmitter(id);
-    delete flowControllers[id];
+  const deleteFlowController = (flowId: string): void => {
+    removeFlowEmitter(flowId);
+    delete flowControllers[flowId];
   };
 
-  const removeNewFlow = (id: string): void => {
-    delete newFlowControllers[id];
+  const removeNewFlowController = (flowId: string): void => {
+    delete newFlowControllers[flowId];
   };
 
-  const getFlowController = (id: string): FlowController | undefined => {
-    if (!(id in flowControllers)) {
-      return undefined;
+  const getFlowController = (flowId: string): Ref<FlowController | undefined> => {
+    if (!(flowId in flowControllers)) {
+      return ref(undefined);
     }
 
-    return flowControllers[id];
+    return flowControllers[flowId];
   };
 
-  const isNewFlow = (id: string): boolean => {
+  const addEmptyController = (flowId: string): Ref<FlowController | undefined> => {
+    flowControllers[flowId] = ref(undefined);
+    return flowControllers[flowId];
+  };
+
+  const isNewFlowController = (id: string): boolean => {
     return id in newFlowControllers;
   };
 
-  return { blockTemplates, flows: flowControllers, addFlow, deleteFlow, getFlowController, isNewFlow, removeNewFlow };
+  return {
+    blockTemplates,
+    flows: flowControllers,
+    addFlowController,
+    addEmptyController,
+    deleteFlowController,
+    getFlowController,
+    isNewFlowController,
+    removeNewFlowController
+  };
 });

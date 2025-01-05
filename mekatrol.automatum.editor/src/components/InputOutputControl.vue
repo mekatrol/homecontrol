@@ -10,12 +10,12 @@
     :fill="fillColor"
     :stroke="strokeColor"
     :stroke-width="strokeWidth"
-    @pointermove="(e) => activeFlowController!.emitter.emitBlockIoPointerMove(e, inputOutput, block)"
-    @pointerover="(e) => activeFlowController!.emitter.emitBlockIoPointerOver(e, inputOutput, block)"
-    @pointerenter="(e) => activeFlowController!.emitter.emitBlockIoPointerEnter(e, inputOutput, block)"
-    @pointerleave="(e) => activeFlowController!.emitter.emitBlockIoPointerLeave(e, inputOutput, block)"
-    @pointerdown="(e) => activeFlowController!.emitter.emitBlockIoPointerDown(e, inputOutput, block)"
-    @pointerup="(e) => activeFlowController!.emitter.emitBlockIoPointerUp(e, inputOutput, block)"
+    @pointermove="(e) => flowController!.emitter.emitBlockIoPointerMove(e, inputOutput, block)"
+    @pointerover="(e) => flowController!.emitter.emitBlockIoPointerOver(e, inputOutput, block)"
+    @pointerenter="(e) => flowController!.emitter.emitBlockIoPointerEnter(e, inputOutput, block)"
+    @pointerleave="(e) => flowController!.emitter.emitBlockIoPointerLeave(e, inputOutput, block)"
+    @pointerdown="(e) => flowController!.emitter.emitBlockIoPointerDown(e, inputOutput, block)"
+    @pointerup="(e) => flowController!.emitter.emitBlockIoPointerUp(e, inputOutput, block)"
   >
     ></rect
   >
@@ -23,9 +23,10 @@
 
 <script setup lang="ts">
 import type { FlowBlock, InputOutput } from '@/services/api-generated';
-import { useActiveFlowController } from '@/composables/active-flow-controller';
+import { useFlowController } from '@/composables/flow-controller';
 
 interface Props {
+  flowId: string;
   block: FlowBlock;
   inputOutput: InputOutput;
   fillColor?: string;
@@ -34,14 +35,14 @@ interface Props {
 }
 const cornerRadius = 2;
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   // Default colors to current color
   fillColor: 'currentColor',
   strokeColor: 'currentColor',
   strokeWidth: '2px'
 });
 
-const activeFlowController = useActiveFlowController();
+const flowController = useFlowController(props.flowId);
 </script>
 
 <style>

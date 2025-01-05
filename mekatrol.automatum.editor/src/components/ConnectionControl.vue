@@ -1,6 +1,6 @@
 <template>
   <!-- Spline path -->
-  <g v-if="show && activeFlowController">
+  <g v-if="show && flowController">
     <path
       :class="`flow-connection ${connection.selected ? 'selected' : ''}`"
       focusable="true"
@@ -9,12 +9,12 @@
       :fill-opacity="theme.connectionStyles.fillOpacity"
       :stroke="theme.connectionStyles.stroke"
       :stroke-width="`${connection.selected ? theme.connectionStyles.strokeWidthSelected : theme.connectionStyles.strokeWidth}`"
-      @pointermove="(e) => activeFlowController!.emitter.emitConnectionPointerMove(e, connection)"
-      @pointerover="(e) => activeFlowController!.emitter.emitConnectionPointerOver(e, connection)"
-      @pointerenter="(e) => activeFlowController!.emitter.emitConnectionPointerEnter(e, connection)"
-      @pointerleave="(e) => activeFlowController!.emitter.emitConnectionPointerLeave(e, connection)"
-      @pointerdown="(e) => activeFlowController!.emitter.emitConnectionPointerDown(e, connection)"
-      @pointerup="(e) => activeFlowController!.emitter.emitConnectionPointerUp(e, connection)"
+      @pointermove="(e) => flowController!.emitter.emitConnectionPointerMove(e, connection)"
+      @pointerover="(e) => flowController!.emitter.emitConnectionPointerOver(e, connection)"
+      @pointerenter="(e) => flowController!.emitter.emitConnectionPointerEnter(e, connection)"
+      @pointerleave="(e) => flowController!.emitter.emitConnectionPointerLeave(e, connection)"
+      @pointerdown="(e) => flowController!.emitter.emitConnectionPointerDown(e, connection)"
+      @pointerup="(e) => flowController!.emitter.emitConnectionPointerUp(e, connection)"
       zOrder="100"
     />
 
@@ -45,9 +45,11 @@ import { computed } from 'vue';
 import { BLOCK_IO_SIZE } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
 import type { FlowConnection } from '@/services/api-generated';
-import { useActiveFlowController } from '@/composables/active-flow-controller';
+import { useFlowController } from '@/composables/flow-controller';
 
 interface Props {
+  flowId: string;
+
   show?: boolean;
 
   connection: FlowConnection;
@@ -75,16 +77,16 @@ const props = withDefaults(defineProps<Props>(), {
   endPointRadius: 5
 });
 
-const startInputOutput = computed(() => activeFlowController.value!.getConnectionStartInputOutput(props.connection));
-const startOffset = computed(() => activeFlowController.value!.getConnectionStartOffset(props.connection));
-const endOffset = computed(() => activeFlowController.value!.getConnectionEndOffset(props.connection));
+const startInputOutput = computed(() => flowController.value!.getConnectionStartInputOutput(props.connection));
+const startOffset = computed(() => flowController.value!.getConnectionStartOffset(props.connection));
+const endOffset = computed(() => flowController.value!.getConnectionEndOffset(props.connection));
 
 const svg = computed(() => {
   const points = generateCubicBezierPoints(startOffset.value, endOffset.value, startInputOutput.value.side);
   return cubicBezierToSvg(points);
 });
 
-const activeFlowController = useActiveFlowController();
+const flowController = useFlowController(props.flowId);
 
 const { theme } = useThemeStore();
 </script>

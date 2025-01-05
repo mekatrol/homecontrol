@@ -18,12 +18,12 @@
       :fill-opacity="blockStyles.opacity"
       :stroke="blockStyles.stroke"
       :stroke-width="`${block.selected ? theme.blockStyles.strokeWidthSelected : theme.blockStyles.strokeWidth}`"
-      @pointermove="(e) => activeFlowController!.emitter.emitBlockPointerMove(e, block)"
-      @pointerover="(e) => activeFlowController!.emitter.emitBlockPointerOver(e, block)"
-      @pointerenter="(e) => activeFlowController!.emitter.emitBlockPointerEnter(e, block)"
-      @pointerleave="(e) => activeFlowController!.emitter.emitBlockPointerLeave(e, block)"
-      @pointerdown="(e) => activeFlowController!.emitter.emitBlockPointerDown(e, block)"
-      @pointerup="(e) => activeFlowController!.emitter.emitBlockPointerUp(e, block)"
+      @pointermove="(e) => flowController!.emitter.emitBlockPointerMove(e, block)"
+      @pointerover="(e) => flowController!.emitter.emitBlockPointerOver(e, block)"
+      @pointerenter="(e) => flowController!.emitter.emitBlockPointerEnter(e, block)"
+      @pointerleave="(e) => flowController!.emitter.emitBlockPointerLeave(e, block)"
+      @pointerdown="(e) => flowController!.emitter.emitBlockPointerDown(e, block)"
+      @pointerup="(e) => flowController!.emitter.emitBlockPointerUp(e, block)"
     ></rect>
     <path
       v-else
@@ -33,12 +33,12 @@
       :stroke="blockStyles.stroke"
       :stroke-width="`${block.selected ? theme.blockStyles.strokeWidthSelected : theme.blockStyles.strokeWidth}`"
       style="stroke-linejoin: round; stroke-linecap: round"
-      @pointermove="(e) => activeFlowController!.emitter.emitBlockPointerMove(e, block)"
-      @pointerover="(e) => activeFlowController!.emitter.emitBlockPointerOver(e, block)"
-      @pointerenter="(e) => activeFlowController!.emitter.emitBlockPointerEnter(e, block)"
-      @pointerleave="(e) => activeFlowController!.emitter.emitBlockPointerLeave(e, block)"
-      @pointerdown="(e) => activeFlowController!.emitter.emitBlockPointerDown(e, block)"
-      @pointerup="(e) => activeFlowController!.emitter.emitBlockPointerUp(e, block)"
+      @pointermove="(e) => flowController!.emitter.emitBlockPointerMove(e, block)"
+      @pointerover="(e) => flowController!.emitter.emitBlockPointerOver(e, block)"
+      @pointerenter="(e) => flowController!.emitter.emitBlockPointerEnter(e, block)"
+      @pointerleave="(e) => flowController!.emitter.emitBlockPointerLeave(e, block)"
+      @pointerdown="(e) => flowController!.emitter.emitBlockPointerDown(e, block)"
+      @pointerup="(e) => flowController!.emitter.emitBlockPointerUp(e, block)"
     />
 
     <!-- Block icon -->
@@ -54,12 +54,12 @@
       :svg-strokeWidth="theme.blockIconStyles.svg.strokeWidth"
       :background-fill="iconStyles.fill"
       :background-opacity="iconStyles.opacity"
-      @pointermove="(e) => activeFlowController!.emitter.emitBlockPointerMove(e, block)"
-      @pointerover="(e) => activeFlowController!.emitter.emitBlockPointerOver(e, block)"
-      @pointerenter="(e) => activeFlowController!.emitter.emitBlockPointerEnter(e, block)"
-      @pointerleave="(e) => activeFlowController!.emitter.emitBlockPointerLeave(e, block)"
-      @pointerdown="(e) => activeFlowController!.emitter.emitBlockPointerDown(e, block)"
-      @pointerup="(e) => activeFlowController!.emitter.emitBlockPointerUp(e, block)"
+      @pointermove="(e) => flowController!.emitter.emitBlockPointerMove(e, block)"
+      @pointerover="(e) => flowController!.emitter.emitBlockPointerOver(e, block)"
+      @pointerenter="(e) => flowController!.emitter.emitBlockPointerEnter(e, block)"
+      @pointerleave="(e) => flowController!.emitter.emitBlockPointerLeave(e, block)"
+      @pointerdown="(e) => flowController!.emitter.emitBlockPointerDown(e, block)"
+      @pointerup="(e) => flowController!.emitter.emitBlockPointerUp(e, block)"
     />
 
     <!-- Icon border -->
@@ -107,6 +107,7 @@
     <InputOutputControl
       v-for="inputOutput in io"
       :key="inputOutput.pin"
+      :flow-id="flowId"
       :block="block"
       :inputOutput="inputOutput"
       :fill-color="theme.blockIoStyles.fill"
@@ -127,13 +128,14 @@ import { MARKER_OFFSET_X, MARKER_OFFSET_Y, MARKER_SIZE } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
 import { leftPointedRect, rightPointedRect } from '@/utils/svg-generator';
 import type { FlowBlock, Offset } from '@/services/api-generated';
-import { useActiveFlowController } from '@/composables/active-flow-controller';
+import { useFlowController } from '@/composables/flow-controller';
 import type { FlowController } from '@/services/flow-edit-controller';
 
 const textGapX = 7;
 const textGapY = 5;
 
 interface Props {
+  flowId: string;
   block: FlowBlock;
 }
 
@@ -225,7 +227,7 @@ const initEmitter = (flowController: FlowController | undefined) => {
   });
 };
 
-const activeFlowController = useActiveFlowController(initEmitter, initEmitter);
+const flowController = useFlowController(props.flowId, initEmitter, initEmitter);
 
 const markers = computed((): MarkerShape[] => {
   if (!props.block) {

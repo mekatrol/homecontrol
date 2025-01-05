@@ -6,25 +6,26 @@
   />
 
   <ConnectionControl
-    v-for="(connection, i) in activeFlowController?.flow.connections"
+    v-for="(connection, i) in flowController?.flow.connections"
     :key="i"
+    :flow-id="flowId"
     :connection="connection"
   />
   <BlockControl
-    v-for="(block, i) in activeFlowController?.flow.blocks"
+    v-for="(block, i) in flowController?.flow.blocks"
     :key="i"
-    :flow-id="activeFlowController?.flow.id"
+    :flow-id="flowId"
     :block="block"
   />
   <ConnectingControl
-    v-if="activeFlowController && connecting"
+    v-if="connecting"
     :connecting="connecting"
-    :flow-id="activeFlowController.flow.id"
+    :flow-id="flowId"
   />
   <BlockControl
-    v-if="activeFlowController && dragBlock"
+    v-if="dragBlock"
     :block="dragBlock"
-    :flow-id="activeFlowController.flow.id"
+    :flow-id="flowId"
   />
 </template>
 
@@ -36,46 +37,47 @@ import BlockControl from '@/components/BlockControl.vue';
 import { ref } from 'vue';
 import { type FlowConnecting } from '@/types/flow-connecting';
 import type { FlowBlock } from '@/services/api-generated';
-import { useActiveFlowController } from '@/composables/active-flow-controller';
+import { useFlowController } from '@/composables/flow-controller';
 import type { FlowController } from '@/services/flow-edit-controller';
 
 interface Props {
+  flowId: string;
   width: number;
   height: number;
   gridSize: number;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const dragBlock = ref<FlowBlock | undefined>(undefined);
 
 const connecting = ref<FlowConnecting | undefined>(undefined);
 
-const initEmitter = (flowController: FlowController | undefined) => {
-  if (!flowController) {
+const initEmitter = (fc: FlowController | undefined) => {
+  if (!fc) {
     return;
   }
 
-  flowController.emitter.onBlockDragStart((e) => {
+  fc.emitter.onBlockDragStart((e) => {
     dragBlock.value = e.data;
   });
 
-  flowController.emitter.onBlockDragEnd((e) => {
+  fc.emitter.onBlockDragEnd((e) => {
     dragBlock.value = e.data;
   });
 
-  flowController.emitter.onBlockDragMove((e) => {
+  fc.emitter.onBlockDragMove((e) => {
     dragBlock.value = e.data;
   });
 
-  flowController.emitter.onConnectingStart((e) => {
+  fc.emitter.onConnectingStart((e) => {
     connecting.value = e.data;
   });
 
-  flowController.emitter.onConnectingEnd((_e) => {
+  fc.emitter.onConnectingEnd((_e) => {
     connecting.value = undefined;
   });
 };
 
-const activeFlowController = useActiveFlowController(initEmitter, initEmitter);
+const flowController = useFlowController(props.flowId, initEmitter, initEmitter);
 </script>

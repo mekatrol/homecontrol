@@ -21,7 +21,7 @@ export const useAppStore = defineStore('app', () => {
   const isBusyCount = ref(0);
   const messageData = ref<MessageData | undefined>(undefined);
 
-  const { getFlowController, addFlow, deleteFlow, isNewFlow, removeNewFlow } = useFlowStore();
+  const { getFlowController, addFlowController, deleteFlowController, isNewFlowController, removeNewFlowController } = useFlowStore();
 
   const activeFlow = ref<Flow | undefined>(undefined);
 
@@ -44,7 +44,7 @@ export const useAppStore = defineStore('app', () => {
       'Create new flow',
       async () => {
         const flow = await api.flow.get(EMPTY_GUID);
-        addFlow(flow, true);
+        addFlowController(flow, true);
 
         if (makeActive) {
           activeFlow.value = flow;
@@ -59,11 +59,11 @@ export const useAppStore = defineStore('app', () => {
     return await wrapApiCall(
       `Save flow with ID '${flow.id}'`,
       async () => {
-        if (isNewFlow(flow.id)) {
+        if (isNewFlowController(flow.id)) {
           await api.flow.post(flow);
 
           // Remove from new flows list
-          removeNewFlow(flow.id);
+          removeNewFlowController(flow.id);
 
           return;
         }
@@ -74,14 +74,16 @@ export const useAppStore = defineStore('app', () => {
     );
   };
 
-  const openFlow = async (id: string, errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
+  const openFlow = async (flowId: string, errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
     return await wrapApiCall(
-      `Open flow with ID '${id}'`,
+      `Open flow with ID '${flowId}'`,
       async () => {
-        const flow = await api.flow.get(id);
+        const flow = await api.flow.get(flowId);
 
-        if (!getFlowController(flow.id)) {
-          addFlow(flow, false);
+        const flowController = getFlowController(flow.id);
+
+        if (!flowController.value) {
+          addFlowController(flow, false);
         }
         activeFlow.value = flow;
         return flow;
@@ -90,12 +92,13 @@ export const useAppStore = defineStore('app', () => {
     );
   };
 
-  const closeFlow = (id: string): void => {
-    if (activeFlow.value?.id === id) {
+  const closeFlow = (flowId: string): void => {
+    // Clear active flow if it is the flow being closed
+    if (activeFlow.value?.id === flowId) {
       activeFlow.value = undefined;
     }
 
-    deleteFlow(id);
+    deleteFlowController(flowId);
   };
 
   const isBusy = computed(() => isBusyCount.value > 0);

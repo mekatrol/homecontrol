@@ -11,12 +11,12 @@
       :fill-opacity="theme.connectionStyles.fillOpacity"
       :stroke="theme.connectionStyles.stroke"
       :stroke-width="theme.connectionStyles.strokeWidth"
-      @pointermove="(e) => activeFlowController!.emitter.emitConnectingPointerMove(e, connecting)"
-      @pointerover="(e) => activeFlowController!.emitter.emitConnectingPointerOver(e, connecting)"
-      @pointerenter="(e) => activeFlowController!.emitter.emitConnectingPointerEnter(e, connecting)"
-      @pointerleave="(e) => activeFlowController!.emitter.emitConnectingPointerLeave(e, connecting)"
-      @pointerdown="(e) => activeFlowController!.emitter.emitConnectingPointerDown(e, connecting)"
-      @pointerup="(e) => activeFlowController!.emitter.emitConnectingPointerUp(e, connecting)"
+      @pointermove="(e) => flowController!.emitter.emitConnectingPointerMove(e, connecting)"
+      @pointerover="(e) => flowController!.emitter.emitConnectingPointerOver(e, connecting)"
+      @pointerenter="(e) => flowController!.emitter.emitConnectingPointerEnter(e, connecting)"
+      @pointerleave="(e) => flowController!.emitter.emitConnectingPointerLeave(e, connecting)"
+      @pointerdown="(e) => flowController!.emitter.emitConnectingPointerDown(e, connecting)"
+      @pointerup="(e) => flowController!.emitter.emitConnectingPointerUp(e, connecting)"
       zOrder="100"
     />
 
@@ -50,7 +50,7 @@ import { BLOCK_IO_SIZE } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
 import type { FlowConnecting } from '@/types/flow-connecting';
 import type { InputOutput, Offset } from '@/services/api-generated';
-import { useActiveFlowController } from '@/composables/active-flow-controller';
+import { useFlowController } from '@/composables/flow-controller';
 import type { FlowController } from '@/services/flow-edit-controller';
 
 interface Props {
@@ -121,7 +121,7 @@ const initEmitter = (flowController: FlowController | undefined) => {
   });
 };
 
-const activeFlowController = useActiveFlowController(initEmitter, initEmitter);
+const flowController = useFlowController(props.flowId, initEmitter, initEmitter);
 </script>
 
 <style scoped lang="scss">
