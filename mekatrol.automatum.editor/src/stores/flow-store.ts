@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { type Flow } from '@/services/api-generated';
 import { blockTemplates } from '@/types/block-template';
-import { initFlowController, type FlowController } from '@/types/flow-controller';
+import { initFlowController, type FlowController } from '@/services/flow-controller';
 import { removeFlowEmitter } from '@/utils/event-emitter';
 
 const flows: Record<string, FlowController> = {};

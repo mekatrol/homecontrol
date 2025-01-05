@@ -1,5 +1,5 @@
 import mitt, { type Emitter } from 'mitt';
-import { type FlowController } from '@/types/flow-controller';
+import { type FlowController } from '@/services/flow-controller';
 import {
   BLOCK_IO_POINTER_DOWN,
   BLOCK_IO_POINTER_ENTER,

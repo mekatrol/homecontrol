@@ -1,7 +1,7 @@
 import type { Flow } from '@/services/api-generated';
 import { useAppStore } from '@/stores/app-store';
 import { useFlowStore } from '@/stores/flow-store';
-import type { FlowController } from '@/types/flow-controller';
+import type { FlowController } from '@/services/flow-controller';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch, type Ref } from 'vue';
 
