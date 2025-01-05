@@ -438,8 +438,7 @@
           "enabled",
           "id",
           "interval",
-          "key",
-          "label",
+          "name",
           "updated"
         ],
         "type": "object",
@@ -448,13 +447,10 @@
             "type": "string",
             "format": "uuid"
           },
-          "key": {
-            "type": "string"
-          },
           "enabled": {
             "type": "boolean"
           },
-          "label": {
+          "name": {
             "type": "string"
           },
           "description": {
@@ -687,8 +683,7 @@
           "description",
           "enabled",
           "id",
-          "key",
-          "label",
+          "name",
           "updated"
         ],
         "type": "object",
@@ -697,13 +692,10 @@
             "type": "string",
             "format": "uuid"
           },
-          "key": {
-            "type": "string"
-          },
           "enabled": {
             "type": "boolean"
           },
-          "label": {
+          "name": {
             "type": "string"
           },
           "description": {

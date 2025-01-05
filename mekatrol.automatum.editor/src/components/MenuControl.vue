@@ -1,35 +1,56 @@
 <template>
   <div class="menu">
     <div class="menu-item">
-      <button @click="emit('open')"><span class="material-symbols-outlined">folder</span>Open</button>
+      <button @click="emit('open')"><FontAwesomeIcon :icon="faFolder" />Open</button>
     </div>
     <div class="menu-item">
-      <button @click="emit('new')"><span class="material-symbols-outlined">add</span>New</button>
+      <button @click="emit('new')"><FontAwesomeIcon :icon="faPlus" />New</button>
     </div>
     <div
       v-if="isFlowOpen"
       class="menu-item"
     >
-      <button @click="emit('save')"><span class="material-symbols-outlined">save</span>Save</button>
+      <button @click="emit('save')"><FontAwesomeIcon :icon="faSave" />Save</button>
     </div>
     <div
       v-if="isFlowOpen"
       class="menu-item"
     >
-      <button @click="emit('close')"><span class="material-symbols-outlined">close</span>Close</button>
+      <button @click="emit('close')"><FontAwesomeIcon :icon="faClose" />Close</button>
+    </div>
+
+    <div
+      class="menu-item"
+      v-for="flow in flows"
+      :key="flow.id"
+    >
+      <button @click="emit('switch-flow', flow.id)">
+        <FontAwesomeIcon :icon="faChartDiagram" />
+        {{ flow.name }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useFlowStore } from '@/stores/flow-store';
+import { storeToRefs } from 'pinia';
+
+import { faClose, faChartDiagram, faSave, faFolder, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
 interface Props {
   isFlowOpen: boolean;
 }
 
 defineProps<Props>();
 
+const flowStore = useFlowStore();
+const { flows } = storeToRefs(flowStore);
+
 const emit = defineEmits<{
   (e: 'open'): void;
+  (e: 'switch-flow', flowId: string): void;
   (e: 'new'): void;
   (e: 'save'): void;
   (e: 'close'): void;
@@ -57,5 +78,9 @@ const emit = defineEmits<{
   flex-direction: row;
   align-items: center;
   gap: 0.3rem;
+}
+
+.menu-item button svg {
+  font-size: 1rem;
 }
 </style>

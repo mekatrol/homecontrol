@@ -51,9 +51,29 @@ end;
 
         modelBuilder
             .Entity<FlowEntity>()
+                .HasIndex(p => p.Name)
+                    .IsUnique();
+
+        modelBuilder
+            .Entity<FlowEntity>()
+                .Property(p => p.Name)
+                    .IsRequired();
+
+        modelBuilder
+            .Entity<FlowEntity>()
                 .Property(c => c.RowVersion)
                     .HasDefaultValue(1)
                     .IsRowVersion();
+
+        modelBuilder
+            .Entity<PointEntity>()
+                .HasIndex(p => p.Name)
+                    .IsUnique();
+
+        modelBuilder
+            .Entity<PointEntity>()
+                .Property(p => p.Name)
+                    .IsRequired();
 
         modelBuilder
             .Entity<PointEntity>()

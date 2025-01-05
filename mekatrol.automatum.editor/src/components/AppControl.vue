@@ -3,13 +3,17 @@
     <MenuControl
       :is-flow-open="!!flowId"
       @open="onOpenFlow"
+      @switch-flow="switchFlow"
       @new="onNewFlow"
       @save="onSaveFlow"
       @close="onCloseFlow"
     />
   </nav>
   <main>
-    <div v-if="flowId">
+    <div
+      v-if="flowId"
+      :key="flowId"
+    >
       <EditorControl :flow-id="flowId" />
     </div>
     <div>
@@ -51,6 +55,7 @@ import { useAppStore } from '@/stores/app-store';
 import { ref, watch } from 'vue';
 import type { Flow } from '@/services/api-generated';
 import { storeToRefs } from 'pinia';
+import { useFlowStore } from '@/stores/flow-store';
 
 const appStore = useAppStore();
 const { newFlow, saveFlow } = appStore;
@@ -59,6 +64,20 @@ const { activeFlow } = storeToRefs(appStore);
 const flowId = ref<string | undefined>(undefined);
 
 const showOpenDialog = ref(false);
+
+const switchFlow = (flowId: string) => {
+  // If a flow was active then close it
+  if (appStore.activeFlow) {
+    appStore.closeFlow(appStore.activeFlow.id, false);
+  }
+
+  const flowStore = useFlowStore();
+  const flow = flowStore.flows.find((f) => f.id == flowId);
+
+  if (flow) {
+    appStore.activeFlow = flow;
+  }
+};
 
 const onOpenFlow = () => {
   showOpenDialog.value = true;
@@ -73,7 +92,7 @@ const onOpenConfirm = async (): Promise<void> => {
 
   // If a flow was active then close it
   if (appStore.activeFlow) {
-    appStore.closeFlow(appStore.activeFlow.id);
+    appStore.closeFlow(appStore.activeFlow.id, true);
   }
 
   // Open the selected flow
@@ -90,7 +109,7 @@ const onOpenCancel = async (): Promise<void> => {
 
 const onCloseFlow = () => {
   if (activeFlow.value) {
-    appStore.closeFlow(activeFlow.value.id);
+    appStore.closeFlow(activeFlow.value.id, true);
   }
 };
 
@@ -107,7 +126,7 @@ const onFlowClickedClose = async (flowClicked: Flow): Promise<void> => {
 
 const onNewFlow = async () => {
   if (activeFlow.value) {
-    appStore.closeFlow(activeFlow.value.id);
+    appStore.closeFlow(activeFlow.value.id, true);
   }
 
   await newFlow(true);

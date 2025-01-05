@@ -36,8 +36,7 @@ public class FlowServiceTest : IntegrationTestBase
         {
             var flow = new Flow
             {
-                Label = "label1",
-                Key = "the.key",
+                Name = "label1",
                 Blocks = [],
                 Connections = []
             };
@@ -58,8 +57,7 @@ public class FlowServiceTest : IntegrationTestBase
             var flow = new Flow
             {
                 Id = Guid.NewGuid(),
-                Label = "label1",
-                Key = "the.key",
+                Name = "label1",
                 Blocks = [],
                 Connections = []
             };
@@ -80,8 +78,7 @@ public class FlowServiceTest : IntegrationTestBase
             var flow = new Flow
             {
                 Id = Guid.NewGuid(),
-                Label = "label1",
-                Key = "the.key",
+                Name = "label1",
                 Blocks = [],
                 Connections = []
             };
@@ -106,8 +103,7 @@ public class FlowServiceTest : IntegrationTestBase
             var flow = new Flow
             {
                 Id = Guid.Empty,
-                Label = "label1",
-                Key = "the.key",
+                Name = "label1",
                 Blocks = [],
                 Connections = []
             };
@@ -154,8 +150,7 @@ public class FlowServiceTest : IntegrationTestBase
                 var flow = new Flow
                 {
                     Id = id,
-                    Key = "the.key",
-                    Label = "label1",
+                    Name = "label1",
                     Blocks = [],
                     Connections = []
                 };
@@ -203,8 +198,7 @@ public class FlowServiceTest : IntegrationTestBase
                 var flow = new Flow
                 {
                     Id = id,
-                    Key = "the.key",
-                    Label = "label1",
+                    Name = "name1",
                     Blocks = [],
                     Connections = []
                 };
@@ -224,8 +218,7 @@ public class FlowServiceTest : IntegrationTestBase
                 var flow = new Flow
                 {
                     Id = id, // // Will be duplicate ID
-                    Key = "the.key.2",
-                    Label = "label2",
+                    Name = "name2",
                     Blocks = [],
                     Connections = []
                 };
@@ -244,26 +237,25 @@ public class FlowServiceTest : IntegrationTestBase
     }
 
     [TestMethod]
-    public async Task TestCreateDuplicateKey()
+    public async Task TestCreateDuplicateName()
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var key = "the.key";
+            var name = "the name";
 
             await using (var scope = services.CreateAsyncScope())
             {
                 var flow = new Flow
                 {
                     Id = Guid.NewGuid(),
-                    Key = key,
-                    Label = "label1"
+                    Name = name
                 };
 
                 var flowService = services.GetRequiredService<IFlowService>();
 
                 var createdFlow = await flowService.Create(flow, cancellationToken);
 
-                Assert.AreEqual(key, createdFlow.Key);
+                Assert.AreEqual(name, createdFlow.Name);
             }
 
             // Clear tracking for previously created point
@@ -274,8 +266,7 @@ public class FlowServiceTest : IntegrationTestBase
                 var flow = new Flow
                 {
                     Id = Guid.NewGuid(),
-                    Key = key,
-                    Label = "label2"
+                    Name = name
                 };
 
                 var flowService = services.GetRequiredService<IFlowService>();
@@ -286,7 +277,7 @@ public class FlowServiceTest : IntegrationTestBase
                 });
 
                 Assert.AreEqual(1, ex.Errors.Count);
-                Assert.AreEqual($"A flow with the key '{key}' already exists.", ex.Errors[0].ErrorMessage);
+                Assert.AreEqual($"A flow with the name '{name}' already exists.", ex.Errors[0].ErrorMessage);
             }
         });
     }
@@ -303,8 +294,7 @@ public class FlowServiceTest : IntegrationTestBase
             var flow = new Flow
             {
                 Id = id,
-                Key = "the.key",
-                Label = "label1",
+                Name = "label1",
                 Blocks = [],
                 Connections = []
             };
@@ -316,8 +306,8 @@ public class FlowServiceTest : IntegrationTestBase
             var flowCopy1 = await flowService.Get(flow.Id, cancellationToken);
             var flowCopy2 = await flowService.Get(flow.Id, cancellationToken);
 
-            flowCopy1.Label = "label2";
-            flowCopy2.Label = "label3";
+            flowCopy1.Name = "label2";
+            flowCopy2.Name = "label3";
 
             await flowService.Update(flowCopy1, cancellationToken);
 

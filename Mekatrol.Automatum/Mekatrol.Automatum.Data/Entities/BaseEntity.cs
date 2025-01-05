@@ -4,6 +4,8 @@ public class BaseEntity
 {
     public Guid Id { get; set; } = Guid.Empty;
 
+    public string Name { get; set; } = string.Empty;
+
     public string Json { get; set; } = string.Empty;
 
     public DateTimeOffset Created { get; set; }

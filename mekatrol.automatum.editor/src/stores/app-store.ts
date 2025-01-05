@@ -92,13 +92,15 @@ export const useAppStore = defineStore('app', () => {
     );
   };
 
-  const closeFlow = (flowId: string): void => {
+  const closeFlow = (flowId: string, removeFromStore: boolean): void => {
     // Clear active flow if it is the flow being closed
     if (activeFlow.value?.id === flowId) {
       activeFlow.value = undefined;
     }
 
-    deleteFlowController(flowId);
+    if (removeFromStore) {
+      deleteFlowController(flowId);
+    }
   };
 
   const isBusy = computed(() => isBusyCount.value > 0);

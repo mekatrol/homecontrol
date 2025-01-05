@@ -5,10 +5,11 @@ import { FlowController } from '@/services/flow-edit-controller';
 import { removeFlowEmitter } from '@/services/flow-event-emitter';
 import { ref, type Ref } from 'vue';
 
-const flowControllers: Record<string, Ref<FlowController | undefined>> = {};
-const newFlowControllers: Record<string, FlowController> = {};
-
 export const useFlowStore = defineStore('flow', () => {
+  const flowControllers: Record<string, Ref<FlowController | undefined>> = {};
+  const newFlowControllers: Record<string, FlowController> = {};
+  const flows = ref<Flow[]>([]);
+
   const addFlowController = (flow: Flow, isNew: boolean): Ref<FlowController | undefined> => {
     let flowControllerRef: Ref<FlowController | undefined>;
 
@@ -22,6 +23,8 @@ export const useFlowStore = defineStore('flow', () => {
     } else {
       // Else add a new empty one
       flowControllerRef = addEmptyController(flow.id);
+
+      flows.value = [...flows.value, flow];
     }
 
     // Create new instance of flow controller
@@ -42,6 +45,7 @@ export const useFlowStore = defineStore('flow', () => {
   const deleteFlowController = (flowId: string): void => {
     removeFlowEmitter(flowId);
     delete flowControllers[flowId];
+    flows.value = flows.value.filter((f) => f.id != flowId);
   };
 
   const removeNewFlowController = (flowId: string): void => {
@@ -66,8 +70,9 @@ export const useFlowStore = defineStore('flow', () => {
   };
 
   return {
+    flows,
     blockTemplates,
-    flows: flowControllers,
+    flowControllers,
     addFlowController,
     addEmptyController,
     deleteFlowController,

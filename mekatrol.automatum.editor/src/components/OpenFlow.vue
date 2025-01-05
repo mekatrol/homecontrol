@@ -39,7 +39,7 @@ const rowClickedClose = (i: number): void => {
 
 const headers: TableHeader[] = [
   {
-    label: 'Label'
+    label: 'Name'
   },
   {
     label: 'Last updated'
@@ -58,7 +58,7 @@ const rows = computed(() => {
     const row: TableRow = {
       cells: [
         {
-          value: flow.label
+          value: flow.name
         },
         {
           value: formatDateTime(flow.updated)

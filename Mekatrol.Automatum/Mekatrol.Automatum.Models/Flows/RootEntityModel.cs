@@ -2,11 +2,9 @@
 
 public class RootEntityModel : BaseModel
 {
-    public string Key { get; set; } = string.Empty;
-
     public bool Enabled { get; set; } = true;
 
-    public string Label { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     public string Description { get; set; } = string.Empty;
 

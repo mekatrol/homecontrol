@@ -216,10 +216,7 @@ export const handleApiError = (
 const displayErrorMessage = (error: ApiError, action: string): void => {
   // A HTTP 409 (conflict) indicates update concurrency exception
   if (error.errorType === ApiErrorType.Conflict) {
-    showErrorMessage(
-      `${action} failed because the data has been modified by '${error.errors[0].errorMessage}' since you started editing.` +
-        'Please reload the page and try again. Reloading will reset any changes that you have made.'
-    );
+    showErrorMessage(`${error.errors[0].errorMessage}`);
   }
 
   // A HTTP 404 (not found)

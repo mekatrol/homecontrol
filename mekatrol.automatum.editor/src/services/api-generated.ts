@@ -19,9 +19,8 @@ export enum BlockSide {
 export interface Flow {
   /** @format uuid */
   id: string;
-  key: string;
   enabled: boolean;
-  label: string;
+  name: string;
   description: string;
   /** @format date-time */
   created: string;
@@ -105,9 +104,8 @@ export interface PingModel {
 export interface Point {
   /** @format uuid */
   id: string;
-  key: string;
   enabled: boolean;
-  label: string;
+  name: string;
   description: string;
   /** @format date-time */
   created: string;

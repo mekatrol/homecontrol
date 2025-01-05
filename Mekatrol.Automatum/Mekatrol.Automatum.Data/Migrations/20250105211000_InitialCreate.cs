@@ -16,6 +16,7 @@ namespace Mekatrol.Automatum.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     Json = table.Column<string>(type: "TEXT", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
@@ -31,6 +32,7 @@ namespace Mekatrol.Automatum.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     Json = table.Column<string>(type: "TEXT", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
@@ -40,6 +42,18 @@ namespace Mekatrol.Automatum.Data.Migrations
                 {
                     table.PrimaryKey("PK_Points", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Flows_Name",
+                table: "Flows",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Points_Name",
+                table: "Points",
+                column: "Name",
+                unique: true);
         }
 
         /// <inheritdoc />

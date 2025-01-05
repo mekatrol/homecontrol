@@ -37,7 +37,7 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
 
             model.Id = Guid.NewGuid();
             model.Enabled = true;
-            model.Key = "a.new.flow";
+            model.Name = $"<New {typeof(TModel).Name}>";
 
             return model;
         }
@@ -54,9 +54,9 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
 
     public async virtual Task<TModel> Create(TModel model, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(model.Key))
+        if (string.IsNullOrWhiteSpace(model.Name))
         {
-            throw KeyMissingException(model.Id);
+            throw NameMissingException(model.Id);
         }
 
         var dateTime = DateTimeOffset.UtcNow;
@@ -69,6 +69,7 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
         var entity = Activator.CreateInstance<TEntity>()!;
 
         entity.Id = model.Id; // If caller specified an empty guid then create a new ID
+        entity.Name = model.Name;
         entity.Json = JsonSerializer.Serialize(model, JsonSerializerExtensions.ApiSerializerOptions);
         entity.Created = dateTime;
         entity.Updated = dateTime;
@@ -87,6 +88,11 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
                 {
                     throw IdAlreadyExistsException(model.Id);
                 }
+
+                if (ex.InnerException.Message.Contains($"UNIQUE constraint failed: {typeof(TModel).Name}s.{nameof(BaseEntity.Name)}"))
+                {
+                    throw NameAlreadyExistsException(model.Name);
+                }
             }
             throw;
         }
@@ -96,9 +102,9 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
 
     public async virtual Task<TModel> Update(TModel model, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(model.Key))
+        if (string.IsNullOrWhiteSpace(model.Name))
         {
-            throw KeyMissingException(model.Id);
+            throw NameMissingException(model.Id);
         }
 
         if (model.Id == Guid.Empty)
@@ -111,6 +117,7 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
 
         model.Updated = DateTimeOffset.UtcNow;
 
+        existing.Name = model.Name;
         existing.Updated = model.Updated;
 
         existing.Json = JsonSerializer.Serialize(model, JsonSerializerExtensions.ApiSerializerOptions);
@@ -123,6 +130,17 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
         {
             // The model has been updated since it was fetched
             throw OptimisticConcurrencyException(model.Id);
+        }
+        catch (Exception ex)
+        {
+            if (ex.InnerException != null)
+            {
+                if (ex.InnerException.Message.Contains($"UNIQUE constraint failed: {typeof(TModel).Name}s.{nameof(BaseEntity.Name)}"))
+                {
+                    throw NameAlreadyExistsException(model.Name);
+                }
+            }
+            throw;
         }
 
         return JsonSerializer.Deserialize<TModel>(existing.Json, JsonSerializerExtensions.ApiSerializerOptions)!;
@@ -143,13 +161,13 @@ internal abstract class EntityService<TModel, TEntity>(IAutomatumDbContext dbCon
 
     protected static NotFoundException IdNotFoundException(Guid id) => new($"A {typeof(TModel).Name.ToLower()} with the ID '{id}' was not found.");
 
-    protected static BadRequestException KeyMissingException(Guid id) => new($"The {typeof(TModel).Name.ToLower()} with the ID '{id}' has a missing or invalid key.");
+    protected static BadRequestException NameMissingException(Guid id) => new($"The {typeof(TModel).Name.ToLower()} with the ID '{id}' has a missing or invalid name.");
 
     protected static InternalServerException CouldNotDeserializeException(Guid id) => new($"The {typeof(TModel).Name.ToLower()} with ID '{id}' could not be deserialized.");
 
     protected static ConflictException IdAlreadyExistsException(Guid id) => new($"A {typeof(TModel).Name.ToLower()} with the ID '{id}' already exists.");
 
-    protected static ConflictException KeyAlreadyExistsException(string key) => new($"A {typeof(TModel).Name.ToLower()} with the key '{key}' already exists.");
+    protected static ConflictException NameAlreadyExistsException(string name) => new($"A {typeof(TModel).Name.ToLower()} with the name '{name}' already exists.");
 
     protected static ConflictException OptimisticConcurrencyException(Guid id) => new($"The {typeof(TModel).Name.ToLower()} with the ID '{id}' has changed, you need to fetch the latest version and update it.");
 }

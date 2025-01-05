@@ -17,12 +17,12 @@
       />
     </div>
     <div class="form-group">
-      <label for="label">Label</label>
+      <label for="name">Name</label>
       <input
-        v-model="activeFlow.label"
-        placeholder="<enter flow label>"
+        v-model="activeFlow.name"
+        placeholder="<enter flow name>"
         type="text"
-        id="label"
+        id="name"
         :readonly="validations.flow.label.readonly"
         :required="validations.flow.label.required"
         :minlength="validations.flow.label.minLength"

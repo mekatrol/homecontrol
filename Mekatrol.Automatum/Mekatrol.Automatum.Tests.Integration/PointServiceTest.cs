@@ -36,8 +36,7 @@ public class PointServiceTest : IntegrationTestBase
         {
             var point = new Point
             {
-                Label = "label1",
-                Key = "the.key",
+                Name = "label1",
                 Description = "The description"
             };
 
@@ -57,8 +56,7 @@ public class PointServiceTest : IntegrationTestBase
             var point = new Point
             {
                 Id = Guid.NewGuid(),
-                Key = "the.key",
-                Label = "label1"
+                Name = "label1"
             };
 
             var pointService = services.GetRequiredService<IPointService>();
@@ -77,8 +75,7 @@ public class PointServiceTest : IntegrationTestBase
             var point = new Point
             {
                 Id = Guid.NewGuid(),
-                Key = "the.key",
-                Label = "label1"
+                Name = "label1"
             };
 
             var pointService = services.GetRequiredService<IPointService>();
@@ -101,8 +98,7 @@ public class PointServiceTest : IntegrationTestBase
             var point = new Point
             {
                 Id = Guid.Empty,
-                Label = "label1",
-                Key = "the.key"
+                Name = "label1",
             };
 
             var pointService = services.GetRequiredService<IPointService>();
@@ -147,8 +143,7 @@ public class PointServiceTest : IntegrationTestBase
                 var point = new Point
                 {
                     Id = id,
-                    Key = "the.key",
-                    Label = "label1"
+                    Name = "label1"
                 };
 
                 var pointService = services.GetRequiredService<IPointService>();
@@ -194,8 +189,7 @@ public class PointServiceTest : IntegrationTestBase
                 var point = new Point
                 {
                     Id = id,
-                    Key = "the.key",
-                    Label = "label1"
+                    Name = "label1"
                 };
 
                 var pointService = services.GetRequiredService<IPointService>();
@@ -213,8 +207,7 @@ public class PointServiceTest : IntegrationTestBase
                 var point = new Point
                 {
                     Id = id, // Will be duplicate ID
-                    Key = "the.key.2",
-                    Label = "label2"
+                    Name = "label2"
                 };
 
                 var pointService = services.GetRequiredService<IPointService>();
@@ -231,26 +224,25 @@ public class PointServiceTest : IntegrationTestBase
     }
 
     [TestMethod]
-    public async Task TestCreateDuplicateKey()
+    public async Task TestCreateDuplicateName()
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var key = "the.key";
+            var name = "the.name";
 
             await using (var scope = services.CreateAsyncScope())
             {
                 var point = new Point
                 {
                     Id = Guid.NewGuid(),
-                    Key = key,
-                    Label = "label1"
+                    Name = name
                 };
 
                 var pointService = services.GetRequiredService<IPointService>();
 
                 var createdPoint = await pointService.Create(point, cancellationToken);
 
-                Assert.AreEqual(key, createdPoint.Key);
+                Assert.AreEqual(name, createdPoint.Name);
             }
 
             // Clear tracking for previously created point
@@ -261,8 +253,7 @@ public class PointServiceTest : IntegrationTestBase
                 var point = new Point
                 {
                     Id = Guid.NewGuid(),
-                    Key = key,
-                    Label = "label2"
+                    Name = name
                 };
 
                 var pointService = services.GetRequiredService<IPointService>();
@@ -273,7 +264,7 @@ public class PointServiceTest : IntegrationTestBase
                 });
 
                 Assert.AreEqual(1, ex.Errors.Count);
-                Assert.AreEqual($"A point with the key '{key}' already exists.", ex.Errors[0].ErrorMessage);
+                Assert.AreEqual($"A point with the name '{name}' already exists.", ex.Errors[0].ErrorMessage);
             }
         });
     }
@@ -290,8 +281,7 @@ public class PointServiceTest : IntegrationTestBase
             var point = new Point
             {
                 Id = id,
-                Key = "the.key",
-                Label = "label1"
+                Name = "label1"
             };
 
             var pointService = services.GetRequiredService<IPointService>();
@@ -301,8 +291,8 @@ public class PointServiceTest : IntegrationTestBase
             var pointCopy1 = await pointService.Get(point.Id, cancellationToken);
             var pointCopy2 = await pointService.Get(point.Id, cancellationToken);
 
-            pointCopy1.Label = "label2";
-            pointCopy2.Label = "label3";
+            pointCopy1.Name = "label2";
+            pointCopy2.Name = "label3";
 
             await pointService.Update(pointCopy1, cancellationToken);
 
