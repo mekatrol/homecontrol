@@ -48,13 +48,13 @@
 import BlockTemplateControl from '@/components/BlockTemplateControl.vue';
 import SvgScrollbar from '@/components/SvgScrollbar.vue';
 import { useFlowStore } from '@/stores/flow-store';
-import { BLOCK_HEIGHT, BLOCK_POINTER_DOWN, BLOCK_POINTER_UP } from '@/constants';
+import { BLOCK_HEIGHT } from '@/constants';
 import type { BlockTemplate } from '@/types/block-template';
 import { v4 as uuidv4 } from 'uuid';
 import type { FlowBlock } from '@/services/api-generated';
-import { emitBlockEvent } from '@/services/event-emitter';
 import { ref } from 'vue';
 import { useActiveFlowController } from '@/composables/active-flow-controller';
+import { useFlowEmitter } from '@/composables/flow-emitter';
 
 interface Props {
   width: number;
@@ -68,6 +68,7 @@ const props = defineProps<Props>();
 const { blockTemplates } = useFlowStore();
 
 const activeFlowController = useActiveFlowController();
+const emitter = useFlowEmitter(activeFlowController);
 
 // This is the number of blocks that have been scrolled up
 const yScroll = ref(0);
@@ -114,7 +115,7 @@ const palettePointerUp = (e: PointerEvent) => {
 };
 
 const pointerDown = (e: PointerEvent, blockTemplate: BlockTemplate, x: number, y: number): void => {
-  if (!activeFlowController.value) {
+  if (!emitter.value) {
     return;
   }
 
@@ -132,15 +133,15 @@ const pointerDown = (e: PointerEvent, blockTemplate: BlockTemplate, x: number, y
     draggingAsNew: true
   };
 
-  emitBlockEvent(activeFlowController.value.flow.id, BLOCK_POINTER_DOWN, e, block);
+  emitter.value.emitBlockPointerDown(e, block);
 };
 
 const pointerUp = (e: PointerEvent) => {
-  if (!activeFlowController.value?.dragBlock) {
+  if (!emitter.value || !activeFlowController.value?.dragBlock) {
     return;
   }
 
-  emitBlockEvent(activeFlowController.value.flow.id, BLOCK_POINTER_UP, e, activeFlowController.value?.dragBlock);
+  emitter.value.emitBlockPointerUp(e, activeFlowController.value.dragBlock);
 };
 
 const focus = (_e: FocusEvent): void => {

@@ -1,25 +1,10 @@
 import { ZOrder } from '@/types/z-order';
-import {
-  configureFlowPointerEvents,
-  emitConnectingEvent,
-  emitDraggingBlockEvent,
-  type FlowBlockIOPointerEvent,
-  type FlowBlockPointerEvent
-} from '@/services/event-emitter';
+import { FlowEventEmitter, getFlowEmitter, type FlowBlockIOPointerEvent, type FlowBlockPointerEvent } from '@/services/event-emitter';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
 import type { FlowConnecting } from '@/types/flow-connecting';
-import {
-  BLOCK_PALETTE_WIDTH,
-  CONNECTING_END,
-  CONNECTING_END_LOCATION_CHANGE,
-  CONNECTING_START,
-  DRAGGING_BLOCK_END,
-  DRAGGING_BLOCK_MOVE,
-  DRAGGING_BLOCK_START,
-  MARKER_SIZE
-} from '@/constants';
 import type { Flow, Offset, Size } from '@/services/api-generated';
 import { v4 as uuidv4 } from 'uuid';
+import { BLOCK_PALETTE_WIDTH, MARKER_SIZE } from '@/constants';
 
 export class FlowController {
   public _flow: Flow;
@@ -38,7 +23,39 @@ export class FlowController {
     this._flow = flow;
     this._zOrder = new ZOrder(flow.blocks);
     this._blockPaletteWidth = BLOCK_PALETTE_WIDTH;
+
+    // Configure flow events
+    const emitter = getFlowEmitter(flow.id);
+    this.configureFlowPointerEvents(emitter);
   }
+
+  public configureFlowPointerEvents = (emitter: FlowEventEmitter): void => {
+    emitter.onBlockPointerDown((e) => {
+      this.blockPointerDown(e);
+    });
+
+    emitter.onBlockPointerUp((e) => {
+      this.blockPointerUp(e);
+    });
+
+    emitter.onBlockPointerMove((e) => {
+      this.dragBlockMove(e.pointerEvent);
+    });
+
+    emitter.onBlockIoPointerUp((_e) => {
+      this.drawingConnection = undefined;
+    });
+
+    emitter.onBlockIoPointerDown((e) => {
+      this.blockIOPointerDown(e);
+    });
+
+    emitter.onConnectionPointerDown((e) => {
+      this.clearSelectedItems();
+      this.drawingConnection = undefined;
+      this.selectedConnection = e.data;
+    });
+  };
 
   public get id() {
     return this._flow.id;
@@ -156,7 +173,8 @@ export class FlowController {
     this._dragBlockOffset = { x: e.pointerEvent.offsetX - e.data.offset.x, y: e.pointerEvent.offsetY - e.data.offset.y };
     this._dragBlockOriginalPosition = { x: e.data.offset.x, y: e.data.offset.y };
 
-    emitDraggingBlockEvent(this._flow.id, DRAGGING_BLOCK_START, this._dragBlock);
+    const emitter = getFlowEmitter(this._flow.id);
+    emitter.emitBlockDragStart(this._dragBlock);
   }
 
   public blockPointerUp(e: FlowBlockPointerEvent) {
@@ -180,7 +198,8 @@ export class FlowController {
     // Clear drawing connection
     this._drawingConnection = undefined;
 
-    emitDraggingBlockEvent(this._flow.id, DRAGGING_BLOCK_END, undefined);
+    const emitter = getFlowEmitter(this._flow.id);
+    emitter.emitBlockDragEnd();
   }
 
   public blockIOPointerDown(e: FlowBlockIOPointerEvent) {
@@ -195,7 +214,8 @@ export class FlowController {
 
     this._drawingConnection = connecting;
 
-    emitConnectingEvent(this._flow.id, CONNECTING_START, this._drawingConnection);
+    const emitter = getFlowEmitter(this._flow.id);
+    emitter.emitConnectingStart(this._drawingConnection);
   }
 
   public dragBlockMove = (e: PointerEvent): void => {
@@ -227,7 +247,8 @@ export class FlowController {
       block.dragLocationHasBeenValid = true;
     }
 
-    emitDraggingBlockEvent(this._flow.id, DRAGGING_BLOCK_MOVE, block);
+    const emitter = getFlowEmitter(this._flow.id);
+    emitter.emitBlockDragMove(block);
   };
 
   public dragConnectionMove = (e: PointerEvent): void => {
@@ -254,7 +275,8 @@ export class FlowController {
     // Update end offset to pointer offset
     this._drawingConnection.endLocation = { x: e.offsetX - this._blockPaletteWidth, y: e.offsetY };
 
-    emitConnectingEvent(this._flow.id, CONNECTING_END_LOCATION_CHANGE, this._drawingConnection);
+    const emitter = getFlowEmitter(this._flow.id);
+    emitter.emitConnectingUpdate(this._drawingConnection);
 
     if (!block || !inputOutput) {
       // Clear any existing styles / hit info
@@ -433,12 +455,14 @@ export class FlowController {
   public pointerUp = (e: PointerEvent): void => {
     this._dragBlock = undefined;
 
+    const emitter = getFlowEmitter(this._flow.id);
+
     if (this._drawingConnection && this._drawingConnectionEndPin) {
       const connection = this.dragConnectionCreateConnection();
-      emitConnectingEvent(this._flow.id, CONNECTING_END, connection);
+      emitter.emitConnectingEnd(connection);
     } else {
       // No connection was made
-      emitConnectingEvent(this._flow.id, CONNECTING_END, undefined);
+      emitter.emitConnectingEnd(undefined);
     }
 
     if (e.target instanceof Element) {
@@ -531,15 +555,3 @@ export class FlowController {
     this._flow.connections = this._flow.connections.filter((c) => c != connection);
   };
 }
-
-// Initialise a new instance of a controller
-export const initFlowController = (flow: Flow): FlowController => {
-  // Create instance and add to dictionary
-  const flowController = new FlowController(flow);
-
-  // Pointer events
-  configureFlowPointerEvents(flowController);
-
-  // Return flow controller instance
-  return flowController;
-};

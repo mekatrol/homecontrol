@@ -11,12 +11,12 @@
       :fill-opacity="theme.connectionStyles.fillOpacity"
       :stroke="theme.connectionStyles.stroke"
       :stroke-width="theme.connectionStyles.strokeWidth"
-      @pointermove="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_MOVE, e, props.connecting)"
-      @pointerover="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_OVER, e, props.connecting)"
-      @pointerenter="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_ENTER, e, props.connecting)"
-      @pointerleave="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_LEAVE, e, props.connecting)"
-      @pointerdown="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_DOWN, e, props.connecting)"
-      @pointerup="(e) => emitPointerEvent(flowId, CONNECTING_POINTER_UP, e, props.connecting)"
+      @pointermove="(e) => emitter!.emitConnectingPointerMove(e, connecting)"
+      @pointerover="(e) => emitter!.emitConnectingPointerOver(e, connecting)"
+      @pointerenter="(e) => emitter!.emitConnectingPointerEnter(e, connecting)"
+      @pointerleave="(e) => emitter!.emitConnectingPointerLeave(e, connecting)"
+      @pointerdown="(e) => emitter!.emitConnectingPointerDown(e, connecting)"
+      @pointerup="(e) => emitter!.emitConnectingPointerUp(e, connecting)"
       zOrder="100"
     />
 
@@ -46,22 +46,14 @@
 import { generateCubicBezierPoints } from '@/utils/cubic-spline';
 import { cubicBezierToSvg } from '@/utils/svg-generator';
 import { computed, ref } from 'vue';
-import { emitPointerEvent, useEmitter } from '@/services/event-emitter';
-import {
-  CONNECTING_POINTER_MOVE,
-  CONNECTING_POINTER_OVER,
-  CONNECTING_POINTER_ENTER,
-  CONNECTING_POINTER_LEAVE,
-  CONNECTING_POINTER_DOWN,
-  CONNECTING_POINTER_UP,
-  BLOCK_IO_SIZE,
-  CONNECTING_END_LOCATION_CHANGE,
-  CONNECTING_START
-} from '@/constants';
+import { BLOCK_IO_SIZE } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
 import type { FlowConnecting } from '@/types/flow-connecting';
 import type { InputOutput, Offset } from '@/services/api-generated';
 import { useActiveFlowController } from '@/composables/active-flow-controller';
+import { useFlowEmitter } from '@/composables/flow-emitter';
+import type { FlowController } from '@/services/flow-controller';
+import type { FlowEventEmitter } from '@/services/event-emitter';
 
 interface Props {
   flowId: string;
@@ -116,24 +108,23 @@ const svg = computed(() => {
 
 const { theme } = useThemeStore();
 
-const initEmitter = () => {
-  if (!activeFlowController.value) {
+const initEmitter = (_flowController: FlowController | undefined, emitter: FlowEventEmitter | undefined) => {
+  if (!emitter) {
     return;
   }
 
-  const emitter = useEmitter(props.flowId);
-
-  emitter.on(CONNECTING_START, (e) => {
-    startOffset.value = calculateStartOffset(e!);
+  emitter.onConnectingStart((e) => {
+    startOffset.value = calculateStartOffset(e.data!);
     endOffset.value = startOffset.value;
   });
 
-  emitter.on(CONNECTING_END_LOCATION_CHANGE, (e) => {
-    endOffset.value = e!.endLocation;
+  emitter.onConnectingUpdate((e) => {
+    endOffset.value = e.data!.endLocation;
   });
 };
 
 const activeFlowController = useActiveFlowController(initEmitter, initEmitter);
+const emitter = useFlowEmitter(activeFlowController);
 </script>
 
 <style scoped lang="scss">

@@ -18,12 +18,12 @@
       :fill-opacity="blockStyles.opacity"
       :stroke="blockStyles.stroke"
       :stroke-width="`${block.selected ? theme.blockStyles.strokeWidthSelected : theme.blockStyles.strokeWidth}`"
-      @pointermove="(e) => emit(BLOCK_POINTER_MOVE, e)"
-      @pointerover="(e) => emit(BLOCK_POINTER_OVER, e)"
-      @pointerenter="(e) => emit(BLOCK_POINTER_ENTER, e)"
-      @pointerleave="(e) => emit(BLOCK_POINTER_LEAVE, e)"
-      @pointerdown="(e) => emit(BLOCK_POINTER_DOWN, e)"
-      @pointerup="(e) => emit(BLOCK_POINTER_UP, e)"
+      @pointermove="(e) => emitter!.emitBlockPointerMove(e, block)"
+      @pointerover="(e) => emitter!.emitBlockPointerOver(e, block)"
+      @pointerenter="(e) => emitter!.emitBlockPointerEnter(e, block)"
+      @pointerleave="(e) => emitter!.emitBlockPointerLeave(e, block)"
+      @pointerdown="(e) => emitter!.emitBlockPointerDown(e, block)"
+      @pointerup="(e) => emitter!.emitBlockPointerUp(e, block)"
     ></rect>
     <path
       v-else
@@ -33,12 +33,12 @@
       :stroke="blockStyles.stroke"
       :stroke-width="`${block.selected ? theme.blockStyles.strokeWidthSelected : theme.blockStyles.strokeWidth}`"
       style="stroke-linejoin: round; stroke-linecap: round"
-      @pointermove="(e) => emit(BLOCK_POINTER_MOVE, e)"
-      @pointerover="(e) => emit(BLOCK_POINTER_OVER, e)"
-      @pointerenter="(e) => emit(BLOCK_POINTER_ENTER, e)"
-      @pointerleave="(e) => emit(BLOCK_POINTER_LEAVE, e)"
-      @pointerdown="(e) => emit(BLOCK_POINTER_DOWN, e)"
-      @pointerup="(e) => emit(BLOCK_POINTER_UP, e)"
+      @pointermove="(e) => emitter!.emitBlockPointerMove(e, block)"
+      @pointerover="(e) => emitter!.emitBlockPointerOver(e, block)"
+      @pointerenter="(e) => emitter!.emitBlockPointerEnter(e, block)"
+      @pointerleave="(e) => emitter!.emitBlockPointerLeave(e, block)"
+      @pointerdown="(e) => emitter!.emitBlockPointerDown(e, block)"
+      @pointerup="(e) => emitter!.emitBlockPointerUp(e, block)"
     />
 
     <!-- Block icon -->
@@ -54,12 +54,12 @@
       :svg-strokeWidth="theme.blockIconStyles.svg.strokeWidth"
       :background-fill="iconStyles.fill"
       :background-opacity="iconStyles.opacity"
-      @pointermove="(e) => emit(BLOCK_POINTER_MOVE, e)"
-      @pointerover="(e) => emit(BLOCK_POINTER_OVER, e)"
-      @pointerenter="(e) => emit(BLOCK_POINTER_ENTER, e)"
-      @pointerleave="(e) => emit(BLOCK_POINTER_LEAVE, e)"
-      @pointerdown="(e) => emit(BLOCK_POINTER_DOWN, e)"
-      @pointerup="(e) => emit(BLOCK_POINTER_UP, e)"
+      @pointermove="(e) => emitter!.emitBlockPointerMove(e, block)"
+      @pointerover="(e) => emitter!.emitBlockPointerOver(e, block)"
+      @pointerenter="(e) => emitter!.emitBlockPointerEnter(e, block)"
+      @pointerleave="(e) => emitter!.emitBlockPointerLeave(e, block)"
+      @pointerdown="(e) => emitter!.emitBlockPointerDown(e, block)"
+      @pointerup="(e) => emitter!.emitBlockPointerUp(e, block)"
     />
 
     <!-- Icon border -->
@@ -123,23 +123,14 @@ import InputOutputControl from '@/components/InputOutputControl.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
 import type { MarkerShape } from '@/types/marker-shape';
 import { computed, ref } from 'vue';
-import { emitBlockEvent, useEmitter, type FlowEvents } from '@/services/event-emitter';
-import {
-  MARKER_OFFSET_X,
-  MARKER_OFFSET_Y,
-  MARKER_SIZE,
-  BLOCK_POINTER_MOVE,
-  BLOCK_POINTER_OVER,
-  BLOCK_POINTER_ENTER,
-  BLOCK_POINTER_LEAVE,
-  BLOCK_POINTER_DOWN,
-  BLOCK_POINTER_UP,
-  DRAGGING_BLOCK_MOVE
-} from '@/constants';
+import { FlowEventEmitter } from '@/services/event-emitter';
+import { MARKER_OFFSET_X, MARKER_OFFSET_Y, MARKER_SIZE } from '@/constants';
 import { useThemeStore } from '@/stores/theme-store';
 import { leftPointedRect, rightPointedRect } from '@/utils/svg-generator';
 import type { FlowBlock, Offset } from '@/services/api-generated';
 import { useActiveFlowController } from '@/composables/active-flow-controller';
+import type { FlowController } from '@/services/flow-controller';
+import { useFlowEmitter } from '@/composables/flow-emitter';
 
 const textGapX = 7;
 const textGapY = 5;
@@ -220,33 +211,24 @@ const iconBorderPath = computed(() => {
   return `M ${iconSize.value + 1.5} ${0.5} l 0 ${iconSize.value - 1}`;
 });
 
-const initEmitter = () => {
-  if (!activeFlowController.value) {
+const initEmitter = (_flowController: FlowController | undefined, emitter: FlowEventEmitter | undefined) => {
+  if (!emitter) {
     return;
   }
 
-  const emitter = useEmitter(activeFlowController.value.flow.id);
-
-  emitter.on(DRAGGING_BLOCK_MOVE, (b) => {
-    if (b.id === props.block.id) {
+  emitter.onDraggingBlockMove((e) => {
+    if (e.data!.id === props.block.id) {
       // This block is being dragged from the palette
 
       // Make copy of offset to trigger reactive event
-      const offset = { x: b.offset.x, y: b.offset.y };
+      const offset = { x: e.data!.offset.x, y: e.data!.offset.y };
       blockOffset.value = offset;
     }
   });
 };
 
-const emit = (event: keyof FlowEvents, e: PointerEvent) => {
-  if (!activeFlowController.value) {
-    return;
-  }
-
-  emitBlockEvent(activeFlowController.value.flow.id, event, e, props.block);
-};
-
 const activeFlowController = useActiveFlowController(initEmitter, initEmitter);
+const emitter = useFlowEmitter(activeFlowController);
 
 const markers = computed((): MarkerShape[] => {
   if (!props.block) {

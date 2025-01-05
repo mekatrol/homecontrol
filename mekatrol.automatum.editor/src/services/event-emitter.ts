@@ -1,36 +1,50 @@
-import mitt, { type Emitter } from 'mitt';
+import mitt, { type Emitter, type Handler } from 'mitt';
 import { type FlowController } from '@/services/flow-controller';
-import {
-  BLOCK_IO_POINTER_DOWN,
-  BLOCK_IO_POINTER_ENTER,
-  BLOCK_IO_POINTER_LEAVE,
-  BLOCK_IO_POINTER_MOVE,
-  BLOCK_IO_POINTER_OVER,
-  BLOCK_IO_POINTER_UP,
-  BLOCK_POINTER_DOWN,
-  BLOCK_POINTER_ENTER,
-  BLOCK_POINTER_LEAVE,
-  BLOCK_POINTER_MOVE,
-  BLOCK_POINTER_OVER,
-  BLOCK_POINTER_UP,
-  CONNECTING_POINTER_DOWN,
-  CONNECTING_POINTER_ENTER,
-  CONNECTING_POINTER_LEAVE,
-  CONNECTING_POINTER_MOVE,
-  CONNECTING_POINTER_OVER,
-  CONNECTING_POINTER_UP,
-  CONNECTION_POINTER_DOWN,
-  CONNECTION_POINTER_ENTER,
-  CONNECTION_POINTER_LEAVE,
-  CONNECTION_POINTER_MOVE,
-  CONNECTION_POINTER_OVER,
-  CONNECTION_POINTER_UP
-} from '@/constants';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
 import type { FlowConnecting } from '@/types/flow-connecting';
 
-export interface FlowPointerEvent<T> {
+const BLOCK_POINTER_MOVE = 'blockPointerMove';
+const BLOCK_POINTER_OVER = 'blockPointerOver';
+const BLOCK_POINTER_ENTER = 'blockPointerEnter';
+const BLOCK_POINTER_LEAVE = 'blockPointerLeave';
+const BLOCK_POINTER_DOWN = 'blockPointerDown';
+const BLOCK_POINTER_UP = 'blockPointerUp';
+const BLOCK_IO_POINTER_MOVE = 'blockIOPointerMove';
+const BLOCK_IO_POINTER_OVER = 'blockIOPointerOver';
+const BLOCK_IO_POINTER_ENTER = 'blockIOPointerEnter';
+const BLOCK_IO_POINTER_LEAVE = 'blockIOPointerLeave';
+const BLOCK_IO_POINTER_DOWN = 'blockIOPointerDown';
+const BLOCK_IO_POINTER_UP = 'blockIOPointerUp';
+const CONNECTION_POINTER_MOVE = 'connectionPointerMove';
+const CONNECTION_POINTER_OVER = 'connectionPointerOver';
+const CONNECTION_POINTER_ENTER = 'connectionPointerEnter';
+const CONNECTION_POINTER_LEAVE = 'connectionPointerLeave';
+const CONNECTION_POINTER_DOWN = 'connectionPointerDown';
+const CONNECTION_POINTER_UP = 'connectionPointerUp';
+
+// Fired when a new connection is starting
+export const CONNECTING_START = 'connectingStart';
+
+// Fired a new connection is finished
+export const CONNECTING_END = 'connectingEnd';
+
+// Fired when the mouse is moving for a new connection
+export const CONNECTING_UPDATE = 'connectingUpdate';
+
+// Fired when dragging block has starting
+export const DRAGGING_BLOCK_START = 'draggingBlockStart';
+
+// Fired dragging block has finished
+export const DRAGGING_BLOCK_END = 'draggingBlockEnd';
+
+// Fired when dragging block moved
+export const DRAGGING_BLOCK_MOVE = 'draggingBlockMove';
+
+export interface FlowEventData<T> {
   data: T;
+}
+
+export interface FlowPointerEvent<T> extends FlowEventData<T> {
   pointerEvent: PointerEvent;
 }
 
@@ -48,7 +62,11 @@ export interface FlowConnectionPointerEvent extends FlowPointerEvent<FlowConnect
 // A pointer event from a flow connecting
 export interface FlowConnectingPointerEvent extends FlowPointerEvent<FlowConnecting> {}
 
-export type FlowEvents = {
+export interface FlowConnectingEvent extends FlowEventData<FlowConnecting | undefined> {}
+
+export interface FlowBlockDraggingEvent extends FlowEventData<FlowBlock | undefined> {}
+
+export type FlowEventType = {
   /*
    * Block pointer events
    */
@@ -70,16 +88,6 @@ export type FlowEvents = {
   blockIOPointerUp: FlowBlockIOPointerEvent;
 
   /*
-   * Connecting pointer events
-   */
-  connectingPointerMove: FlowConnectingPointerEvent;
-  connectingPointerOver: FlowConnectingPointerEvent;
-  connectingPointerEnter: FlowConnectingPointerEvent;
-  connectingPointerLeave: FlowConnectingPointerEvent;
-  connectingPointerDown: FlowConnectingPointerEvent;
-  connectingPointerUp: FlowConnectingPointerEvent;
-
-  /*
    * Connection pointer events
    */
   connectionPointerMove: FlowConnectionPointerEvent;
@@ -92,27 +100,27 @@ export type FlowEvents = {
   /*
    * Connecting events
    */
-  connectingStart: FlowConnecting;
-  connectingEnd: FlowConnection | undefined;
-  connectingEndLocationChange: FlowConnecting;
+  connectingStart: FlowConnectingEvent;
+  connectingEnd: FlowConnectingEvent;
+  connectingUpdate: FlowConnectingEvent;
 
   /*
    * Block dragging events
    */
-  draggingBlockStart: FlowBlock;
-  draggingBlockEnd: FlowBlock | undefined;
-  draggingBlockMove: FlowBlock;
+  draggingBlockStart: FlowBlockDraggingEvent;
+  draggingBlockEnd: FlowBlockDraggingEvent;
+  draggingBlockMove: FlowBlockDraggingEvent;
 };
 
 // We need a flow emitter per flow (use ID as key)
-const emitters: Record<string, Emitter<FlowEvents>> = {};
+const emitters: Record<string, FlowEventEmitter> = {};
 
-export const getFlowEmitter = (flowId: string): Emitter<FlowEvents> => {
+export const getFlowEmitter = (flowId: string): FlowEventEmitter => {
   if (flowId in emitters) {
     return emitters[flowId];
   }
 
-  const emitter = mitt<FlowEvents>();
+  const emitter = new FlowEventEmitter(flowId);
 
   emitters[flowId] = emitter;
 
@@ -123,162 +131,282 @@ export const removeFlowEmitter = (flowId: string): void => {
   delete emitters[flowId];
 };
 
-export const emitPointerEvent = <T>(flowId: string, event: keyof FlowEvents, e: PointerEvent, data: T): boolean => {
-  const emitter = getFlowEmitter(flowId);
-  emitter.emit(event, {
-    data: data,
-    pointerEvent: e
-  } as FlowConnectingPointerEvent);
-  e.preventDefault();
-  return false;
-};
+export class FlowEventEmitter {
+  public _flowId: string;
+  public _emitter: Emitter<FlowEventType>;
 
-export const emitConnectingEvent = (flowId: string, event: keyof FlowEvents, connecting: FlowConnecting | FlowConnection | undefined): boolean => {
-  const emitter = getFlowEmitter(flowId);
-  emitter.emit(event, connecting);
-  return false;
-};
+  constructor(flowId: string) {
+    this._flowId = flowId;
+    this._emitter = mitt<FlowEventType>();
+  }
 
-export const emitBlockEvent = (flowId: string, event: keyof FlowEvents, e: PointerEvent, block: FlowBlock): boolean => {
-  const emitter = getFlowEmitter(flowId);
-  emitter.emit(event, {
-    data: block,
-    pointerEvent: e
-  });
+  public emitPointerEvent = <T>(event: keyof FlowEventType, e: PointerEvent, data: T): boolean => {
+    this._emitter.emit(event, {
+      data: data,
+      pointerEvent: e
+    } as FlowConnectingPointerEvent);
+    e.preventDefault();
+    return false;
+  };
 
-  e.preventDefault();
-  return false;
-};
+  public emitConnectingStart(connecting: FlowConnecting): void {
+    this.emitConnectingEvent(CONNECTING_START, connecting);
+  }
 
-export const emitDraggingBlockEvent = (flowId: string, event: keyof FlowEvents, connecting: FlowBlock | undefined): boolean => {
-  const emitter = getFlowEmitter(flowId);
-  emitter.emit(event, connecting);
-  return false;
-};
+  public onConnectingStart(handler: Handler<FlowConnectingEvent>) {
+    this._emitter.on(CONNECTING_START, (e) => {
+      handler(e);
+    });
+  }
 
-export const emitIOEvent = (flowId: string, event: keyof FlowEvents, e: PointerEvent, io: InputOutput, block: FlowBlock): boolean => {
-  const emitter = getFlowEmitter(flowId);
+  public onConnectingEnd(handler: Handler<FlowConnectingEvent>) {
+    this._emitter.on(CONNECTING_END, (e) => {
+      handler(e);
+    });
+  }
 
-  emitter.emit(event, {
-    inputOutput: io,
-    data: block,
-    pointerEvent: e
-  });
-  e.preventDefault();
-  return false;
-};
+  public onConnectingUpdate(handler: Handler<FlowConnectingEvent>) {
+    this._emitter.on(CONNECTING_UPDATE, (e) => {
+      handler(e);
+    });
+  }
 
-export const emitConnectionEvent = (flowId: string, event: keyof FlowEvents, e: PointerEvent, connection: FlowConnection): boolean => {
-  const emitter = getFlowEmitter(flowId);
+  public emitConnectingEnd(connection: FlowConnection | undefined): void {
+    this.emitConnectingEvent(CONNECTING_END, connection);
+  }
 
-  emitter.emit(event, {
-    data: connection,
-    pointerEvent: e
-  });
-  e.preventDefault();
-  return false;
-};
+  public emitConnectingUpdate(connecting: FlowConnecting): void {
+    this.emitConnectingEvent(CONNECTING_UPDATE, connecting);
+  }
 
-export const configureFlowPointerEvents = (flowController: FlowController): void => {
-  const emitter = getFlowEmitter(flowController.flow.id);
+  public emitConnectingEvent = (event: keyof FlowEventType, connecting: FlowConnecting | FlowConnection | undefined): boolean => {
+    this._emitter.emit(event, {
+      data: connecting
+    } as FlowConnectingEvent);
+    return false;
+  };
 
-  emitter.on(BLOCK_POINTER_ENTER, (_e: FlowBlockPointerEvent) => {
-    // console.log(`block pointer enter: ${e.data.id}`, e);
-  });
+  public emitConnectingPointerMove(e: PointerEvent, connecting: FlowConnecting): void {
+    this.emitConnectingPointerEvent(CONNECTION_POINTER_MOVE, e, connecting);
+  }
 
-  emitter.on(BLOCK_POINTER_LEAVE, (_e: FlowBlockPointerEvent) => {
-    // console.log(`block pointer leave: ${e.data.id}`, e);
-  });
+  public emitConnectingPointerOver(e: PointerEvent, connecting: FlowConnecting): void {
+    this.emitConnectingPointerEvent(CONNECTION_POINTER_OVER, e, connecting);
+  }
 
-  emitter.on(BLOCK_POINTER_DOWN, (e: FlowBlockPointerEvent) => {
-    flowController.blockPointerDown(e);
-  });
+  public emitConnectingPointerEnter(e: PointerEvent, connecting: FlowConnecting): void {
+    this.emitConnectingPointerEvent(CONNECTION_POINTER_ENTER, e, connecting);
+  }
 
-  emitter.on(BLOCK_POINTER_UP, (e: FlowBlockPointerEvent) => {
-    flowController.blockPointerUp(e);
-  });
+  public emitConnectingPointerLeave(e: PointerEvent, connecting: FlowConnecting): void {
+    this.emitConnectingPointerEvent(CONNECTION_POINTER_LEAVE, e, connecting);
+  }
 
-  emitter.on(BLOCK_POINTER_MOVE, (e: FlowBlockPointerEvent) => {
-    flowController.dragBlockMove(e.pointerEvent);
-  });
+  public emitConnectingPointerDown(e: PointerEvent, connecting: FlowConnecting): void {
+    this.emitConnectingPointerEvent(CONNECTION_POINTER_DOWN, e, connecting);
+  }
 
-  emitter.on(BLOCK_POINTER_OVER, (_e) => {});
+  public emitConnectingPointerUp(e: PointerEvent, connecting: FlowConnecting): void {
+    this.emitConnectingPointerEvent(CONNECTION_POINTER_UP, e, connecting);
+  }
 
-  emitter.on(BLOCK_IO_POINTER_MOVE, (_e) => {
-    // console.log(`BLOCK_IO_POINTER_MOVE: ${e.data.id}`, e);
-  });
+  public emitConnectingPointerEvent(event: keyof FlowEventType, e: PointerEvent, connection: FlowConnecting): boolean {
+    this.emitEvent(event, {
+      data: connection,
+      pointerEvent: e
+    });
 
-  emitter.on(BLOCK_IO_POINTER_OVER, (_e) => {
-    // console.log(`BLOCK_IO_POINTER_OVER: ${e.data.id}`, e);
-  });
+    // Stop pointer event from propagating
+    e.preventDefault();
+    return false;
+  }
 
-  emitter.on(BLOCK_IO_POINTER_ENTER, (_e) => {
-    // console.log(`BLOCK_IO_POINTER_ENTER: ${e.data.id}`, e);
-  });
+  public emitBlockPointerMove(e: PointerEvent, block: FlowBlock) {
+    this.emitBlockEvent(BLOCK_POINTER_MOVE, e, block);
+  }
 
-  emitter.on(BLOCK_IO_POINTER_LEAVE, (_e) => {
-    // console.log(`BLOCK_IO_POINTER_LEAVE: ${e.data.id}`, e);
-  });
+  public onBlockPointerMove(handler: Handler<FlowBlockPointerEvent>) {
+    this._emitter.on(BLOCK_POINTER_MOVE, (e) => {
+      handler(e);
+    });
+  }
 
-  emitter.on(BLOCK_IO_POINTER_UP, (_e) => {
-    flowController.drawingConnection = undefined;
-  });
+  public emitBlockPointerOver(e: PointerEvent, block: FlowBlock) {
+    this.emitBlockEvent(BLOCK_POINTER_OVER, e, block);
+  }
 
-  emitter.on(BLOCK_IO_POINTER_DOWN, (e) => {
-    flowController.blockIOPointerDown(e);
-  });
+  public emitBlockPointerEnter(e: PointerEvent, block: FlowBlock) {
+    this.emitBlockEvent(BLOCK_POINTER_ENTER, e, block);
+  }
 
-  emitter.on(CONNECTING_POINTER_MOVE, (_e) => {
-    // console.log(`CONNECTING_POINTER_MOVE: ${_e.data}`, _e);
-  });
+  public emitBlockPointerLeave(e: PointerEvent, block: FlowBlock) {
+    this.emitBlockEvent(BLOCK_POINTER_LEAVE, e, block);
+  }
 
-  emitter.on(CONNECTING_POINTER_OVER, (_e) => {
-    // console.log(`CONNECTING_POINTER_OVER: ${_e.data}`, _e);
-  });
+  public emitBlockPointerDown(e: PointerEvent, block: FlowBlock) {
+    this.emitBlockEvent(BLOCK_POINTER_DOWN, e, block);
+  }
 
-  emitter.on(CONNECTING_POINTER_ENTER, (_e) => {
-    // console.log(`CONNECTING_POINTER_ENTER: ${_e.data}`, _e);
-  });
+  public onBlockPointerDown(handler: Handler<FlowBlockPointerEvent>) {
+    this._emitter.on(BLOCK_POINTER_DOWN, (e) => {
+      handler(e);
+    });
+  }
 
-  emitter.on(CONNECTING_POINTER_LEAVE, (_e) => {
-    // console.log(`CONNECTING_POINTER_LEAVE: ${_e.data}`, _e);
-  });
+  public emitBlockPointerUp(e: PointerEvent, block: FlowBlock) {
+    this.emitBlockEvent(BLOCK_POINTER_UP, e, block);
+  }
 
-  emitter.on(CONNECTING_POINTER_UP, (_e) => {
-    // console.log(`CONNECTING_POINTER_UP: ${_e.data}`, _e);
-  });
+  public onBlockPointerUp(handler: Handler<FlowBlockPointerEvent>) {
+    this._emitter.on(BLOCK_POINTER_UP, (e) => {
+      handler(e);
+    });
+  }
 
-  emitter.on(CONNECTING_POINTER_DOWN, (_e) => {
-    // console.log(`CONNECTING_POINTER_DOWN: ${_e.data}`, _e);
-  });
+  public emitBlockEvent = (event: keyof FlowEventType, e: PointerEvent, block: FlowBlock): boolean => {
+    this._emitter.emit(event, {
+      data: block,
+      pointerEvent: e
+    });
 
-  emitter.on(CONNECTION_POINTER_MOVE, (_e) => {
-    // console.log(`CONNECTION_POINTER_MOVE: ${_e.data}`, _e);
-  });
+    e.preventDefault();
+    return false;
+  };
 
-  emitter.on(CONNECTION_POINTER_OVER, (_e) => {
-    // console.log(`CONNECTION_POINTER_OVER: ${_e.data}`, _e);
-  });
+  public emitBlockDragStart(dragBlock: FlowBlock) {
+    this.emitDraggingBlockEvent(DRAGGING_BLOCK_START, dragBlock);
+  }
 
-  emitter.on(CONNECTION_POINTER_ENTER, (_e) => {
-    // console.log(`CONNECTION_POINTER_ENTER: ${_e.data}`, _e);
-  });
+  public onDraggingBlockStart(handler: Handler<FlowBlockDraggingEvent>) {
+    this._emitter.on(DRAGGING_BLOCK_START, (e) => {
+      handler(e);
+    });
+  }
 
-  emitter.on(CONNECTION_POINTER_LEAVE, (_e) => {
-    // console.log(`CONNECTION_POINTER_LEAVE: ${_e.data}`, _e);
-  });
+  public onDraggingBlockEnd(handler: Handler<FlowBlockDraggingEvent>) {
+    this._emitter.on(DRAGGING_BLOCK_END, (e) => {
+      handler(e);
+    });
+  }
 
-  emitter.on(CONNECTION_POINTER_UP, (_e) => {
-    // console.log(`CONNECTION_POINTER_UP: ${_e.data}`, _e);
-  });
+  public onDraggingBlockMove(handler: Handler<FlowBlockDraggingEvent>) {
+    this._emitter.on(DRAGGING_BLOCK_MOVE, (e) => {
+      handler(e);
+    });
+  }
 
-  emitter.on(CONNECTION_POINTER_DOWN, (e) => {
-    flowController.clearSelectedItems();
-    flowController.drawingConnection = undefined;
-    flowController.selectedConnection = e.data;
-  });
-};
+  public emitBlockDragEnd() {
+    this.emitDraggingBlockEvent(DRAGGING_BLOCK_END, undefined);
+  }
 
-export const useEmitter = (flowId: string): Emitter<FlowEvents> => {
-  return getFlowEmitter(flowId);
-};
+  public emitBlockDragMove(dragBlock: FlowBlock): void {
+    this.emitDraggingBlockEvent(DRAGGING_BLOCK_MOVE, dragBlock);
+  }
+
+  public emitDraggingBlockEvent = (event: keyof FlowEventType, connecting: FlowBlock | undefined): boolean => {
+    this._emitter.emit(event, {
+      data: connecting
+    });
+    return false;
+  };
+
+  public emitBlockIoPointerMove(e: PointerEvent, inputOutput: InputOutput, block: FlowBlock) {
+    this.emitIOEvent(BLOCK_IO_POINTER_MOVE, e, inputOutput, block);
+  }
+
+  public emitBlockIoPointerOver(e: PointerEvent, inputOutput: InputOutput, block: FlowBlock) {
+    this.emitIOEvent(BLOCK_IO_POINTER_OVER, e, inputOutput, block);
+  }
+
+  public emitBlockIoPointerEnter(e: PointerEvent, inputOutput: InputOutput, block: FlowBlock) {
+    this.emitIOEvent(BLOCK_IO_POINTER_ENTER, e, inputOutput, block);
+  }
+
+  public emitBlockIoPointerLeave(e: PointerEvent, inputOutput: InputOutput, block: FlowBlock) {
+    this.emitIOEvent(BLOCK_IO_POINTER_LEAVE, e, inputOutput, block);
+  }
+
+  public emitBlockIoPointerDown(e: PointerEvent, inputOutput: InputOutput, block: FlowBlock) {
+    this.emitIOEvent(BLOCK_IO_POINTER_DOWN, e, inputOutput, block);
+  }
+
+  public onBlockIoPointerDown(handler: Handler<FlowBlockIOPointerEvent>) {
+    this._emitter.on(BLOCK_IO_POINTER_DOWN, (e) => {
+      handler(e);
+    });
+  }
+
+  public emitBlockIoPointerUp(e: PointerEvent, inputOutput: InputOutput, block: FlowBlock) {
+    this.emitIOEvent(BLOCK_IO_POINTER_UP, e, inputOutput, block);
+  }
+
+  public onBlockIoPointerUp(handler: Handler<FlowBlockIOPointerEvent>) {
+    this._emitter.on(BLOCK_IO_POINTER_UP, (e) => {
+      handler(e);
+    });
+  }
+
+  public emitIOEvent = (event: keyof FlowEventType, e: PointerEvent, io: InputOutput, block: FlowBlock): boolean => {
+    this._emitter.emit(event, {
+      inputOutput: io,
+      data: block,
+      pointerEvent: e
+    });
+    e.preventDefault();
+    return false;
+  };
+
+  public emitConnectionPointerMove(e: PointerEvent, connection: FlowConnection): void {
+    this.emitConnectionPointerEvent(CONNECTION_POINTER_MOVE, e, connection);
+  }
+
+  public emitConnectionPointerOver(e: PointerEvent, connection: FlowConnection): void {
+    this.emitConnectionPointerEvent(CONNECTION_POINTER_OVER, e, connection);
+  }
+
+  public emitConnectionPointerEnter(e: PointerEvent, connection: FlowConnection): void {
+    this.emitConnectionPointerEvent(CONNECTION_POINTER_ENTER, e, connection);
+  }
+
+  public emitConnectionPointerLeave(e: PointerEvent, connection: FlowConnection): void {
+    this.emitConnectionPointerEvent(CONNECTION_POINTER_LEAVE, e, connection);
+  }
+
+  public emitConnectionPointerDown(e: PointerEvent, connection: FlowConnection): void {
+    this.emitConnectionPointerEvent(CONNECTION_POINTER_DOWN, e, connection);
+  }
+
+  public onConnectionPointerDown(handler: Handler<FlowConnectionPointerEvent>) {
+    this._emitter.on(CONNECTION_POINTER_DOWN, (e) => {
+      handler(e);
+    });
+  }
+
+  public emitConnectionPointerUp(e: PointerEvent, connection: FlowConnection): void {
+    this.emitConnectionPointerEvent(CONNECTION_POINTER_UP, e, connection);
+  }
+
+  public emitConnectionPointerEvent(event: keyof FlowEventType, e: PointerEvent, connection: FlowConnection): boolean {
+    this.emitEvent(event, {
+      data: connection,
+      pointerEvent: e
+    });
+
+    // Stop pointer event from propagating
+    e.preventDefault();
+    return false;
+  }
+
+  public emitEvent(
+    event: keyof FlowEventType,
+    eventData:
+      | FlowBlockPointerEvent
+      | FlowBlockIOPointerEvent
+      | FlowConnectionPointerEvent
+      | FlowConnectingPointerEvent
+      | FlowConnectingEvent
+      | FlowBlockDraggingEvent
+  ): void {
+    this._emitter.emit(event, eventData);
+  }
+}

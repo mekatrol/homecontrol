@@ -34,11 +34,11 @@ import ConnectionControl from '@/components/ConnectionControl.vue';
 import ConnectingControl from '@/components/ConnectingControl.vue';
 import BlockControl from '@/components/BlockControl.vue';
 import { ref } from 'vue';
-import { useEmitter } from '@/services/event-emitter';
-import { CONNECTING_END, CONNECTING_START, DRAGGING_BLOCK_END, DRAGGING_BLOCK_MOVE, DRAGGING_BLOCK_START } from '@/constants';
+import { FlowEventEmitter } from '@/services/event-emitter';
 import { type FlowConnecting } from '@/types/flow-connecting';
 import type { FlowBlock } from '@/services/api-generated';
 import { useActiveFlowController } from '@/composables/active-flow-controller';
+import type { FlowController } from '@/services/flow-controller';
 
 interface Props {
   width: number;
@@ -52,29 +52,28 @@ const dragBlock = ref<FlowBlock | undefined>(undefined);
 
 const connecting = ref<FlowConnecting | undefined>(undefined);
 
-const initEmitter = () => {
-  if (!activeFlowController.value) {
+const initEmitter = (_flowController: FlowController | undefined, emitter: FlowEventEmitter | undefined) => {
+  if (!emitter) {
     return;
   }
-  const emitter = useEmitter(activeFlowController.value.flow.id);
 
-  emitter.on(DRAGGING_BLOCK_START, (b) => {
-    dragBlock.value = b;
+  emitter.onDraggingBlockStart((e) => {
+    dragBlock.value = e.data;
   });
 
-  emitter.on(DRAGGING_BLOCK_END, (b) => {
-    dragBlock.value = b;
+  emitter.onDraggingBlockEnd((e) => {
+    dragBlock.value = e.data;
   });
 
-  emitter.on(DRAGGING_BLOCK_MOVE, (b) => {
-    dragBlock.value = b;
+  emitter.onDraggingBlockMove((e) => {
+    dragBlock.value = e.data;
   });
 
-  emitter.on(CONNECTING_START, (c) => {
-    connecting.value = c;
+  emitter.onConnectingStart((e) => {
+    connecting.value = e.data;
   });
 
-  emitter.on(CONNECTING_END, (_) => {
+  emitter.onConnectingEnd((_e) => {
     connecting.value = undefined;
   });
 };

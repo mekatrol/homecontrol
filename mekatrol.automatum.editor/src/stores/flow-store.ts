@@ -1,52 +1,54 @@
 import { defineStore } from 'pinia';
 import { type Flow } from '@/services/api-generated';
 import { blockTemplates } from '@/types/block-template';
-import { initFlowController, type FlowController } from '@/services/flow-controller';
+import { FlowController } from '@/services/flow-controller';
 import { removeFlowEmitter } from '@/services/event-emitter';
 
-const flows: Record<string, FlowController> = {};
-const newFlows: Record<string, FlowController> = {};
+const flowControllers: Record<string, FlowController> = {};
+const newFlowControllers: Record<string, FlowController> = {};
 
 export const useFlowStore = defineStore('flow', () => {
   const addFlow = (flow: Flow, isNew: boolean): FlowController => {
     // Does a flow with the specified ID already exist?
-    if (flow.id in flows) {
+    if (flow.id in flowControllers) {
       throw new Error(`A flow with the ID '${flow.id}' has already been added.`);
     }
 
-    const flowController = initFlowController(flow);
+    // Create new instance of flow controller
+    const flowController = new FlowController(flow);
 
-    flows[flow.id] = flowController;
+    // Add to flow controller dictionary
+    flowControllers[flow.id] = flowController;
 
     // If this is a new flow then we need to keep track of it being new
-    // for when calling the API
+    // for when calling the server API for post/put
     if (isNew) {
-      newFlows[flow.id] = flowController;
+      newFlowControllers[flow.id] = flowController;
     }
 
-    return flows[flow.id];
+    return flowControllers[flow.id];
   };
 
   const deleteFlow = (id: string): void => {
     removeFlowEmitter(id);
-    delete flows[id];
+    delete flowControllers[id];
   };
 
   const removeNewFlow = (id: string): void => {
-    delete newFlows[id];
+    delete newFlowControllers[id];
   };
 
   const getFlowController = (id: string): FlowController | undefined => {
-    if (!(id in flows)) {
+    if (!(id in flowControllers)) {
       return undefined;
     }
 
-    return flows[id];
+    return flowControllers[id];
   };
 
   const isNewFlow = (id: string): boolean => {
-    return id in newFlows;
+    return id in newFlowControllers;
   };
 
-  return { blockTemplates, flows, addFlow, deleteFlow, getFlowController, isNewFlow, removeNewFlow };
+  return { blockTemplates, flows: flowControllers, addFlow, deleteFlow, getFlowController, isNewFlow, removeNewFlow };
 });
