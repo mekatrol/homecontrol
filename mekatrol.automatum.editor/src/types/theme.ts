@@ -30,7 +30,7 @@ export type ThemeDefinition = {
   blockIconStyles: IconStyle;
   blockFunctionLabelStyles: ElementStyles;
   blockLabelStyles: ElementStyles;
-  blockIOStyles: ElementStyles;
+  blockIoStyles: ElementStyles;
   connectionStyles: ElementStyles;
 };
 
@@ -75,7 +75,7 @@ export const defaultTheme: ThemeDefinition = {
     strokeWidthSelected: '4px',
     radius: 3
   },
-  blockIOStyles: {
+  blockIoStyles: {
     color: '#eee',
     fill: '#333',
     fillOpacity: '100%',

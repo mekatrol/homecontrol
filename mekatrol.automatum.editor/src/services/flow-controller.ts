@@ -1,5 +1,5 @@
 import { ZOrder } from '@/types/z-order';
-import { FlowEventEmitter, getFlowEmitter, type FlowBlockIOPointerEvent, type FlowBlockPointerEvent } from '@/services/event-emitter';
+import { FlowEventEmitter, getFlowEmitter, type FlowBlockIoPointerEvent, type FlowBlockPointerEvent } from '@/services/event-emitter';
 import type { FlowBlock, InputOutput, FlowConnection } from '@/services/api-generated';
 import type { FlowConnecting } from '@/types/flow-connecting';
 import type { Flow, Offset, Size } from '@/services/api-generated';
@@ -47,7 +47,7 @@ export class FlowController {
     });
 
     emitter.onBlockIoPointerDown((e) => {
-      this.blockIOPointerDown(e);
+      this.blockIoPointerDown(e);
     });
 
     emitter.onConnectionPointerDown((e) => {
@@ -202,7 +202,7 @@ export class FlowController {
     emitter.emitBlockDragEnd();
   }
 
-  public blockIOPointerDown(e: FlowBlockIOPointerEvent) {
+  public blockIoPointerDown(e: FlowBlockIoPointerEvent) {
     this.clearSelectedItems();
 
     const connecting = {

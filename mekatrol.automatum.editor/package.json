@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite --open",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "npx eslint ./src && run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:e2e": "playwright test",

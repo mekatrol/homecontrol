@@ -5,7 +5,7 @@
     :class="block.draggingAsNew ? 'dragging-new' : ''"
   >
     <rect
-      v-if="!isIOBlock"
+      v-if="!isIoBlock"
       :class="`flow-block ${block.draggingAsNew ? 'dragging-new' : ''}${block.selected ? 'selected' : ''}`"
       focusable="true"
       :x="0"
@@ -90,7 +90,7 @@
     />
 
     <!-- Block markers -->
-    <div v-if="!isIOBlock">
+    <div v-if="!isIoBlock">
       <MarkerControl
         v-for="(marker, i) in markers"
         :key="i"
@@ -109,9 +109,9 @@
       :key="inputOutput.pin"
       :block="block"
       :inputOutput="inputOutput"
-      :fill-color="theme.blockIOStyles.fill"
-      :stroke-color="theme.blockIOStyles.stroke"
-      :stroke-width="theme.blockIOStyles.strokeWidth"
+      :fill-color="theme.blockIoStyles.fill"
+      :stroke-color="theme.blockIoStyles.stroke"
+      :stroke-width="theme.blockIoStyles.strokeWidth"
     />
   </g>
 </template>
@@ -151,7 +151,7 @@ interface Styles {
   stroke: string;
 }
 
-const isIOBlock = computed(() => {
+const isIoBlock = computed(() => {
   switch (props.block.functionType) {
     case 'BI':
     case 'BO':
