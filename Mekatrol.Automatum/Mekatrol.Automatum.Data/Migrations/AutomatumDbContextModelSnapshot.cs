@@ -19,8 +19,7 @@ namespace Mekatrol.Automatum.Data.Migrations
 
             modelBuilder.Entity("Mekatrol.Automatum.Data.Entities.FlowEntity", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("Created")
@@ -30,7 +29,7 @@ namespace Mekatrol.Automatum.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Key")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -45,7 +44,7 @@ namespace Mekatrol.Automatum.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Key")
                         .IsUnique();
 
                     b.ToTable("Flows");
@@ -53,8 +52,7 @@ namespace Mekatrol.Automatum.Data.Migrations
 
             modelBuilder.Entity("Mekatrol.Automatum.Data.Entities.PointEntity", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("Created")
@@ -64,7 +62,7 @@ namespace Mekatrol.Automatum.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Key")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -79,7 +77,7 @@ namespace Mekatrol.Automatum.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Key")
                         .IsUnique();
 
                     b.ToTable("Points");

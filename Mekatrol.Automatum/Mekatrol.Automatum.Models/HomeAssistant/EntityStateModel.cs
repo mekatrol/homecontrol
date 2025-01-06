@@ -14,8 +14,3 @@ public class EntityStateModel
 
     public DateTimeOffset LastUpdated { get; set; }
 }
-
-public class AttributesModel
-{
-    public string FriendlyName { get; set; } = string.Empty;
-}

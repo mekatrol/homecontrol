@@ -15,8 +15,8 @@ namespace Mekatrol.Automatum.Data.Migrations
                 name: "Flows",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Key = table.Column<string>(type: "TEXT", nullable: false),
                     Json = table.Column<string>(type: "TEXT", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
@@ -31,8 +31,8 @@ namespace Mekatrol.Automatum.Data.Migrations
                 name: "Points",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Key = table.Column<string>(type: "TEXT", nullable: false),
                     Json = table.Column<string>(type: "TEXT", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     Updated = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
@@ -44,15 +44,15 @@ namespace Mekatrol.Automatum.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Flows_Name",
+                name: "IX_Flows_Key",
                 table: "Flows",
-                column: "Name",
+                column: "Key",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Points_Name",
+                name: "IX_Points_Key",
                 table: "Points",
-                column: "Name",
+                column: "Key",
                 unique: true);
         }
 

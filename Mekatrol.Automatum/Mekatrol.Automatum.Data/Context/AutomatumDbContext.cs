@@ -51,12 +51,12 @@ end;
 
         modelBuilder
             .Entity<FlowEntity>()
-                .HasIndex(p => p.Name)
+                .HasIndex(p => p.Key)
                     .IsUnique();
 
         modelBuilder
             .Entity<FlowEntity>()
-                .Property(p => p.Name)
+                .Property(p => p.Key)
                     .IsRequired();
 
         modelBuilder
@@ -67,12 +67,12 @@ end;
 
         modelBuilder
             .Entity<PointEntity>()
-                .HasIndex(p => p.Name)
+                .HasIndex(p => p.Key)
                     .IsUnique();
 
         modelBuilder
             .Entity<PointEntity>()
-                .Property(p => p.Name)
+                .Property(p => p.Key)
                     .IsRequired();
 
         modelBuilder

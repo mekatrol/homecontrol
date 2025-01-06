@@ -2,6 +2,6 @@
 
 namespace Mekatrol.Automatum.Services;
 
-public interface IPointService : IEntityService<Point>
+public interface IFlowDbService : IDbService<Flow>
 {
 }

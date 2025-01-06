@@ -48,6 +48,15 @@ public class Program
                 });
             }
 
+            webAppBuilder.Services.Configure<HostOptions>(x =>
+            {
+                x.ServicesStartConcurrently = true;
+                x.ServicesStopConcurrently = true;
+
+                // Don't stop host if background service fails
+                x.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+            });
+
             // Initialise DB context
             webAppBuilder.Services.AddDbContext<IAutomatumDbContext, AutomatumDbContext>(
                 options => options.UseSqlite($"Data Source={nameof(Mekatrol)}.{nameof(Automatum)}.db".ToLower()),

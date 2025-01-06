@@ -20,7 +20,7 @@ public class FlowServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flowService = services.GetRequiredService<IFlowService>();
+            var flowService = services.GetRequiredService<IFlowDbService>();
 
             var flows = await flowService.GetList(cancellationToken);
 
@@ -36,16 +36,17 @@ public class FlowServiceTest : IntegrationTestBase
         {
             var flow = new Flow
             {
-                Name = "label1",
+                Id = Guid.Empty.ToString("D"),
+                Key = "key1",
                 Blocks = [],
                 Connections = []
             };
 
-            var flowService = services.GetRequiredService<IFlowService>();
+            var flowService = services.GetRequiredService<IFlowDbService>();
 
             var createdFlow = await flowService.Create(flow, cancellationToken);
 
-            Assert.AreNotEqual(Guid.Empty, createdFlow.Id);
+            Assert.AreNotEqual(Guid.Empty.ToString("D"), createdFlow.Id);
         });
     }
 
@@ -56,13 +57,13 @@ public class FlowServiceTest : IntegrationTestBase
         {
             var flow = new Flow
             {
-                Id = Guid.NewGuid(),
-                Name = "label1",
+                Id = Guid.NewGuid().ToString("D"),
+                Key = "key1",
                 Blocks = [],
                 Connections = []
             };
 
-            var flowService = services.GetRequiredService<IFlowService>();
+            var flowService = services.GetRequiredService<IFlowDbService>();
 
             var createdFlow = await flowService.Create(flow, cancellationToken);
 
@@ -77,13 +78,13 @@ public class FlowServiceTest : IntegrationTestBase
         {
             var flow = new Flow
             {
-                Id = Guid.NewGuid(),
-                Name = "label1",
+                Id = Guid.NewGuid().ToString("D"),
+                Key = "key1",
                 Blocks = [],
                 Connections = []
             };
 
-            var flowService = services.GetRequiredService<IFlowService>();
+            var flowService = services.GetRequiredService<IFlowDbService>();
 
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
@@ -102,13 +103,13 @@ public class FlowServiceTest : IntegrationTestBase
         {
             var flow = new Flow
             {
-                Id = Guid.Empty,
-                Name = "label1",
+                Id = Guid.Empty.ToString("D"),
+                Key = "key1",
                 Blocks = [],
                 Connections = []
             };
 
-            var flowService = services.GetRequiredService<IFlowService>();
+            var flowService = services.GetRequiredService<IFlowDbService>();
 
             var ex = await Assert.ThrowsExceptionAsync<BadRequestException>(async () =>
             {
@@ -125,12 +126,12 @@ public class FlowServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flowService = services.GetRequiredService<IFlowService>();
+            var flowService = services.GetRequiredService<IFlowDbService>();
 
             var id = Guid.NewGuid();
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
-                await flowService.Delete(id, cancellationToken);
+                await flowService.Delete(id.ToString("D"), cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
@@ -149,40 +150,40 @@ public class FlowServiceTest : IntegrationTestBase
             {
                 var flow = new Flow
                 {
-                    Id = id,
-                    Name = "label1",
+                    Id = id.ToString("D"),
+                    Key = "key1",
                     Blocks = [],
                     Connections = []
                 };
 
-                var flowService = services.GetRequiredService<IFlowService>();
+                var flowService = services.GetRequiredService<IFlowDbService>();
 
                 var createdFlow = await flowService.Create(flow, cancellationToken);
 
-                Assert.AreEqual(id, createdFlow.Id);
+                Assert.AreEqual(id.ToString("D"), createdFlow.Id);
             }
 
             // Clear tracking for previously created flow
             _dbContext?.ChangeTracker.Clear();
 
             // Make sure it exists
-            Assert.IsNotNull(await _dbContext!.Flows.SingleOrDefaultAsync(x => x.Id == id, cancellationToken));
+            Assert.IsNotNull(await _dbContext!.Flows.SingleOrDefaultAsync(x => x.Id == id.ToString("D"), cancellationToken));
 
             // Clear tracking for previously fetched flow
             _dbContext?.ChangeTracker.Clear();
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var flowService = services.GetRequiredService<IFlowService>();
+                var flowService = services.GetRequiredService<IFlowDbService>();
 
-                await flowService.Delete(id, cancellationToken);
+                await flowService.Delete(id.ToString("D"), cancellationToken);
             }
 
             // Clear tracking for previously deleted flow
             _dbContext?.ChangeTracker.Clear();
 
             // Make sure it no longer exists
-            Assert.IsNull(await _dbContext!.Flows.SingleOrDefaultAsync(x => x.Id == id, cancellationToken));
+            Assert.IsNull(await _dbContext!.Flows.SingleOrDefaultAsync(x => x.Id == id.ToString("D"), cancellationToken));
         });
     }
 
@@ -197,17 +198,17 @@ public class FlowServiceTest : IntegrationTestBase
             {
                 var flow = new Flow
                 {
-                    Id = id,
-                    Name = "name1",
+                    Id = id.ToString("D"),
+                    Key = "key1",
                     Blocks = [],
                     Connections = []
                 };
 
-                var flowService = services.GetRequiredService<IFlowService>();
+                var flowService = services.GetRequiredService<IFlowDbService>();
 
                 var createdFlow = await flowService.Create(flow, cancellationToken);
 
-                Assert.AreEqual(id, createdFlow.Id);
+                Assert.AreEqual(id.ToString("D"), createdFlow.Id);
             }
 
             // Clear tracking for previously created flow
@@ -217,13 +218,13 @@ public class FlowServiceTest : IntegrationTestBase
             {
                 var flow = new Flow
                 {
-                    Id = id, // // Will be duplicate ID
-                    Name = "name2",
+                    Id = id.ToString("D"), // // Will be duplicate ID
+                    Key = "key2",
                     Blocks = [],
                     Connections = []
                 };
 
-                var flowService = services.GetRequiredService<IFlowService>();
+                var flowService = services.GetRequiredService<IFlowDbService>();
 
                 var ex = await Assert.ThrowsExceptionAsync<ConflictException>(async () =>
                 {
@@ -237,25 +238,25 @@ public class FlowServiceTest : IntegrationTestBase
     }
 
     [TestMethod]
-    public async Task TestCreateDuplicateName()
+    public async Task TestCreateDuplicateKey()
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var name = "the name";
+            var key = "the key";
 
             await using (var scope = services.CreateAsyncScope())
             {
                 var flow = new Flow
                 {
-                    Id = Guid.NewGuid(),
-                    Name = name
+                    Id = Guid.NewGuid().ToString("D"),
+                    Key = key
                 };
 
-                var flowService = services.GetRequiredService<IFlowService>();
+                var flowService = services.GetRequiredService<IFlowDbService>();
 
                 var createdFlow = await flowService.Create(flow, cancellationToken);
 
-                Assert.AreEqual(name, createdFlow.Name);
+                Assert.AreEqual(key, createdFlow.Key);
             }
 
             // Clear tracking for previously created point
@@ -265,11 +266,11 @@ public class FlowServiceTest : IntegrationTestBase
             {
                 var flow = new Flow
                 {
-                    Id = Guid.NewGuid(),
-                    Name = name
+                    Id = Guid.NewGuid().ToString("D"),
+                    Key = key
                 };
 
-                var flowService = services.GetRequiredService<IFlowService>();
+                var flowService = services.GetRequiredService<IFlowDbService>();
 
                 var ex = await Assert.ThrowsExceptionAsync<ConflictException>(async () =>
                 {
@@ -277,7 +278,7 @@ public class FlowServiceTest : IntegrationTestBase
                 });
 
                 Assert.AreEqual(1, ex.Errors.Count);
-                Assert.AreEqual($"A flow with the name '{name}' already exists.", ex.Errors[0].ErrorMessage);
+                Assert.AreEqual($"A flow with the key '{key}' already exists.", ex.Errors[0].ErrorMessage);
             }
         });
     }
@@ -293,21 +294,21 @@ public class FlowServiceTest : IntegrationTestBase
 
             var flow = new Flow
             {
-                Id = id,
-                Name = "label1",
+                Id = id.ToString("D"),
+                Key = "key1",
                 Blocks = [],
                 Connections = []
             };
 
-            var flowService = services.GetRequiredService<IFlowService>();
+            var flowService = services.GetRequiredService<IFlowDbService>();
 
             var createdFlow = await flowService.Create(flow, cancellationToken);
 
             var flowCopy1 = await flowService.Get(flow.Id, cancellationToken);
             var flowCopy2 = await flowService.Get(flow.Id, cancellationToken);
 
-            flowCopy1.Name = "label2";
-            flowCopy2.Name = "label3";
+            flowCopy1.Key = "key2";
+            flowCopy2.Key = "key3";
 
             await flowService.Update(flowCopy1, cancellationToken);
 
@@ -326,12 +327,12 @@ public class FlowServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flowService = services.GetRequiredService<IFlowService>();
+            var flowService = services.GetRequiredService<IFlowDbService>();
 
             var id = Guid.NewGuid();
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
-                await flowService.Get(id, cancellationToken);
+                await flowService.Get(id.ToString("D"), cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
@@ -344,12 +345,12 @@ public class FlowServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var flowService = services.GetRequiredService<IFlowService>();
+            var flowService = services.GetRequiredService<IFlowDbService>();
 
-            var flow = await flowService.Get(Guid.Empty, cancellationToken);
+            var flow = await flowService.Get(Guid.Empty.ToString("D"), cancellationToken);
 
             Assert.IsNotNull(flow);
-            Assert.AreNotEqual(Guid.Empty, flow.Id);
+            Assert.AreNotEqual(Guid.Empty.ToString("D"), flow.Id);
         });
     }
 

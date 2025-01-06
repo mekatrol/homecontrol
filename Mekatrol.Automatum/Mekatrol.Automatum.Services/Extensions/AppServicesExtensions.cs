@@ -1,4 +1,5 @@
 ﻿using Mekatrol.Automatum.Models.Configuration;
+using Mekatrol.Automatum.Services.Background;
 using Mekatrol.Automatum.Services.Implementation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,14 +37,14 @@ public static class AppServicesExtensions
 
     public static IServiceCollection AddFlowService(this IServiceCollection services)
     {
-        services.AddScoped<IFlowService, FlowService>();
+        services.AddScoped<IFlowDbService, FlowDbService>();
 
         return services;
     }
 
     public static IServiceCollection AddPointService(this IServiceCollection services)
     {
-        services.AddScoped<IPointService, PointService>();
+        services.AddScoped<IPointDbService, PointDbService>();
 
         return services;
     }
@@ -88,7 +89,8 @@ public static class AppServicesExtensions
 
     public static IServiceCollection AddHomeAssistantServices(this IServiceCollection services)
     {
-        services.AddSingleton<IHomeAssistantService, HomeAssistantService>();
+        services.AddScoped<IHomeAssistantService, HomeAssistantService>();
+        services.AddHostedService<HomeAssistantBackgroundService>();
 
         return services;
     }

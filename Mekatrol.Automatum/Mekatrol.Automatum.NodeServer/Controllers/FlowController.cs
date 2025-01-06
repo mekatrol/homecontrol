@@ -6,7 +6,7 @@ namespace Mekatrol.Automatum.NodeServer.Controllers;
 
 [ApiController]
 [Route("flow")]
-public class FlowController(ILogger<FlowController> logger, IFlowService flowService) : ControllerBase
+public class FlowController(ILogger<FlowController> logger, IFlowDbService flowService) : ControllerBase
 {
     [HttpGet]
     public async Task<IList<Flow>> Get(CancellationToken cancellationToken)
@@ -20,7 +20,7 @@ public class FlowController(ILogger<FlowController> logger, IFlowService flowSer
     public async Task<Flow> Get(Guid id, CancellationToken cancellationToken)
     {
         logger.LogDebug("{message}", $"Getting flow with ID '{id}'");
-        var flow = await flowService.Get(id, cancellationToken);
+        var flow = await flowService.Get(id.ToString("D"), cancellationToken);
         return flow;
     }
 
@@ -44,6 +44,6 @@ public class FlowController(ILogger<FlowController> logger, IFlowService flowSer
     public void Delete(Guid id, CancellationToken cancellationToken)
     {
         logger.LogDebug("{message}", $"Deleting flow with ID '${id}'");
-        flowService.Delete(id, cancellationToken);
+        flowService.Delete(id.ToString("D"), cancellationToken);
     }
 }

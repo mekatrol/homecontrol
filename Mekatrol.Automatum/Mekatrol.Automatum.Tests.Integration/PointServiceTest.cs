@@ -20,7 +20,7 @@ public class PointServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var pointService = services.GetRequiredService<IPointService>();
+            var pointService = services.GetRequiredService<IPointDbService>();
 
             var points = await pointService.GetList(cancellationToken);
 
@@ -36,15 +36,16 @@ public class PointServiceTest : IntegrationTestBase
         {
             var point = new Point
             {
-                Name = "label1",
+                Id = Guid.Empty.ToString("D"),
+                Key = "key1",
                 Description = "The description"
             };
 
-            var pointService = services.GetRequiredService<IPointService>();
+            var pointService = services.GetRequiredService<IPointDbService>();
 
             var createdPoint = await pointService.Create(point, cancellationToken);
 
-            Assert.AreNotEqual(Guid.Empty, createdPoint.Id);
+            Assert.AreNotEqual(Guid.Empty.ToString("D"), createdPoint.Id);
         });
     }
 
@@ -55,11 +56,11 @@ public class PointServiceTest : IntegrationTestBase
         {
             var point = new Point
             {
-                Id = Guid.NewGuid(),
-                Name = "label1"
+                Id = Guid.NewGuid().ToString("D"),
+                Key = "key1"
             };
 
-            var pointService = services.GetRequiredService<IPointService>();
+            var pointService = services.GetRequiredService<IPointDbService>();
 
             var createdPoint = await pointService.Create(point, cancellationToken);
 
@@ -74,11 +75,11 @@ public class PointServiceTest : IntegrationTestBase
         {
             var point = new Point
             {
-                Id = Guid.NewGuid(),
-                Name = "label1"
+                Id = Guid.NewGuid().ToString("D"),
+                Key = "key1"
             };
 
-            var pointService = services.GetRequiredService<IPointService>();
+            var pointService = services.GetRequiredService<IPointDbService>();
 
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
@@ -97,11 +98,11 @@ public class PointServiceTest : IntegrationTestBase
         {
             var point = new Point
             {
-                Id = Guid.Empty,
-                Name = "label1",
+                Id = Guid.Empty.ToString("D"),
+                Key = "key1",
             };
 
-            var pointService = services.GetRequiredService<IPointService>();
+            var pointService = services.GetRequiredService<IPointDbService>();
 
             var ex = await Assert.ThrowsExceptionAsync<BadRequestException>(async () =>
             {
@@ -118,12 +119,12 @@ public class PointServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var pointService = services.GetRequiredService<IPointService>();
+            var pointService = services.GetRequiredService<IPointDbService>();
 
             var id = Guid.NewGuid();
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
-                await pointService.Delete(id, cancellationToken);
+                await pointService.Delete(id.ToString("D"), cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
@@ -142,38 +143,38 @@ public class PointServiceTest : IntegrationTestBase
             {
                 var point = new Point
                 {
-                    Id = id,
-                    Name = "label1"
+                    Id = id.ToString("D"),
+                    Key = "key1"
                 };
 
-                var pointService = services.GetRequiredService<IPointService>();
+                var pointService = services.GetRequiredService<IPointDbService>();
 
                 var createdPoint = await pointService.Create(point, cancellationToken);
 
-                Assert.AreEqual(id, createdPoint.Id);
+                Assert.AreEqual(id.ToString("D"), createdPoint.Id);
             }
 
             // Clear tracking for previously created point
             _dbContext?.ChangeTracker.Clear();
 
             // Make sure it exists
-            Assert.IsNotNull(await _dbContext!.Points.SingleOrDefaultAsync(x => x.Id == id, cancellationToken));
+            Assert.IsNotNull(await _dbContext!.Points.SingleOrDefaultAsync(x => x.Id == id.ToString("D"), cancellationToken));
 
             // Clear tracking for previously fetched point
             _dbContext?.ChangeTracker.Clear();
 
             await using (var scope = services.CreateAsyncScope())
             {
-                var pointService = services.GetRequiredService<IPointService>();
+                var pointService = services.GetRequiredService<IPointDbService>();
 
-                await pointService.Delete(id, cancellationToken);
+                await pointService.Delete(id.ToString("D"), cancellationToken);
             }
 
             // Clear tracking for previously deleted point
             _dbContext?.ChangeTracker.Clear();
 
             // Make sure it no longer exists
-            Assert.IsNull(await _dbContext!.Points.SingleOrDefaultAsync(x => x.Id == id, cancellationToken));
+            Assert.IsNull(await _dbContext!.Points.SingleOrDefaultAsync(x => x.Id == id.ToString("D"), cancellationToken));
         });
     }
 
@@ -188,15 +189,15 @@ public class PointServiceTest : IntegrationTestBase
             {
                 var point = new Point
                 {
-                    Id = id,
-                    Name = "label1"
+                    Id = id.ToString("D"),
+                    Key = "key1"
                 };
 
-                var pointService = services.GetRequiredService<IPointService>();
+                var pointService = services.GetRequiredService<IPointDbService>();
 
                 var createdPoint = await pointService.Create(point, cancellationToken);
 
-                Assert.AreEqual(id, createdPoint.Id);
+                Assert.AreEqual(id.ToString("D"), createdPoint.Id);
             }
 
             // Clear tracking for previously created point
@@ -206,11 +207,11 @@ public class PointServiceTest : IntegrationTestBase
             {
                 var point = new Point
                 {
-                    Id = id, // Will be duplicate ID
-                    Name = "label2"
+                    Id = id.ToString("D"), // Will be duplicate ID
+                    Key = "key2"
                 };
 
-                var pointService = services.GetRequiredService<IPointService>();
+                var pointService = services.GetRequiredService<IPointDbService>();
 
                 var ex = await Assert.ThrowsExceptionAsync<ConflictException>(async () =>
                 {
@@ -228,21 +229,21 @@ public class PointServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var name = "the.name";
+            var key = "the.key";
 
             await using (var scope = services.CreateAsyncScope())
             {
                 var point = new Point
                 {
-                    Id = Guid.NewGuid(),
-                    Name = name
+                    Id = Guid.NewGuid().ToString("D"),
+                    Key = key
                 };
 
-                var pointService = services.GetRequiredService<IPointService>();
+                var pointService = services.GetRequiredService<IPointDbService>();
 
                 var createdPoint = await pointService.Create(point, cancellationToken);
 
-                Assert.AreEqual(name, createdPoint.Name);
+                Assert.AreEqual(key, createdPoint.Key);
             }
 
             // Clear tracking for previously created point
@@ -252,11 +253,11 @@ public class PointServiceTest : IntegrationTestBase
             {
                 var point = new Point
                 {
-                    Id = Guid.NewGuid(),
-                    Name = name
+                    Id = Guid.NewGuid().ToString("D"),
+                    Key = key
                 };
 
-                var pointService = services.GetRequiredService<IPointService>();
+                var pointService = services.GetRequiredService<IPointDbService>();
 
                 var ex = await Assert.ThrowsExceptionAsync<ConflictException>(async () =>
                 {
@@ -264,7 +265,7 @@ public class PointServiceTest : IntegrationTestBase
                 });
 
                 Assert.AreEqual(1, ex.Errors.Count);
-                Assert.AreEqual($"A point with the name '{name}' already exists.", ex.Errors[0].ErrorMessage);
+                Assert.AreEqual($"A point with the key '{key}' already exists.", ex.Errors[0].ErrorMessage);
             }
         });
     }
@@ -280,19 +281,19 @@ public class PointServiceTest : IntegrationTestBase
 
             var point = new Point
             {
-                Id = id,
-                Name = "label1"
+                Id = id.ToString("D"),
+                Key = "key1"
             };
 
-            var pointService = services.GetRequiredService<IPointService>();
+            var pointService = services.GetRequiredService<IPointDbService>();
 
             var createdPoint = await pointService.Create(point, cancellationToken);
 
             var pointCopy1 = await pointService.Get(point.Id, cancellationToken);
             var pointCopy2 = await pointService.Get(point.Id, cancellationToken);
 
-            pointCopy1.Name = "label2";
-            pointCopy2.Name = "label3";
+            pointCopy1.Key = "key2";
+            pointCopy2.Key = "label3";
 
             await pointService.Update(pointCopy1, cancellationToken);
 
@@ -311,12 +312,12 @@ public class PointServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var pointService = services.GetRequiredService<IPointService>();
+            var pointService = services.GetRequiredService<IPointDbService>();
 
             var id = Guid.NewGuid();
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
-                await pointService.Get(id, cancellationToken);
+                await pointService.Get(id.ToString("D"), cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
@@ -329,12 +330,12 @@ public class PointServiceTest : IntegrationTestBase
     {
         await RunTestWithServiceContainer(async (services, cancellationToken) =>
         {
-            var pointService = services.GetRequiredService<IPointService>();
+            var pointService = services.GetRequiredService<IPointDbService>();
 
-            var point = await pointService.Get(Guid.Empty, cancellationToken);
+            var point = await pointService.Get(Guid.Empty.ToString("D"), cancellationToken);
 
             Assert.IsNotNull(point);
-            Assert.AreNotEqual(Guid.Empty, point.Id);
+            Assert.AreNotEqual(Guid.Empty.ToString("D"), point.Id);
         });
     }
 
