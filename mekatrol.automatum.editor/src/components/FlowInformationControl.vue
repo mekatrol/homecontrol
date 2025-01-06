@@ -15,6 +15,12 @@
         :minlength="validations.flow.interval.minLength"
         :maxlength="validations.flow.interval.maxLength"
       />
+      <p
+        v-if="intervalValidation"
+        class="validation-error"
+      >
+        {{ intervalValidation }}
+      </p>
     </div>
     <div class="form-group">
       <label for="name">Name</label>
@@ -28,6 +34,12 @@
         :minlength="validations.flow.label.minLength"
         :maxlength="validations.flow.label.maxLength"
       />
+      <p
+        v-if="nameValidation"
+        class="validation-error"
+      >
+        {{ nameValidation }}
+      </p>
     </div>
     <div class="form-group">
       <label for="description">Description</label>
@@ -60,6 +72,22 @@
 import { validations } from '@/validation/validation-definitions';
 import { storeToRefs } from 'pinia';
 import { useAppStore } from '@/stores/app-store';
+import type { ValidationResult } from '@/validation/validation-helpers';
+import { computed } from 'vue';
+
+interface Props {
+  validation: ValidationResult[];
+}
+
+const props = defineProps<Props>();
+
+const nameValidation = computed(() => {
+  return props.validation.find((v) => v.field === 'name')?.message;
+});
+
+const intervalValidation = computed(() => {
+  return props.validation.find((v) => v.field === 'interval')?.message;
+});
 
 const appStore = useAppStore();
 const { activeFlow } = storeToRefs(appStore);
@@ -117,14 +145,21 @@ input:not([type='checkbox']) {
   outline: 3px solid hsl(203, 30%, 26%);
 }
 
+.validation-success,
 input:not([type='checkbox']):not(:placeholder-shown):user-valid {
   outline-color: var(--clr-success);
 }
 
+p.validation-error {
+  color: var(--clr-error);
+}
+
+.validation-error,
 input:not([type='checkbox']):user-invalid {
   outline-color: var(--clr-error);
 }
 
+.validation-warning,
 input:not([type='checkbox']):focus:invalid {
   outline-color: var(--clr-warning);
 }

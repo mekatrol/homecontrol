@@ -33,7 +33,7 @@ export default [
         'error',
         {
           ArrayExpression: 'consistent',
-          ArrayPattern: { minItems: 3 }
+          ArrayPattern: { minItems: 10 }
         }
       ],
 

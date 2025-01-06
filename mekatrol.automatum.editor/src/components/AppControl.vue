@@ -17,7 +17,7 @@
       <EditorControl :flow-id="flowId" />
     </div>
     <div>
-      <FlowInformationControl />
+      <FlowInformationControl :validation="flowValidation" />
     </div>
   </main>
   <AppDialog
@@ -56,6 +56,9 @@ import { ref, watch } from 'vue';
 import type { Flow } from '@/services/api-generated';
 import { storeToRefs } from 'pinia';
 import { useFlowStore } from '@/stores/flow-store';
+import { validateFlow } from '@/validation/flow-validation';
+import { type ValidationResult } from '@/validation/validation-helpers';
+import { showInfoMessage } from '@/services/message';
 
 const appStore = useAppStore();
 const { newFlow, saveFlow } = appStore;
@@ -64,6 +67,8 @@ const { activeFlow } = storeToRefs(appStore);
 const flowId = ref<string | undefined>(undefined);
 
 const showOpenDialog = ref(false);
+
+const flowValidation = ref<ValidationResult[]>([]);
 
 const switchFlow = (flowId: string) => {
   // If a flow was active then close it
@@ -136,6 +141,14 @@ const onSaveFlow = async () => {
   try {
     if (!activeFlow.value) {
       // Do nothing if active flow not found
+      return;
+    }
+
+    flowValidation.value = validateFlow(activeFlow.value);
+
+    if (flowValidation.value.length > 0) {
+      // Show message with validation errors
+      showInfoMessage('Cannot save, please fix validation errors');
       return;
     }
 
