@@ -89,12 +89,13 @@
 
 <script setup lang="ts">
 import { validations } from '@/validation/validation-definitions';
-import { storeToRefs } from 'pinia';
-import { useAppStore } from '@/stores/app-store';
 import type { ValidationResult } from '@/validation/validation-helpers';
 import { computed } from 'vue';
+import { useFlowStore } from '@/stores/flow-store';
+import { storeToRefs } from 'pinia';
 
 interface Props {
+  flowId: string;
   validation: ValidationResult[];
 }
 
@@ -112,8 +113,11 @@ const keyValidation = computed(() => {
   return props.validation.find((v) => v.field === 'key')?.message;
 });
 
-const appStore = useAppStore();
-const { activeFlow } = storeToRefs(appStore);
+const { flows } = storeToRefs(useFlowStore());
+const activeFlow = computed(() => {
+  const flow = flows.value.find((f) => f.id === props.flowId)!;
+  return flow;
+});
 </script>
 
 <style lang="css">

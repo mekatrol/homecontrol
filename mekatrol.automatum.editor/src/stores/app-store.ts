@@ -23,8 +23,6 @@ export const useAppStore = defineStore('app', () => {
 
   const { getFlowController, addFlowController, deleteFlowController, isNewFlowController, removeNewFlowController } = useFlowStore();
 
-  const activeFlow = ref<Flow | undefined>(undefined);
-
   const closeMessageOverlay = () => {
     clearMessage();
   };
@@ -39,16 +37,12 @@ export const useAppStore = defineStore('app', () => {
     );
   };
 
-  const newFlow = async (makeActive: boolean, errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
+  const newFlow = async (errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
     return await wrapApiCall(
       'Create new flow',
       async () => {
         const flow = await api.flow.get(EMPTY_GUID);
         addFlowController(flow, true);
-
-        if (makeActive) {
-          activeFlow.value = flow;
-        }
         return flow;
       },
       errorHandlerCallback
@@ -85,7 +79,7 @@ export const useAppStore = defineStore('app', () => {
         if (!flowController.value) {
           addFlowController(flow, false);
         }
-        activeFlow.value = flow;
+
         return flow;
       },
       errorHandlerCallback
@@ -93,11 +87,6 @@ export const useAppStore = defineStore('app', () => {
   };
 
   const closeFlow = (flowId: string, removeFromStore: boolean): void => {
-    // Clear active flow if it is the flow being closed
-    if (activeFlow.value?.id === flowId) {
-      activeFlow.value = undefined;
-    }
-
     if (removeFromStore) {
       deleteFlowController(flowId);
     }
@@ -123,7 +112,6 @@ export const useAppStore = defineStore('app', () => {
     closeMessageOverlay,
     incrementBusy,
     decrementBusy,
-    activeFlow,
     saveFlow,
     newFlow,
     openFlow,

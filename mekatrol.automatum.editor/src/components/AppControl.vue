@@ -2,11 +2,8 @@
   <nav>
     <MenuControl
       :is-flow-open="!!flowId"
-      :showing-points-view="showPointsView"
-      @points="onPoints"
-      @close-points="onClosePoints"
+      :showing-points-view="selectedTab === 0"
       @open="onOpenFlow"
-      @switch-flow="switchFlow"
       @new="onNewFlow"
       @save="onSaveFlow"
       @close="onCloseFlow"
@@ -15,24 +12,14 @@
   <main>
     <TabView
       :tabs="tabs"
-      :initial-tab-name="'Sydney'"
+      :active-tab="selectedTab"
       @tab-changed="onTabChanged"
     >
-      <div
-        class="editor-view"
-        v-if="selectedTab === 'Sydney'"
-      >
-        <div
-          class="editor"
-          v-if="flowId"
-          :key="flowId"
-        >
-          <EditorControl :flow-id="flowId" />
-        </div>
-        <div class="summary">
-          <FlowInformationControl :validation="flowValidation" />
-        </div>
-      </div>
+      <component
+        :is="tabs[selectedTab].component"
+        :flow-id="flowId"
+        :flow-validation="flowValidation"
+      />
     </TabView>
   </main>
   <AppDialog
@@ -60,62 +47,39 @@
 
 <script setup lang="ts">
 import MenuControl from '@/components/MenuControl.vue';
-import EditorControl from '@/components/EditorControl.vue';
-import FlowInformationControl from '@/components/FlowInformationControl.vue';
 import BusyOverlay from '@/components/BusyOverlay.vue';
 import TabView from '@/components/TabView.vue';
 import MessageOverlay from '@/components/MessageOverlay.vue';
 import AppDialog from './AppDialog.vue';
 import OpenFlow from '@/components/OpenFlow.vue';
 import { useAppStore } from '@/stores/app-store';
-import { ref, watch } from 'vue';
+import { markRaw, ref } from 'vue';
 import type { Flow } from '@/services/api-generated';
-import { storeToRefs } from 'pinia';
-import { useFlowStore } from '@/stores/flow-store';
 import { validateFlow } from '@/validation/flow-validation';
 import { type ValidationResult } from '@/validation/validation-helpers';
 import { showInfoMessage } from '@/services/message';
+import PointsView from '@/views/PointsView.vue';
+import FlowEditorView from '@/views/FlowEditorView.vue';
+import { EMPTY_GUID } from '@/constants';
 import type { Tab } from '@/types/tab';
+import { useFlowStore } from '@/stores/flow-store';
 
 const appStore = useAppStore();
 const { newFlow, saveFlow } = appStore;
-const { activeFlow } = storeToRefs(appStore);
 
 const flowId = ref<string | undefined>(undefined);
 
 const showOpenDialog = ref(false);
-const showPointsView = ref(false);
 const flowValidation = ref<ValidationResult[]>([]);
-const selectedTab = ref<string | undefined>(undefined);
+const selectedTab = ref<number>(0);
 
-const tabs: Tab[] = [
-  { name: 'Sydney', content: 'Sydney is the capital of New South Wales Australia.' },
-  { name: 'London', content: 'London is the capital city of England.' },
-  { name: 'Paris', content: 'Paris is the capital of France.' },
-  { name: 'Tokyo', content: 'Tokyo is the capital of Japan.' }
-];
-
-const onPoints = () => {
-  showPointsView.value = true;
-};
-
-const onClosePoints = () => {
-  showPointsView.value = false;
-};
-
-const switchFlow = (flowId: string) => {
-  // If a flow was active then close it
-  if (appStore.activeFlow) {
-    appStore.closeFlow(appStore.activeFlow.id, false);
+const tabs = markRaw<Tab[]>([
+  {
+    name: 'Points',
+    id: EMPTY_GUID,
+    component: PointsView
   }
-
-  const flowStore = useFlowStore();
-  const flow = flowStore.flows.find((f) => f.id == flowId);
-
-  if (flow) {
-    appStore.activeFlow = flow;
-  }
-};
+]);
 
 const onOpenFlow = () => {
   showOpenDialog.value = true;
@@ -128,13 +92,21 @@ const onOpenConfirm = async (): Promise<void> => {
     throw new Error('Open flow confirmed, but no flow was selected...');
   }
 
-  // If a flow was active then close it
-  if (appStore.activeFlow) {
-    appStore.closeFlow(appStore.activeFlow.id, true);
-  }
-
   // Open the selected flow
-  await appStore.openFlow(clickedFlow.value.id);
+  const flow = await appStore.openFlow(clickedFlow.value.id);
+
+  // Only add if not already open in a tab
+  if (!tabs.find((t) => t.id === flow.id)) {
+    const tab = {
+      name: flow.name,
+      id: flow.id,
+      component: FlowEditorView
+    };
+
+    flowId.value = flow.id;
+    const i = tabs.push(tab);
+    selectedTab.value = i - 1;
+  }
 
   // Clear the selection
   clickedFlow.value = undefined;
@@ -145,16 +117,30 @@ const onOpenCancel = async (): Promise<void> => {
   clickedFlow.value = undefined;
 };
 
+const getTabFlow = (tabNumber: number): Flow | undefined => {
+  const tab = tabs[tabNumber];
+
+  return useFlowStore().flows.find((f) => f.id === tab.id);
+};
+
 const onCloseFlow = () => {
-  if (activeFlow.value) {
-    appStore.closeFlow(activeFlow.value.id, true);
+  const flow = getTabFlow(selectedTab.value);
+
+  if (flow) {
+    appStore.closeFlow(flow.id, true);
   }
+
+  selectedTab.value = Math.max(0, selectedTab.value - 1);
 };
 
 const clickedFlow = ref<Flow | undefined>(undefined);
 
-const onTabChanged = (tabName: string | undefined) => {
-  selectedTab.value = tabName;
+const onTabChanged = (tabIndex: number) => {
+  selectedTab.value = tabIndex;
+
+  const activeTab = tabs[tabIndex];
+
+  flowId.value = activeTab.id === EMPTY_GUID ? undefined : activeTab.id;
 };
 
 const onFlowClicked = (flowClicked: Flow): void => {
@@ -167,21 +153,29 @@ const onFlowClickedClose = async (flowClicked: Flow): Promise<void> => {
 };
 
 const onNewFlow = async () => {
-  if (activeFlow.value) {
-    appStore.closeFlow(activeFlow.value.id, true);
-  }
+  const flow = await newFlow();
 
-  await newFlow(true);
+  const tab = {
+    name: flow.name,
+    id: flow.id,
+    component: FlowEditorView
+  };
+
+  flowId.value = flow.id;
+  const i = tabs.push(tab);
+  selectedTab.value = i - 1;
 };
 
 const onSaveFlow = async () => {
   try {
-    if (!activeFlow.value) {
-      // Do nothing if active flow not found
+    const flow = getTabFlow(selectedTab.value);
+
+    if (!flow) {
+      // Do nothing if active tab not a flow editor
       return;
     }
 
-    flowValidation.value = validateFlow(activeFlow.value);
+    flowValidation.value = validateFlow(flow);
 
     if (flowValidation.value.length > 0) {
       // Show message with validation errors
@@ -190,18 +184,11 @@ const onSaveFlow = async () => {
       return;
     }
 
-    await saveFlow(activeFlow.value);
+    await saveFlow(flow);
   } catch (e) {
     console.error(e);
   }
 };
-
-watch(
-  () => activeFlow.value,
-  (flow: Flow | undefined) => {
-    flowId.value = flow?.id;
-  }
-);
 </script>
 
 <style scoped lang="css">
@@ -211,22 +198,5 @@ main {
   display: flex;
   flex-direction: row;
   overflow: hidden;
-}
-
-.editor-view {
-  min-width: 100%;
-  min-height: 100%;
-  display: flex;
-  flex-direction: row;
-
-  .editor {
-    width: 80%;
-    max-width: 80%;
-    height: 100%;
-  }
-
-  .summary {
-    max-width: 20%;
-  }
 }
 </style>

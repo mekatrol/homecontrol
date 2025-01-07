@@ -1,16 +1,11 @@
 <template>
   <div class="tab-view-container">
-    <div class="tab-view">
+    <div class="tab-view-tabs">
       <button
-        :class="`tab-view-links ${tab.name === activeTabName ? 'active' : ''}`"
-        v-for="tab in tabs"
-        :key="tab.name"
-        @click="
-          () => {
-            activeTabName = tab.name;
-            emit('tab-changed', tab.name);
-          }
-        "
+        :class="`tab-view-links ${i == activeTab ? 'active' : ''}`"
+        v-for="(tab, i) in tabs"
+        :key="tab.id"
+        @click="() => emit('tab-changed', i)"
       >
         {{ tab.name }}
       </button>
@@ -24,24 +19,17 @@
 
 <script setup lang="ts">
 import type { Tab } from '@/types/tab';
-import { onMounted, ref } from 'vue';
 
 interface Props {
   tabs: Tab[];
-  initialTabName: string | undefined;
+  activeTab: number;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: 'tab-changed', name: string | undefined): void;
+  (e: 'tab-changed', index: number): void;
 }>();
-
-const activeTabName = ref<string | undefined>(props.initialTabName);
-
-onMounted(() => {
-  emit('tab-changed', activeTabName.value);
-});
 </script>
 
 <style scoped lang="css">
@@ -52,15 +40,14 @@ onMounted(() => {
 }
 
 /* Style the tab-view */
-.tab-view {
-  overflow: hidden;
+.tab-view-tabs {
   border: 1px solid #ccc;
   background-color: #f1f1f1;
   /* min-width: 100%; */
 }
 
 /* Style the buttons inside the tab-view */
-.tab-view button {
+.tab-view-tabs button {
   background-color: inherit;
   float: left;
   border: none;
@@ -73,11 +60,11 @@ onMounted(() => {
 }
 
 /* Change background color of buttons on hover */
-.tab-view button:hover {
+.tab-view-tabs button:hover {
   background-color: #ddd;
 }
 
-.tab-view button.active {
+.tab-view-tabs button.active {
   background-color: #ccc;
 }
 
