@@ -73,7 +73,7 @@ const showOpenDialog = ref(false);
 const flowValidation = ref<ValidationResult[]>([]);
 const selectedTab = ref<number>(0);
 
-const tabs = markRaw<Tab[]>([
+let tabs = markRaw<Tab[]>([
   {
     name: 'Points',
     id: EMPTY_GUID,
@@ -128,6 +128,7 @@ const onCloseFlow = () => {
 
   if (flow) {
     appStore.closeFlow(flow.id, true);
+    tabs = tabs.filter((t) => t.id != flow.id);
   }
 
   selectedTab.value = Math.max(0, selectedTab.value - 1);
