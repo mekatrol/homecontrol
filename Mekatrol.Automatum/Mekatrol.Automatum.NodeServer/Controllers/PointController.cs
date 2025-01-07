@@ -26,7 +26,7 @@ public class PointController(ILogger<PointController> logger, IPointDbService po
     }
 
     [HttpGet("home-assistant/{entityId}")]
-    public async Task<EntityStateModel> Get(string entityId, CancellationToken cancellationToken)
+    public async Task<HomeAssistantEntityModel> Get(string entityId, CancellationToken cancellationToken)
     {
         logger.LogDebug("{message}", $"Getting home assistant entity with ID '{entityId}'");
         var entity = await pointService.GetHomeAssistantEntity(entityId, cancellationToken);

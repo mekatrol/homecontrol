@@ -5,5 +5,5 @@ namespace Mekatrol.Automatum.Services;
 
 public interface IPointDbService : IDbService<Point>
 {
-    Task<EntityStateModel> GetHomeAssistantEntity(string entityId, CancellationToken cancellationToken);
+    Task<HomeAssistantEntityModel> GetHomeAssistantEntity(string entityId, CancellationToken cancellationToken);
 }

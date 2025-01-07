@@ -11,6 +11,13 @@ export const validateFlow = (flow: Flow): ValidationResult[] => {
     });
   }
 
+  if (!flow.key || flow.key.trim().length === 0) {
+    validationResults.push({
+      field: 'key',
+      message: 'Key is required'
+    });
+  }
+
   if (!validateUuid(flow.id)) {
     validationResults.push({
       field: 'id',

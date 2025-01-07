@@ -23,16 +23,35 @@
       </p>
     </div>
     <div class="form-group">
-      <label for="name">Name</label>
+      <label for="interval">Key</label>
+      <input
+        v-model="activeFlow.key"
+        placeholder="00:01:00"
+        type="text"
+        id="interval"
+        :readonly="validations.flow.key.readonly"
+        :required="validations.flow.key.required"
+        :minlength="validations.flow.key.minLength"
+        :maxlength="validations.flow.key.maxLength"
+      />
+      <p
+        v-if="keyValidation"
+        class="validation-error"
+      >
+        {{ keyValidation }}
+      </p>
+    </div>
+    <div class="form-group">
+      <label for="name">Friendly Name</label>
       <input
         v-model="activeFlow.name"
         placeholder="<enter flow name>"
         type="text"
         id="name"
-        :readonly="validations.flow.label.readonly"
-        :required="validations.flow.label.required"
-        :minlength="validations.flow.label.minLength"
-        :maxlength="validations.flow.label.maxLength"
+        :readonly="validations.flow.name.readonly"
+        :required="validations.flow.name.required"
+        :minlength="validations.flow.name.minLength"
+        :maxlength="validations.flow.name.maxLength"
       />
       <p
         v-if="nameValidation"
@@ -87,6 +106,10 @@ const nameValidation = computed(() => {
 
 const intervalValidation = computed(() => {
   return props.validation.find((v) => v.field === 'interval')?.message;
+});
+
+const keyValidation = computed(() => {
+  return props.validation.find((v) => v.field === 'key')?.message;
 });
 
 const appStore = useAppStore();

@@ -416,6 +416,45 @@
           }
         }
       }
+    },
+    "/point/home-assistant/{entityId}": {
+      "get": {
+        "tags": [
+          "Point"
+        ],
+        "parameters": [
+          {
+            "name": "entityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantEntityModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantEntityModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeAssistantEntityModel"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -438,17 +477,20 @@
           "enabled",
           "id",
           "interval",
+          "key",
           "name",
           "updated"
         ],
         "type": "object",
         "properties": {
           "id": {
-            "type": "string",
-            "format": "uuid"
+            "type": "string"
           },
           "enabled": {
             "type": "boolean"
+          },
+          "key": {
+            "type": "string"
           },
           "name": {
             "type": "string"
@@ -562,8 +604,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string",
-            "format": "uuid"
+            "type": "string"
           },
           "startBlockId": {
             "type": "string",
@@ -583,6 +624,53 @@
           },
           "selected": {
             "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HomeAssistantEntityAttributesModel": {
+        "required": [
+          "friendlyName"
+        ],
+        "type": "object",
+        "properties": {
+          "friendlyName": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HomeAssistantEntityModel": {
+        "required": [
+          "attributes",
+          "entityId",
+          "lastChanged",
+          "lastReported",
+          "lastUpdated",
+          "state"
+        ],
+        "type": "object",
+        "properties": {
+          "entityId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/HomeAssistantEntityAttributesModel"
+          },
+          "lastChanged": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastReported": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -683,17 +771,20 @@
           "description",
           "enabled",
           "id",
+          "key",
           "name",
           "updated"
         ],
         "type": "object",
         "properties": {
           "id": {
-            "type": "string",
-            "format": "uuid"
+            "type": "string"
           },
           "enabled": {
             "type": "boolean"
+          },
+          "key": {
+            "type": "string"
           },
           "name": {
             "type": "string"

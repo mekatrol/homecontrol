@@ -44,7 +44,8 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
 
             model.Id = Guid.NewGuid().ToString("D");
             model.Enabled = true;
-            model.Key = $"<New {typeof(TModel).Name}>";
+            model.Key = $"new.{typeof(TModel).Name.ToLowerInvariant()}";
+            model.Name = $"New {typeof(TModel).Name}";
 
             return model;
         }
@@ -69,6 +70,11 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
         if (string.IsNullOrWhiteSpace(model.Key))
         {
             throw KeyMissingException(model.Id);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Name))
+        {
+            throw NameMissingException(model.Id);
         }
 
         var dateTime = DateTimeOffset.UtcNow;
@@ -129,6 +135,11 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
             throw KeyMissingException(model.Id);
         }
 
+        if (string.IsNullOrWhiteSpace(model.Name))
+        {
+            throw NameMissingException(model.Id);
+        }
+
         var existing = await _dbContext.Set<TEntity>().SingleOrDefaultAsync(x => x.Id == model.Id, cancellationToken)
             ?? throw IdNotFoundException(model.Id);
 
@@ -180,6 +191,8 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
     protected static BadRequestException IdNotValidException(string id) => new($"The ID '{id}' is not valid.");
 
     protected static NotFoundException IdNotFoundException(string id) => new($"A {typeof(TModel).Name.ToLower()} with the ID '{id}' was not found.");
+
+    protected static BadRequestException NameMissingException(string id) => new($"The {typeof(TModel).Name.ToLower()} with the ID '{id}' has a missing or invalid name.");
 
     protected static BadRequestException KeyMissingException(string id) => new($"The {typeof(TModel).Name.ToLower()} with the ID '{id}' has a missing or invalid key.");
 

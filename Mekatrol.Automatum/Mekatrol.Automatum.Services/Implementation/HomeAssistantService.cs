@@ -26,7 +26,7 @@ internal class HomeAssistantService : IHomeAssistantService
         _logger = logger;
     }
 
-    public async Task<IList<EntityStateModel>> GetStates(CancellationToken cancellationToken)
+    public async Task<IList<HomeAssistantEntityModel>> GetStates(CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync("http://ha.lan:8123/api/states", cancellationToken);
 
@@ -37,13 +37,13 @@ internal class HomeAssistantService : IHomeAssistantService
         }
 
         // Get the body JSON as a ApiResponse object
-        var entityStates = await response.Content.ReadFromJsonAsync<IList<EntityStateModel>>(_jsonOptions, cancellationToken);
+        var entityStates = await response.Content.ReadFromJsonAsync<IList<HomeAssistantEntityModel>>(_jsonOptions, cancellationToken);
 
         // Return states or empty list if deserialization returned null
         return entityStates ?? [];
     }
 
-    public async Task<EntityStateModel> GetState(string entityId, CancellationToken cancellationToken)
+    public async Task<HomeAssistantEntityModel> GetState(string entityId, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync($"http://ha.lan:8123/api/states/{entityId}", cancellationToken);
 
@@ -54,7 +54,7 @@ internal class HomeAssistantService : IHomeAssistantService
         }
 
         // Get the body JSON as a ApiResponse object
-        var entityState = await response.Content.ReadFromJsonAsync<EntityStateModel>(_jsonOptions, cancellationToken);
+        var entityState = await response.Content.ReadFromJsonAsync<HomeAssistantEntityModel>(_jsonOptions, cancellationToken);
 
         // Return state or null if not found
         return entityState;

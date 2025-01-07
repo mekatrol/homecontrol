@@ -8,7 +8,7 @@ namespace Mekatrol.Automatum.Services.Implementation;
 internal class PointDbService(IHomeAssistantService homeAssistant, IAutomatumDbContext dbContext) 
     : DbService<Point, PointEntity>(dbContext), IPointDbService
 {
-    public async Task<EntityStateModel> GetHomeAssistantEntity(string entityId, CancellationToken cancellationToken)
+    public async Task<HomeAssistantEntityModel> GetHomeAssistantEntity(string entityId, CancellationToken cancellationToken)
     {
         return await homeAssistant.GetState(entityId, cancellationToken);
     }

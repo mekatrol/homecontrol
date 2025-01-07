@@ -17,9 +17,9 @@ export enum BlockSide {
 }
 
 export interface Flow {
-  /** @format uuid */
   id: string;
   enabled: boolean;
+  key: string;
   name: string;
   description: string;
   /** @format date-time */
@@ -53,7 +53,6 @@ export interface FlowBlock {
 }
 
 export interface FlowConnection {
-  /** @format uuid */
   id: string;
   /** @format uuid */
   startBlockId: string;
@@ -64,6 +63,22 @@ export interface FlowConnection {
   /** @format int32 */
   endPin: number;
   selected: boolean;
+}
+
+export interface HomeAssistantEntityAttributesModel {
+  friendlyName: string;
+}
+
+export interface HomeAssistantEntityModel {
+  entityId: string;
+  state: string;
+  attributes: HomeAssistantEntityAttributesModel;
+  /** @format date-time */
+  lastChanged: string;
+  /** @format date-time */
+  lastReported: string;
+  /** @format date-time */
+  lastUpdated: string;
 }
 
 export interface InputOutput {
@@ -102,9 +117,9 @@ export interface PingModel {
 }
 
 export interface Point {
-  /** @format uuid */
   id: string;
   enabled: boolean;
+  key: string;
   name: string;
   description: string;
   /** @format date-time */
@@ -419,6 +434,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<void, any>({
         path: `/point/${id}`,
         method: 'DELETE',
+        ...params
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Point
+     * @name Get2
+     * @request GET:/point/home-assistant/{entityId}
+     * @originalName get
+     * @duplicate
+     */
+    get2: (entityId: string, params: RequestParams = {}) =>
+      this.request<HomeAssistantEntityModel, any>({
+        path: `/point/home-assistant/${entityId}`,
+        method: 'GET',
+        format: 'json',
         ...params
       })
   };

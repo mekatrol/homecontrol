@@ -82,9 +82,12 @@ public class Program
                         policy.AllowAnyHeader();
                     });
             });
-
             webAppBuilder.Services
                 .AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.InvalidModelStateResponseFactory = (context) => new ErrorModelResult();
+                })
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;

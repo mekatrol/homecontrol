@@ -1,6 +1,6 @@
 ﻿namespace Mekatrol.Automatum.Models.HomeAssistant;
 
-public class AttributesModel
+public class HomeAssistantEntityAttributesModel
 {
     public string FriendlyName { get; set; } = string.Empty;
 }
