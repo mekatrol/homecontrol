@@ -1,27 +1,22 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
 import { EMPTY_GUID } from '@/constants';
-import type { Flow } from '@/services/api-generated';
-import { Api } from '@/services/api-generated';
+import type { Flow, Point } from '@/services/api-generated';
 import { useFlowStore } from '@/stores/flow-store';
 import { wrapApiCall, type HandleErrorCallback } from '@/services/api';
 import { clearMessage, type MessageData } from '@/services/message';
-
-// The server API base URL is embedded in a hidden field in the page
-// it is set by the server on page load
-const serverBaseUrlElement = document.getElementById('server-base-url') as HTMLInputElement;
-const serverBaseUrl = serverBaseUrlElement?.value ?? '/api';
+import { useApi } from '@/composables/api';
+import { usePointStore } from './point-store';
 
 // Create an Api singleton to use for calling server APIs
-const api = new Api({
-  baseURL: serverBaseUrl
-});
+const api = useApi();
 
 export const useAppStore = defineStore('app', () => {
   const isBusyCount = ref(0);
   const messageData = ref<MessageData | undefined>(undefined);
 
   const { getFlowController, addFlowController, deleteFlowController, isNewFlowController, removeNewFlowController } = useFlowStore();
+  const { addPoint, deletePoint, isNewPoint, removeNewPoint } = usePointStore();
 
   const closeMessageOverlay = () => {
     clearMessage();
@@ -37,7 +32,7 @@ export const useAppStore = defineStore('app', () => {
     );
   };
 
-  const newFlow = async (errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
+  const getNewFlow = async (errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
     return await wrapApiCall(
       'Create new flow',
       async () => {
@@ -68,9 +63,9 @@ export const useAppStore = defineStore('app', () => {
     );
   };
 
-  const openFlow = async (flowId: string, errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
+  const getFlow = async (flowId: string, errorHandlerCallback?: HandleErrorCallback): Promise<Flow> => {
     return await wrapApiCall(
-      `Open flow with ID '${flowId}'`,
+      `Get flow with ID '${flowId}'`,
       async () => {
         const flow = await api.flow.get(flowId);
 
@@ -89,6 +84,61 @@ export const useAppStore = defineStore('app', () => {
   const closeFlow = (flowId: string, removeFromStore: boolean): void => {
     if (removeFromStore) {
       deleteFlowController(flowId);
+    }
+  };
+
+  const getNewPoint = async (errorHandlerCallback?: HandleErrorCallback): Promise<Point> => {
+    return await wrapApiCall(
+      'Create new point',
+      async () => {
+        const point = await api.point.get(EMPTY_GUID);
+        addPoint(point, true);
+        return point;
+      },
+      errorHandlerCallback
+    );
+  };
+
+  const savePoint = async (point: Point, errorHandlerCallback?: HandleErrorCallback): Promise<void> => {
+    return await wrapApiCall(
+      `Save point with ID '${point.id}'`,
+      async () => {
+        if (isNewPoint(point.id)) {
+          await api.point.post(point);
+
+          // Remove from new flows list
+          removeNewPoint(point.id);
+
+          return;
+        }
+
+        await api.point.put(point);
+      },
+      errorHandlerCallback
+    );
+  };
+
+  const getPoint = async (pointId: string, errorHandlerCallback?: HandleErrorCallback): Promise<Point> => {
+    return await wrapApiCall(
+      `Get point with ID '${pointId}'`,
+      async () => {
+        const point = await api.point.get(pointId);
+
+        const flowController = getFlowController(point.id);
+
+        if (!flowController.value) {
+          addPoint(point, false);
+        }
+
+        return point;
+      },
+      errorHandlerCallback
+    );
+  };
+
+  const closePoint = (pointId: string, removeFromStore: boolean): void => {
+    if (removeFromStore) {
+      deletePoint(pointId);
     }
   };
 
@@ -112,10 +162,18 @@ export const useAppStore = defineStore('app', () => {
     closeMessageOverlay,
     incrementBusy,
     decrementBusy,
+
+    // Flow related
+    getFlowSummaries,
     saveFlow,
-    newFlow,
-    openFlow,
+    getNewFlow,
+    getFlow,
     closeFlow,
-    getFlowSummaries
+
+    // Point related
+    savePoint,
+    getNewPoint,
+    getPoint,
+    closePoint
   };
 });

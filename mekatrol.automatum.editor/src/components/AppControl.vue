@@ -58,14 +58,14 @@ import type { Flow } from '@/services/api-generated';
 import { validateFlow } from '@/validation/flow-validation';
 import { type ValidationResult } from '@/validation/validation-helpers';
 import { showInfoMessage } from '@/services/message';
-import PointsView from '@/views/PointsView.vue';
-import FlowEditorView from '@/views/FlowEditorView.vue';
+import PointsView from '@/components/PointsView.vue';
+import FlowEditorView from '@/components/FlowEditorView.vue';
 import { EMPTY_GUID } from '@/constants';
 import type { Tab } from '@/types/tab';
 import { useFlowStore } from '@/stores/flow-store';
 
 const appStore = useAppStore();
-const { newFlow, saveFlow } = appStore;
+const { getNewFlow, saveFlow } = appStore;
 
 const flowId = ref<string | undefined>(undefined);
 
@@ -93,7 +93,7 @@ const onOpenConfirm = async (): Promise<void> => {
   }
 
   // Open the selected flow
-  const flow = await appStore.openFlow(clickedFlow.value.id);
+  const flow = await appStore.getFlow(clickedFlow.value.id);
 
   // Only add if not already open in a tab
   if (!tabs.find((t) => t.id === flow.id)) {
@@ -154,7 +154,7 @@ const onFlowClickedClose = async (flowClicked: Flow): Promise<void> => {
 };
 
 const onNewFlow = async () => {
-  const flow = await newFlow();
+  const flow = await getNewFlow();
 
   const tab = {
     name: flow.name,

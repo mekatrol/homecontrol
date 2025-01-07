@@ -135,7 +135,7 @@ const iconType = computed((): IconDefinition => {
       font-weight: 700;
 
       &.info {
-        background-color: var(--clr-info);
+        background-color: var(--clr-information);
       }
 
       &.success {
@@ -143,7 +143,7 @@ const iconType = computed((): IconDefinition => {
       }
 
       &.warn {
-        background-color: var(--clr-warn);
+        background-color: var(--clr-warning);
         color: #222;
       }
 

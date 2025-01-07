@@ -26,7 +26,7 @@
       <label for="interval">Key</label>
       <input
         v-model="activeFlow.key"
-        placeholder="00:01:00"
+        placeholder=""
         type="text"
         id="interval"
         :readonly="validations.flow.key.readonly"
@@ -120,74 +120,4 @@ const activeFlow = computed(() => {
 });
 </script>
 
-<style lang="css">
-:root {
-  --clr-success: hsl(143, 100%, 26%);
-  --clr-warning: hsl(43, 100%, 66%);
-  --clr-error: hsl(348, 55%, 49%);
-}
-
-form {
-  display: grid;
-  gap: 1rem;
-  max-width: 45ch;
-}
-
-.form-group {
-  display: grid;
-  gap: 0.5rem;
-  padding-inline: 1rem;
-}
-
-.form-group.inline {
-  label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    align-content: center;
-    gap: 0.5rem;
-  }
-}
-
-label {
-  font-size: 1rem;
-}
-
-input {
-  font: inherit;
-}
-
-input {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  border: 0;
-  background-color: hsl(201, 31%, 11%);
-}
-
-input[type='checkbox'] {
-  float: left;
-}
-
-input:not([type='checkbox']) {
-  outline: 3px solid hsl(203, 30%, 26%);
-}
-
-.validation-success,
-input:not([type='checkbox']):not(:placeholder-shown):user-valid {
-  outline-color: var(--clr-success);
-}
-
-p.validation-error {
-  color: var(--clr-error);
-}
-
-.validation-error,
-input:not([type='checkbox']):user-invalid {
-  outline-color: var(--clr-error);
-}
-
-.validation-warning,
-input:not([type='checkbox']):focus:invalid {
-  outline-color: var(--clr-warning);
-}
-</style>
+<style scoped lang="css"></style>

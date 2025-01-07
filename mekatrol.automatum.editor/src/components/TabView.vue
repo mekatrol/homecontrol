@@ -71,7 +71,7 @@ const emit = defineEmits<{
 /* Style the tab-view content */
 .tab-view-content {
   display: none;
-  padding: 6px 12px;
+  padding: 0;
   -webkit-animation: fadeEffect 0.3s;
   animation: fadeEffect 0.3s;
 }

@@ -1,22 +1,42 @@
 <template>
   <div class="menu">
     <div class="menu-item">
-      <button @click="emit('open')"><FontAwesomeIcon :icon="faFolder" />Open flow</button>
+      <button
+        class="btn icon"
+        @click="emit('open')"
+      >
+        <FontAwesomeIcon :icon="faFolder" />Open flow
+      </button>
     </div>
     <div class="menu-item">
-      <button @click="emit('new')"><FontAwesomeIcon :icon="faPlus" />New flow</button>
+      <button
+        class="btn icon"
+        @click="emit('new')"
+      >
+        <FontAwesomeIcon :icon="faPlus" />New flow
+      </button>
     </div>
     <div
       v-if="isFlowOpen"
       class="menu-item"
     >
-      <button @click="emit('save')"><FontAwesomeIcon :icon="faSave" />Save</button>
+      <button
+        class="btn icon"
+        @click="emit('save')"
+      >
+        <FontAwesomeIcon :icon="faSave" />Save
+      </button>
     </div>
     <div
       v-if="isFlowOpen"
       class="menu-item"
     >
-      <button @click="emit('close')"><FontAwesomeIcon :icon="faClose" />Close</button>
+      <button
+        class="btn icon"
+        @click="emit('close')"
+      >
+        <FontAwesomeIcon :icon="faClose" />Close
+      </button>
     </div>
   </div>
 </template>
@@ -50,16 +70,6 @@ const emit = defineEmits<{
 .menu-item {
   display: flex;
   flex-direction: row;
-}
-
-.menu-item button {
-  padding-inline: 0.5rem;
-  padding-block: 0.2rem;
-
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.3rem;
 }
 
 .menu-item button svg {

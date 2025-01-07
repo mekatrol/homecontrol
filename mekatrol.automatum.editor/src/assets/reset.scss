@@ -79,6 +79,11 @@ object {
   background-size: cover;
 }
 
+input[type='text'] {
+  border: 2px solid hsl(0, 0%, 42%);
+  border-radius: 0.25rem;
+}
+
 // App content should force footer to bottom of page
 #app {
   display: flex;

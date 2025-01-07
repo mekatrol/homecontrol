@@ -65,8 +65,8 @@ export const useFlowStore = defineStore('flow', () => {
     return flowControllers[flowId];
   };
 
-  const isNewFlowController = (id: string): boolean => {
-    return id in newFlowControllers;
+  const isNewFlowController = (flowId: string): boolean => {
+    return flowId in newFlowControllers;
   };
 
   return {
