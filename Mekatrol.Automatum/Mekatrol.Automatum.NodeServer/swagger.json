@@ -5,6 +5,28 @@
     "version": "1.0"
   },
   "paths": {
+    "/Alert": {
+      "delete": {
+        "tags": [
+          "Alert"
+        ],
+        "parameters": [
+          {
+            "name": "alertId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/flow": {
       "get": {
         "tags": [

@@ -297,6 +297,28 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version 1.0
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  alert = {
+    /**
+     * No description
+     *
+     * @tags Alert
+     * @name Delete
+     * @request DELETE:/Alert
+     */
+    delete: (
+      query?: {
+        /** @format uuid */
+        alertId?: string;
+      },
+      params: RequestParams = {}
+    ) =>
+      this.request<void, any>({
+        path: `/Alert`,
+        method: 'DELETE',
+        query: query,
+        ...params
+      })
+  };
   flow = {
     /**
      * No description
