@@ -34,22 +34,11 @@
       @flow-clicked-close="onFlowClickedClose"
     ></OpenFlow>
   </AppDialog>
-  <BusyOverlay
-    :show="appStore.isBusy"
-    full-screen
-  />
-  <MessageOverlay
-    :show="!!appStore.messageData"
-    :data="appStore.messageData"
-    full-screen
-  />
 </template>
 
 <script setup lang="ts">
 import MenuControl from '@/components/MenuControl.vue';
-import BusyOverlay from '@/components/BusyOverlay.vue';
 import TabView from '@/components/TabView.vue';
-import MessageOverlay from '@/components/MessageOverlay.vue';
 import AppDialog from './AppDialog.vue';
 import OpenFlow from '@/components/OpenFlow.vue';
 import { useAppStore } from '@/stores/app-store';

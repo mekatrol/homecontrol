@@ -28,6 +28,7 @@ export interface Flow {
   updated: string;
   /** @format date-span */
   interval: string;
+  pointReferences: FlowPointReference[];
   blocks: FlowBlock[];
   connections: FlowConnection[];
 }
@@ -65,20 +66,10 @@ export interface FlowConnection {
   selected: boolean;
 }
 
-export interface HomeAssistantEntityAttributesModel {
-  friendlyName: string;
-}
-
-export interface HomeAssistantEntityModel {
-  entityId: string;
-  state: string;
-  attributes: HomeAssistantEntityAttributesModel;
-  /** @format date-time */
-  lastChanged: string;
-  /** @format date-time */
-  lastReported: string;
-  /** @format date-time */
-  lastUpdated: string;
+export interface FlowPointReference {
+  pointId: string;
+  direction: InputOutputDirection;
+  signalType: InputOutputSignalType;
 }
 
 export interface InputOutput {
@@ -101,7 +92,24 @@ export enum InputOutputDirection {
 export enum InputOutputSignalType {
   Analogue = 'Analogue',
   Digital = 'Digital',
+  Date = 'Date',
+  Duration = 'Duration',
+  Time = 'Time',
+  DateTime = 'DateTime',
   PWM = 'PWM'
+}
+
+export interface ModuleState {
+  name: string;
+  description: string;
+  status: ModuleStatus;
+  messages: string[];
+}
+
+export enum ModuleStatus {
+  Loading = 'Loading',
+  Running = 'Running',
+  Errored = 'Errored'
 }
 
 export interface Offset {
@@ -126,6 +134,19 @@ export interface Point {
   created: string;
   /** @format date-time */
   updated: string;
+  signalType: InputOutputSignalType;
+  units: string;
+  currentValue: string;
+  /** @format date-time */
+  valueLastUpdated: string;
+}
+
+export interface PointState {
+  id: string;
+  value?: any;
+  units: string;
+  /** @format date-time */
+  lastUpdated: string;
 }
 
 export interface Size {
@@ -133,6 +154,18 @@ export interface Size {
   width: number;
   /** @format double */
   height: number;
+}
+
+export interface StateAlert {
+  title: string;
+  message: string;
+  link?: string | null;
+}
+
+export interface SystemState {
+  isLoading: boolean;
+  modules: ModuleState[];
+  alerts: StateAlert[];
 }
 
 import type { AxiosInstance, AxiosRequestConfig, HeadersDefaults, ResponseType } from 'axios';
@@ -435,20 +468,35 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/point/${id}`,
         method: 'DELETE',
         ...params
-      }),
-
+      })
+  };
+  pointValue = {
     /**
      * No description
      *
-     * @tags Point
-     * @name Get2
-     * @request GET:/point/home-assistant/{entityId}
-     * @originalName get
-     * @duplicate
+     * @tags PointState
+     * @name Get
+     * @request GET:/point-value/{key}
      */
-    get2: (entityId: string, params: RequestParams = {}) =>
-      this.request<HomeAssistantEntityModel, any>({
-        path: `/point/home-assistant/${entityId}`,
+    get: (key: string, params: RequestParams = {}) =>
+      this.request<PointState, any>({
+        path: `/point-value/${key}`,
+        method: 'GET',
+        format: 'json',
+        ...params
+      })
+  };
+  state = {
+    /**
+     * No description
+     *
+     * @tags State
+     * @name List
+     * @request GET:/State
+     */
+    list: (params: RequestParams = {}) =>
+      this.request<SystemState, any>({
+        path: `/State`,
         method: 'GET',
         format: 'json',
         ...params

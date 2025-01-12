@@ -1,4 +1,5 @@
 ﻿using Mekatrol.Automatum.Data.Context;
+using Mekatrol.Automatum.Middleware.Exceptions;
 using Mekatrol.Automatum.Models.HomeAssistant;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,7 @@ internal class HomeAssistantService : IHomeAssistantService
         _logger = logger;
     }
 
-    public async Task<IList<HomeAssistantEntityModel>> GetStates(CancellationToken cancellationToken)
+    public async Task<IList<HomeAssistantEntity>> GetStates(CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync("http://ha.lan:8123/api/states", cancellationToken);
 
@@ -37,13 +38,13 @@ internal class HomeAssistantService : IHomeAssistantService
         }
 
         // Get the body JSON as a ApiResponse object
-        var entityStates = await response.Content.ReadFromJsonAsync<IList<HomeAssistantEntityModel>>(_jsonOptions, cancellationToken);
+        var entityStates = await response.Content.ReadFromJsonAsync<IList<HomeAssistantEntity>>(_jsonOptions, cancellationToken);
 
         // Return states or empty list if deserialization returned null
         return entityStates ?? [];
     }
 
-    public async Task<HomeAssistantEntityModel> GetState(string entityId, CancellationToken cancellationToken)
+    public async Task<HomeAssistantEntity> GetState(string entityId, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync($"http://ha.lan:8123/api/states/{entityId}", cancellationToken);
 
@@ -54,7 +55,8 @@ internal class HomeAssistantService : IHomeAssistantService
         }
 
         // Get the body JSON as a ApiResponse object
-        var entityState = await response.Content.ReadFromJsonAsync<HomeAssistantEntityModel>(_jsonOptions, cancellationToken);
+        var entityState = await response.Content.ReadFromJsonAsync<HomeAssistantEntity>(_jsonOptions, cancellationToken) 
+            ?? throw new NotFoundException($""); // TODO: throw a proper error
 
         // Return state or null if not found
         return entityState;

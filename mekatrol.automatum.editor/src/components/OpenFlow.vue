@@ -21,7 +21,7 @@ import AppTable from './AppTable.vue';
 import { formatDateTime } from '@/services/date';
 
 const appStore = useAppStore();
-const { getFlowSummaries } = appStore;
+const { getFlows } = appStore;
 const flowSummaries = ref<Flow[]>([]);
 
 const emit = defineEmits<{
@@ -76,7 +76,7 @@ const rows = computed(() => {
 });
 
 onMounted(async () => {
-  flowSummaries.value = await getFlowSummaries();
+  flowSummaries.value = await getFlows();
 });
 </script>
 

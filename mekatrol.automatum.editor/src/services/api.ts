@@ -232,16 +232,25 @@ const displayErrorMessage = (error: ApiError, action: string): void => {
   throw error;
 };
 
-export const wrapApiCall = async <T>(errorDesc: string, apiCall: () => Promise<T>, errorHandlerCallback?: HandleErrorCallback): Promise<T> => {
+export const wrapApiCall = async <T>(
+  errorDesc: string,
+  apiCall: () => Promise<T>,
+  errorHandlerCallback?: HandleErrorCallback,
+  showBusy: boolean = true
+): Promise<T> => {
   const appStore = useAppStore();
   try {
-    appStore.incrementBusy();
+    if (showBusy) {
+      appStore.incrementBusy();
+    }
 
     return await apiCall();
   } catch (err) {
     const apiError = handleApiError(err, errorDesc, errorHandlerCallback, false);
     throw apiError;
   } finally {
-    appStore.decrementBusy();
+    if (showBusy) {
+      appStore.decrementBusy();
+    }
   }
 };

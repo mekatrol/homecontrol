@@ -18,10 +18,13 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
     {
         var entities = await _dbContext.Set<TEntity>().ToListAsync(cancellationToken);
 
-        var list = entities.Select(x =>
+        var list = entities.Select(entity =>
         {
-            var model = JsonSerializer.Deserialize<TModel>(x.Json, JsonSerializerExtensions.ApiSerializerOptions)
-                ?? throw CouldNotDeserializeException(x.Id);
+            var model = JsonSerializer.Deserialize<TModel>(entity.Json, JsonSerializerExtensions.ApiSerializerOptions)
+                ?? throw CouldNotDeserializeException(entity.Id);
+
+            // Allow derived class to perform any updates
+            UpdateModel(model, entity);
 
             return model;
         })
@@ -30,7 +33,7 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
         return list;
     }
 
-    public async virtual Task<TModel> Get(string id, CancellationToken cancellationToken)
+    public async virtual Task<TModel> GetById(string id, CancellationToken cancellationToken)
     {
         if (!Guid.TryParse(id, out var uuid))
         {
@@ -40,24 +43,46 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
         // If the id is an empty GUID then caller wants a new default model (do not persist)
         if (uuid == Guid.Empty)
         {
-            var model = Activator.CreateInstance<TModel>()!;
+            var newModel = Activator.CreateInstance<TModel>()!;
 
-            model.Id = Guid.NewGuid().ToString("D");
-            model.Enabled = true;
-            model.Key = $"new.{typeof(TModel).Name.ToLowerInvariant()}";
-            model.Name = $"New {typeof(TModel).Name}";
+            newModel.Id = Guid.NewGuid().ToString("D");
+            newModel.Enabled = true;
+            newModel.Key = $"new.{typeof(TModel).Name.ToLowerInvariant()}";
+            newModel.Name = $"New {typeof(TModel).Name}";
 
-            return model;
+            return newModel;
         }
 
         var entity = await _dbContext.Set<TEntity>()
             .Where(x => x.Id == id)
             .SingleOrDefaultAsync(cancellationToken);
 
-        return entity == null
+        var model = entity == null
             ? throw IdNotFoundException(id)
             : JsonSerializer.Deserialize<TModel>(entity.Json, JsonSerializerExtensions.ApiSerializerOptions)
-                ?? throw CouldNotDeserializeException(entity.Id);        
+                ?? throw CouldNotDeserializeException(entity.Id);
+
+        // Allow derived class to perform any updates
+        UpdateModel(model, entity);
+
+        return model;
+    }
+
+    public async virtual Task<TModel> GetByKey(string key, CancellationToken cancellationToken)
+    {
+        var entity = await _dbContext.Set<TEntity>()
+            .Where(x => x.Key == key)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        var model = entity == null
+            ? throw KeyNotFoundException(key)
+            : JsonSerializer.Deserialize<TModel>(entity.Json, JsonSerializerExtensions.ApiSerializerOptions)
+                ?? throw CouldNotDeserializeException(entity.Id);
+
+        // Allow derived class to perform any updates
+        UpdateModel(model, entity);
+
+        return model;
     }
 
     public async virtual Task<TModel> Create(TModel model, CancellationToken cancellationToken)
@@ -92,6 +117,9 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
         entity.Created = dateTime;
         entity.Updated = dateTime;
 
+        // Allow derived class to perform any updates
+        UpdateEntity(entity, model);
+
         await _dbContext.Set<TEntity>().AddAsync(entity, cancellationToken);
 
         try
@@ -115,7 +143,13 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
             throw;
         }
 
-        return JsonSerializer.Deserialize<TModel>(entity.Json, JsonSerializerExtensions.ApiSerializerOptions)!;
+        // Get persisted model
+        model =  JsonSerializer.Deserialize<TModel>(entity.Json, JsonSerializerExtensions.ApiSerializerOptions)!;
+
+        // Allow derived class to perform any updates
+        UpdateModel(model, entity);
+
+        return model;
     }
 
     public async virtual Task<TModel> Update(TModel model, CancellationToken cancellationToken)
@@ -140,15 +174,19 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
             throw NameMissingException(model.Id);
         }
 
-        var existing = await _dbContext.Set<TEntity>().SingleOrDefaultAsync(x => x.Id == model.Id, cancellationToken)
+        // Get existing entity (if exists)
+        var entity = await _dbContext.Set<TEntity>().SingleOrDefaultAsync(x => x.Id == model.Id, cancellationToken)
             ?? throw IdNotFoundException(model.Id);
 
         model.Updated = DateTimeOffset.UtcNow;
 
-        existing.Key = model.Key;
-        existing.Updated = model.Updated;
+        entity.Key = model.Key;
+        entity.Updated = model.Updated;
 
-        existing.Json = JsonSerializer.Serialize(model, JsonSerializerExtensions.ApiSerializerOptions);
+        // Allow derived class to perform any updates
+        UpdateEntity(entity, model);
+
+        entity.Json = JsonSerializer.Serialize(model, JsonSerializerExtensions.ApiSerializerOptions);
 
         try
         {
@@ -171,7 +209,13 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
             throw;
         }
 
-        return JsonSerializer.Deserialize<TModel>(existing.Json, JsonSerializerExtensions.ApiSerializerOptions)!;
+        // Get persisted model
+        model = JsonSerializer.Deserialize<TModel>(entity.Json, JsonSerializerExtensions.ApiSerializerOptions)!;
+
+        // Allow derived class to perform any updates
+        UpdateModel(model, entity);
+
+        return model;
     }
 
     public async virtual Task Delete(string id, CancellationToken cancellationToken)
@@ -188,6 +232,10 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    protected abstract void UpdateModel(TModel toModel, TEntity fromEntity);
+
+    protected abstract void UpdateEntity(TEntity toEntity, TModel fromModel);
+
     protected static BadRequestException IdNotValidException(string id) => new($"The ID '{id}' is not valid.");
 
     protected static NotFoundException IdNotFoundException(string id) => new($"A {typeof(TModel).Name.ToLower()} with the ID '{id}' was not found.");
@@ -201,6 +249,8 @@ internal abstract class DbService<TModel, TEntity>(IAutomatumDbContext dbContext
     protected static ConflictException IdAlreadyExistsException(string id) => new($"A {typeof(TModel).Name.ToLower()} with the ID '{id}' already exists.");
 
     protected static ConflictException KeyAlreadyExistsException(string key) => new($"A {typeof(TModel).Name.ToLower()} with the key '{key}' already exists.");
+
+    protected static NotFoundException KeyNotFoundException(string key) => new($"A {typeof(TModel).Name.ToLower()} with the key '{key}' was not found.");
 
     protected static ConflictException OptimisticConcurrencyException(string id) => new($"The {typeof(TModel).Name.ToLower()} with the ID '{id}' has changed, you need to fetch the latest version and update it.");
 }

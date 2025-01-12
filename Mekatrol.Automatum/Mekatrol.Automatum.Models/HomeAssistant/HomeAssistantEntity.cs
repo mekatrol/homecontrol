@@ -1,12 +1,12 @@
 ﻿namespace Mekatrol.Automatum.Models.HomeAssistant;
 
-public class HomeAssistantEntityModel
+public class HomeAssistantEntity
 {
     public string EntityId { get; set; } = string.Empty;
 
     public string State { get; set; } = string.Empty;
 
-    public HomeAssistantEntityAttributesModel Attributes { get; set; } = new HomeAssistantEntityAttributesModel();
+    public HomeAssistantEntityAttributes Attributes { get; set; } = new HomeAssistantEntityAttributes();
 
     public DateTimeOffset LastChanged { get; set; }
 

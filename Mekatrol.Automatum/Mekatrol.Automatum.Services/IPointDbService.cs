@@ -1,9 +1,9 @@
-﻿using Mekatrol.Automatum.Models.Flows;
-using Mekatrol.Automatum.Models.HomeAssistant;
+﻿using Mekatrol.Automatum.Models.HomeAssistant;
+using Mekatrol.Automatum.Models.Devices;
 
 namespace Mekatrol.Automatum.Services;
 
 public interface IPointDbService : IDbService<Point>
 {
-    Task<HomeAssistantEntityModel> GetHomeAssistantEntity(string entityId, CancellationToken cancellationToken);
+    Task<HomeAssistantEntity> GetHomeAssistantEntity(string entityId, CancellationToken cancellationToken);
 }

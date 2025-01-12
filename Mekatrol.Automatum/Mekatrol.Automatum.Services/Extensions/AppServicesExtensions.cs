@@ -15,11 +15,20 @@ public static class AppServicesExtensions
     {
         AddCertificateServices(services);
 
+        // Bind background service options        
+        var backgroundServiceOptions = new BackgroundServiceOptions();
+        builder.Configuration.Bind(BackgroundServiceOptions.SectionName, backgroundServiceOptions);
+        services.AddSingleton(backgroundServiceOptions);
+
+        
+        // Bind background service options        
+        var devicesOptions = new DevicesOptions();
+        builder.Configuration.Bind(DevicesOptions.SectionName, devicesOptions);
+        services.AddSingleton(devicesOptions);
+
         // Bind home assistant options
         var homeAssistantOptions = new HomeAssistantOptions();
         builder.Configuration.Bind(HomeAssistantOptions.SectionName, homeAssistantOptions);
-
-        // Add options as a singleton
         services.AddSingleton(homeAssistantOptions);
 
         services.AddFlowService();
@@ -31,6 +40,12 @@ public static class AppServicesExtensions
         services.AddHomeAssistantServices();
 
         services.AddScoped<IPingService, PingService>();
+
+        services.AddStateServices();
+
+        services.AddHostedService<FlowExecutorBackgroundService>();
+        services.AddHostedService<MainControlLoopBackgroundService>();
+        services.AddHostedService<DeviceManagerBackgroundService>();
 
         return services;
     }
@@ -90,7 +105,13 @@ public static class AppServicesExtensions
     public static IServiceCollection AddHomeAssistantServices(this IServiceCollection services)
     {
         services.AddScoped<IHomeAssistantService, HomeAssistantService>();
-        services.AddHostedService<HomeAssistantBackgroundService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddStateServices(this IServiceCollection services)
+    {
+        services.AddSingleton<IStateService, StateService>();
 
         return services;
     }

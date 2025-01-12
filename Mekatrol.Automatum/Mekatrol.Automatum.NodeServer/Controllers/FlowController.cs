@@ -6,28 +6,29 @@ namespace Mekatrol.Automatum.NodeServer.Controllers;
 
 [ApiController]
 [Route("flow")]
-public class FlowController(ILogger<FlowController> logger, IFlowDbService flowService) : ControllerBase
+public class FlowController(ILogger<FlowController> logger, IStateService flowStateService, IFlowDbService flowService) : ControllerBase
 {
     [HttpGet]
     public async Task<IList<Flow>> Get(CancellationToken cancellationToken)
     {
         logger.LogDebug("Getting flows...");
         var flows = await flowService.GetList(cancellationToken);
+
         return flows;
     }
 
     [HttpGet("{id}")]
     public async Task<Flow> Get(Guid id, CancellationToken cancellationToken)
     {
-        logger.LogDebug("{message}", $"Getting flow with ID '{id}'");
-        var flow = await flowService.Get(id.ToString("D"), cancellationToken);
+        logger.LogDebug("{msg}", $"Getting flow with ID '{id}'");
+        var flow = await flowService.GetById(id.ToString("D"), cancellationToken);
         return flow;
     }
 
     [HttpPost]
     public async Task<Flow> Post([FromBody] Flow flow, CancellationToken cancellationToken)
     {
-        logger.LogDebug("{message}", $"Creating flow with ID '{flow.Id}'");
+        logger.LogDebug("{msg}", $"Creating flow with ID '{flow.Id}'");
         flow = await flowService.Create(flow, cancellationToken);
         return flow;
     }
@@ -35,7 +36,7 @@ public class FlowController(ILogger<FlowController> logger, IFlowDbService flowS
     [HttpPut]
     public async Task<Flow> Put([FromBody] Flow flow, CancellationToken cancellationToken)
     {
-        logger.LogDebug("{message}", $"Updating flow with ID '{flow.Id}'");
+        logger.LogDebug("{msg}", $"Updating flow with ID '{flow.Id}'");
         flow = await flowService.Update(flow, cancellationToken);
         return flow;
     }
@@ -43,7 +44,7 @@ public class FlowController(ILogger<FlowController> logger, IFlowDbService flowS
     [HttpDelete("{id}")]
     public void Delete(Guid id, CancellationToken cancellationToken)
     {
-        logger.LogDebug("{message}", $"Deleting flow with ID '${id}'");
+        logger.LogDebug("{msg}", $"Deleting flow with ID '${id}'");
         flowService.Delete(id.ToString("D"), cancellationToken);
     }
 }

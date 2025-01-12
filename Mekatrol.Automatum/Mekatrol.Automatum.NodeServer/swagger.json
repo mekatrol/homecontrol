@@ -417,14 +417,14 @@
         }
       }
     },
-    "/point/home-assistant/{entityId}": {
+    "/point-value/{key}": {
       "get": {
         "tags": [
-          "Point"
+          "PointValue"
         ],
         "parameters": [
           {
-            "name": "entityId",
+            "name": "key",
             "in": "path",
             "required": true,
             "schema": {
@@ -438,17 +438,46 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/HomeAssistantEntityModel"
+                  "$ref": "#/components/schemas/PointState"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HomeAssistantEntityModel"
+                  "$ref": "#/components/schemas/PointState"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HomeAssistantEntityModel"
+                  "$ref": "#/components/schemas/PointState"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/State": {
+      "get": {
+        "tags": [
+          "State"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemState"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemState"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemState"
                 }
               }
             }
@@ -479,6 +508,7 @@
           "interval",
           "key",
           "name",
+          "pointReferences",
           "updated"
         ],
         "type": "object",
@@ -509,6 +539,12 @@
           "interval": {
             "type": "string",
             "format": "date-span"
+          },
+          "pointReferences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlowPointReference"
+            }
           },
           "blocks": {
             "type": "array",
@@ -628,49 +664,22 @@
         },
         "additionalProperties": false
       },
-      "HomeAssistantEntityAttributesModel": {
+      "FlowPointReference": {
         "required": [
-          "friendlyName"
+          "direction",
+          "pointId",
+          "signalType"
         ],
         "type": "object",
         "properties": {
-          "friendlyName": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
-      "HomeAssistantEntityModel": {
-        "required": [
-          "attributes",
-          "entityId",
-          "lastChanged",
-          "lastReported",
-          "lastUpdated",
-          "state"
-        ],
-        "type": "object",
-        "properties": {
-          "entityId": {
+          "pointId": {
             "type": "string"
           },
-          "state": {
-            "type": "string"
+          "direction": {
+            "$ref": "#/components/schemas/InputOutputDirection"
           },
-          "attributes": {
-            "$ref": "#/components/schemas/HomeAssistantEntityAttributesModel"
-          },
-          "lastChanged": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "lastReported": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "lastUpdated": {
-            "type": "string",
-            "format": "date-time"
+          "signalType": {
+            "$ref": "#/components/schemas/InputOutputSignalType"
           }
         },
         "additionalProperties": false
@@ -727,7 +736,46 @@
         "enum": [
           "Analogue",
           "Digital",
+          "Date",
+          "Duration",
+          "Time",
+          "DateTime",
           "PWM"
+        ],
+        "type": "string"
+      },
+      "ModuleState": {
+        "required": [
+          "description",
+          "messages",
+          "name",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ModuleStatus"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModuleStatus": {
+        "enum": [
+          "Loading",
+          "Running",
+          "Errored"
         ],
         "type": "string"
       },
@@ -768,12 +816,16 @@
       "Point": {
         "required": [
           "created",
+          "currentValue",
           "description",
           "enabled",
           "id",
           "key",
           "name",
-          "updated"
+          "signalType",
+          "units",
+          "updated",
+          "valueLastUpdated"
         ],
         "type": "object",
         "properties": {
@@ -799,6 +851,43 @@
           "updated": {
             "type": "string",
             "format": "date-time"
+          },
+          "signalType": {
+            "$ref": "#/components/schemas/InputOutputSignalType"
+          },
+          "units": {
+            "type": "string"
+          },
+          "currentValue": {
+            "type": "string"
+          },
+          "valueLastUpdated": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PointState": {
+        "required": [
+          "id",
+          "lastUpdated",
+          "units"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "value": {
+            "nullable": true
+          },
+          "units": {
+            "type": "string"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -817,6 +906,52 @@
           "height": {
             "type": "number",
             "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "StateAlert": {
+        "required": [
+          "message",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SystemState": {
+        "required": [
+          "alerts",
+          "isLoading",
+          "modules"
+        ],
+        "type": "object",
+        "properties": {
+          "isLoading": {
+            "type": "boolean"
+          },
+          "modules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModuleState"
+            }
+          },
+          "alerts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StateAlert"
+            }
           }
         },
         "additionalProperties": false

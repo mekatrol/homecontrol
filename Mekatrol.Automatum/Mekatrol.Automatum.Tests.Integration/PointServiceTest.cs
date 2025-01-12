@@ -1,6 +1,6 @@
 ﻿using Mekatrol.Automatum.Data.Context;
 using Mekatrol.Automatum.Middleware.Exceptions;
-using Mekatrol.Automatum.Models.Flows;
+using Mekatrol.Automatum.Models.Devices;
 using Mekatrol.Automatum.Services;
 using Mekatrol.Automatum.Services.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -289,8 +289,8 @@ public class PointServiceTest : IntegrationTestBase
 
             var createdPoint = await pointService.Create(point, cancellationToken);
 
-            var pointCopy1 = await pointService.Get(point.Id, cancellationToken);
-            var pointCopy2 = await pointService.Get(point.Id, cancellationToken);
+            var pointCopy1 = await pointService.GetById(point.Id, cancellationToken);
+            var pointCopy2 = await pointService.GetById(point.Id, cancellationToken);
 
             pointCopy1.Key = "key2";
             pointCopy2.Key = "label3";
@@ -317,7 +317,7 @@ public class PointServiceTest : IntegrationTestBase
             var id = Guid.NewGuid();
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
-                await pointService.Get(id.ToString("D"), cancellationToken);
+                await pointService.GetById(id.ToString("D"), cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
@@ -332,7 +332,7 @@ public class PointServiceTest : IntegrationTestBase
         {
             var pointService = services.GetRequiredService<IPointDbService>();
 
-            var point = await pointService.Get(Guid.Empty.ToString("D"), cancellationToken);
+            var point = await pointService.GetById(Guid.Empty.ToString("D"), cancellationToken);
 
             Assert.IsNotNull(point);
             Assert.AreNotEqual(Guid.Empty.ToString("D"), point.Id);

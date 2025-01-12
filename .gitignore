@@ -150,6 +150,12 @@ Mekatrol.Automatum/Mekatrol.Automatum.Common/obj
 Mekatrol.Automatum/Mekatrol.Automatum.Data/bin
 Mekatrol.Automatum/Mekatrol.Automatum.Data/obj
 
+Mekatrol.Automatum/Mekatrol.Automatum.Devices/bin
+Mekatrol.Automatum/Mekatrol.Automatum.Devices/obj
+
+Mekatrol.Automatum/Mekatrol.Automatum.KnownDevices/bin
+Mekatrol.Automatum/Mekatrol.Automatum.KnownDevices/obj
+
 Mekatrol.Automatum/Mekatrol.Automatum.Middleware/bin
 Mekatrol.Automatum/Mekatrol.Automatum.Middleware/obj
 
@@ -161,12 +167,12 @@ Mekatrol.Automatum/Mekatrol.Automatum.Services/obj
 
 Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/bin
 Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/obj
+Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/mekatrol.automatum.db
+Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/mekatrol.automatum.db-shm
+Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/mekatrol.automatum.db-wal
 
 Mekatrol.Automatum/Mekatrol.Automatum.Tests.Integration/bin
 Mekatrol.Automatum/Mekatrol.Automatum.Tests.Integration/obj
 
 Mekatrol.Automatum/Mekatrol.Automatum.Tests.Unit/bin
 Mekatrol.Automatum/Mekatrol.Automatum.Tests.Unit/obj
-/Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/mekatrol.automatum.db
-/Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/mekatrol.automatum.db-shm
-/Mekatrol.Automatum/Mekatrol.Automatum.NodeServer/mekatrol.automatum.db-wal

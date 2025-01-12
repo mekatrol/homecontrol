@@ -1,5 +1,4 @@
-﻿using Mekatrol.Automatum.Models.Flows;
-using Mekatrol.Automatum.Models.HomeAssistant;
+﻿using Mekatrol.Automatum.Models.Devices;
 using Mekatrol.Automatum.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,23 +19,15 @@ public class PointController(ILogger<PointController> logger, IPointDbService po
     [HttpGet("{id}")]
     public async Task<Point> Get(Guid id, CancellationToken cancellationToken)
     {
-        logger.LogDebug("{message}", $"Getting point with ID '{id}'");
-        var point = await pointService.Get(id.ToString("D"), cancellationToken);
+        logger.LogDebug("{msg}", $"Getting point with ID '{id}'");
+        var point = await pointService.GetById(id.ToString("D"), cancellationToken);
         return point;
-    }
-
-    [HttpGet("home-assistant/{entityId}")]
-    public async Task<HomeAssistantEntityModel> Get(string entityId, CancellationToken cancellationToken)
-    {
-        logger.LogDebug("{message}", $"Getting home assistant entity with ID '{entityId}'");
-        var entity = await pointService.GetHomeAssistantEntity(entityId, cancellationToken);
-        return entity;
     }
 
     [HttpPost]
     public async Task<Point> Post([FromBody] Point point, CancellationToken cancellationToken)
     {
-        logger.LogDebug("{message}", $"Creating point with ID '{point.Id}'");
+        logger.LogDebug("{msg}", $"Creating point with ID '{point.Id}'");
         point = await pointService.Create(point, cancellationToken);
         return point;
     }
@@ -44,7 +35,7 @@ public class PointController(ILogger<PointController> logger, IPointDbService po
     [HttpPut]
     public async Task<Point> Put([FromBody] Point point, CancellationToken cancellationToken)
     {
-        logger.LogDebug("{message}", $"Updating point with ID '{point.Id}'");
+        logger.LogDebug("{msg}", $"Updating point with ID '{point.Id}'");
         point = await pointService.Update(point, cancellationToken);
         return point;
     }
@@ -52,7 +43,7 @@ public class PointController(ILogger<PointController> logger, IPointDbService po
     [HttpDelete("{id}")]
     public async Task Delete(Guid id, CancellationToken cancellationToken)
     {
-        logger.LogDebug("{message}", $"Deleting point with ID '${id}'");
+        logger.LogDebug("{msg}", $"Deleting point with ID '${id}'");
         await pointService.Delete(id.ToString("D"), cancellationToken);
     }
 }

@@ -41,19 +41,26 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import AppTable from '@/components/AppTable.vue';
 import type { TableHeader, TableRow } from '@/types/table';
 import { computed, onMounted, ref } from 'vue';
-import { type Point } from '@/services/api-generated';
+import { type Point, type PointState } from '@/services/api-generated';
 import AppDialog from '@/components/AppDialog.vue';
 import NewPoint from '@/components/NewPoint.vue';
 import { useAppStore } from '@/stores/app-store';
 import { validatePoint } from '@/validation/point-validation';
 import type { ValidationResult } from '@/validation/validation-helpers';
 import { showInfoMessage } from '@/services/message';
+import { useIntervalTimer } from '@/composables/timer';
 
-const { getNewPoint, savePoint } = useAppStore();
+const { getPoints, getNewPoint, savePoint, getPointValue } = useAppStore();
+
+interface PointListItem {
+  point: Point;
+  value: PointState;
+}
 
 const showNewPointDialog = ref(false);
 const newPoint = ref<Point | undefined>(undefined);
 const pointValidation = ref<ValidationResult[]>([]);
+const points = ref<PointListItem[]>([]);
 
 const headers: TableHeader[] = [
   {
@@ -61,21 +68,28 @@ const headers: TableHeader[] = [
   },
   {
     label: 'Key'
+  },
+  {
+    label: 'Value'
   }
 ];
-
-const points = ref<Point[]>([]);
 
 const rows = computed(() => {
   const rows: TableRow[] = [];
 
   for (let i = 0; i < points.value.length; i++) {
-    const point = points.value[i];
+    const pointListItem = points.value[i];
 
     const row: TableRow = {
       cells: [
         {
-          value: point.key
+          value: pointListItem.point.name
+        },
+        {
+          value: pointListItem.point.key
+        },
+        {
+          value: pointListItem.value.value
         }
       ]
     };
@@ -95,7 +109,20 @@ const rowClickedClose = (i: number): void => {
 };
 
 onMounted(async () => {
-  console.log('points view mounted');
+  try {
+    points.value = (await getPoints()).map((p) => ({
+      point: p,
+      value: {
+        id: p.id,
+        key: p.key,
+        value: p.currentValue,
+        units: p.units,
+        lastUpdated: p.valueLastUpdated
+      } as PointState
+    }));
+  } catch {
+    /* The server was not online (probably) */
+  }
 });
 
 const createNewPoint = async () => {
@@ -119,6 +146,17 @@ const onConfirmCreatePoint = async () => {
   showNewPointDialog.value = false;
   newPoint.value = undefined;
 };
+
+useIntervalTimer(async () => {
+  // Get updated points
+  points.value.forEach(async (p) => {
+    const pointValue = await getPointValue(p.point.key);
+    p.value.value = pointValue.value;
+  });
+
+  // Keep timer running
+  return true;
+}, 2000);
 </script>
 
 <style lang="css" scoped>

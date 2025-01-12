@@ -1,9 +1,12 @@
 
+using Mekatrol.Automatum.Common;
 using Mekatrol.Automatum.Data.Context;
 using Mekatrol.Automatum.Middleware;
 using Mekatrol.Automatum.Middleware.Extensions;
 using Mekatrol.Automatum.Models.Configuration;
+using Mekatrol.Automatum.Models.Execution;
 using Mekatrol.Automatum.NodeServer.Extensions;
+using Mekatrol.Automatum.Services;
 using Mekatrol.Automatum.Services.Extensions;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
@@ -82,6 +85,11 @@ public class Program
                         policy.AllowAnyHeader();
                     });
             });
+
+            // Bind device options
+            var devicesOptions = new DevicesOptions();
+            webAppBuilder.Configuration.Bind(DevicesOptions.SectionName, devicesOptions);
+
             webAppBuilder.Services
                 .AddControllers()
                 .ConfigureApiBehaviorOptions(options =>
@@ -133,6 +141,8 @@ public class Program
         app.UseAuthorization();
 
         app.MapControllers();
+
+        app.RegisterSystemModules();
 
         app.Run();
     }

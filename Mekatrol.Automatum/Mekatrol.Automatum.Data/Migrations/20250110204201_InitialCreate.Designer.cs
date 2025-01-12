@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mekatrol.Automatum.Data.Migrations
 {
     [DbContext(typeof(AutomatumDbContext))]
-    [Migration("20250106080852_InitialCreate")]
+    [Migration("20250110204201_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

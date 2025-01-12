@@ -304,8 +304,8 @@ public class FlowServiceTest : IntegrationTestBase
 
             var createdFlow = await flowService.Create(flow, cancellationToken);
 
-            var flowCopy1 = await flowService.Get(flow.Id, cancellationToken);
-            var flowCopy2 = await flowService.Get(flow.Id, cancellationToken);
+            var flowCopy1 = await flowService.GetById(flow.Id, cancellationToken);
+            var flowCopy2 = await flowService.GetById(flow.Id, cancellationToken);
 
             flowCopy1.Key = "key2";
             flowCopy2.Key = "key3";
@@ -332,7 +332,7 @@ public class FlowServiceTest : IntegrationTestBase
             var id = Guid.NewGuid();
             var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async () =>
             {
-                await flowService.Get(id.ToString("D"), cancellationToken);
+                await flowService.GetById(id.ToString("D"), cancellationToken);
             });
 
             Assert.AreEqual(1, ex.Errors.Count);
@@ -347,7 +347,7 @@ public class FlowServiceTest : IntegrationTestBase
         {
             var flowService = services.GetRequiredService<IFlowDbService>();
 
-            var flow = await flowService.Get(Guid.Empty.ToString("D"), cancellationToken);
+            var flow = await flowService.GetById(Guid.Empty.ToString("D"), cancellationToken);
 
             Assert.IsNotNull(flow);
             Assert.AreNotEqual(Guid.Empty.ToString("D"), flow.Id);
