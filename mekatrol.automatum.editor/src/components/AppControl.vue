@@ -52,6 +52,7 @@ import FlowEditorView from '@/components/FlowEditorView.vue';
 import { EMPTY_GUID } from '@/constants';
 import type { Tab } from '@/types/tab';
 import { useFlowStore } from '@/stores/flow-store';
+import SystemState from './SystemState.vue';
 
 const appStore = useAppStore();
 const { getNewFlow, saveFlow } = appStore;
@@ -63,6 +64,11 @@ const flowValidation = ref<ValidationResult[]>([]);
 const selectedTab = ref<number>(0);
 
 let tabs = markRaw<Tab[]>([
+  {
+    name: 'System',
+    id: EMPTY_GUID,
+    component: SystemState
+  },
   {
     name: 'Points',
     id: EMPTY_GUID,

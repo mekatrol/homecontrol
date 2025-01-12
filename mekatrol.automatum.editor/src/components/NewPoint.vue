@@ -72,7 +72,6 @@
 import { validations } from '@/validation/validation-definitions';
 import type { ValidationResult } from '@/validation/validation-helpers';
 import { computed } from 'vue';
-import type { Point } from '@/services/api-generated';
 import { usePointStore } from '@/stores/point-store';
 
 interface Props {

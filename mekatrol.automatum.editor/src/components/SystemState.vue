@@ -1,21 +1,30 @@
 <template>
   <div class="system-state">
-    <AppTable
-      :headers="alertHeaders"
-      :rows="alertRows"
-      :highlight-hover="true"
-      :row-selectable="true"
-      @row-clicked="rowClicked"
-      @row-clicked-close="rowClickedClose"
-    ></AppTable>
-    <AppTable
-      :headers="moduleHeaders"
-      :rows="moduleRows"
-      :highlight-hover="true"
-      :row-selectable="true"
-      @row-clicked="rowClicked"
-      @row-clicked-close="rowClickedClose"
-    ></AppTable>
+    <div>
+      <h1>System overview</h1>
+    </div>
+    <div>
+      <h2>Alerts</h2>
+      <AppTable
+        :headers="alertHeaders"
+        :rows="alertRows"
+        :highlight-hover="true"
+        :row-selectable="true"
+        @row-clicked="rowClicked"
+        @row-clicked-close="rowClickedClose"
+      ></AppTable>
+    </div>
+    <div>
+      <h2>Modules</h2>
+      <AppTable
+        :headers="moduleHeaders"
+        :rows="moduleRows"
+        :highlight-hover="true"
+        :row-selectable="true"
+        @row-clicked="rowClicked"
+        @row-clicked-close="rowClickedClose"
+      ></AppTable>
+    </div>
   </div>
 </template>
 
@@ -77,9 +86,6 @@ const moduleHeaders: TableHeader[] = [
   },
   {
     label: 'Description'
-  },
-  {
-    label: 'Messages'
   }
 ];
 
@@ -99,9 +105,6 @@ const moduleRows = computed(() => {
         },
         {
           value: module.description
-        },
-        {
-          value: module.messages.length > 0 ? module.messages[0] : ''
         }
       ]
     };
@@ -125,6 +128,19 @@ const rowClickedClose = (i: number): void => {
 .system-state {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  padding-bottom: 1rem;
 }
 </style>

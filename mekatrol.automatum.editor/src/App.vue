@@ -1,6 +1,6 @@
 <template>
-  <AppControl v-if="!systemState.isLoading" />
-  <SystemState />
+  <SystemState v-if="systemState.isLoading" />
+  <AppControl v-else />
   <BusyOverlay
     :show="appStore.isBusy"
     full-screen

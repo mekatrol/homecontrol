@@ -103,13 +103,12 @@ export interface ModuleState {
   name: string;
   description: string;
   status: ModuleStatus;
-  messages: string[];
 }
 
 export enum ModuleStatus {
   Loading = 'Loading',
   Running = 'Running',
-  Errored = 'Errored'
+  Error = 'Error'
 }
 
 export interface Offset {
@@ -157,6 +156,8 @@ export interface Size {
 }
 
 export interface StateAlert {
+  /** @format uuid */
+  id: string;
   title: string;
   message: string;
   link?: string | null;
@@ -474,7 +475,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags PointState
+     * @tags PointValue
      * @name Get
      * @request GET:/point-value/{key}
      */

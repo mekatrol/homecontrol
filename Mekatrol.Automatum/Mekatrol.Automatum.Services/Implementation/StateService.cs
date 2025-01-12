@@ -14,6 +14,8 @@ internal class StateService : IStateService
 
     private static readonly Dictionary<string, ModuleState> _moduleStates = [];
 
+    private static readonly Dictionary<Guid, StateAlert> _alerts = [];
+
     private static readonly SystemState _systemState = new();
 
     // The synchronisation lock across background services and HTTP requests
@@ -27,6 +29,7 @@ internal class StateService : IStateService
             
             lock (_lock)
             {
+                _systemState.Alerts = [.. _alerts.Values];
                 _systemState.Modules = [.. _moduleStates.Values];
                 systemState = Clone(_systemState);
             }
@@ -67,6 +70,22 @@ internal class StateService : IStateService
 
         // Return the updated state
         return moduleState;
+    }
+
+    public void AddAlert(StateAlert stateAlert)
+    {
+        lock (_lock)
+        {
+            _alerts.Add(stateAlert.Id, stateAlert);
+        }
+    }
+
+    public void RemoveAlert(Guid alertId)
+    {
+        lock (_lock)
+        {
+            _alerts.Remove(alertId);
+        }
     }
 
     public FlowState GetFlowState(Flow flow)

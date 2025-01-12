@@ -1,6 +1,5 @@
 ﻿
 using Mekatrol.Automatum.Common;
-using Mekatrol.Automatum.Common.Extensions;
 using Mekatrol.Automatum.Devices;
 using Mekatrol.Automatum.Models.Configuration;
 using Mekatrol.Automatum.Models.Execution;
@@ -14,27 +13,16 @@ internal class MainControlLoopBackgroundService(
     BackgroundServiceOptions backgroundServiceOptions,
     IServiceProvider serviceProvider,
     ILogger<MainControlLoopBackgroundService> logger)
-    : BaseBackgroundService<MainControlLoopBackgroundService>(backgroundServiceOptions, serviceProvider, logger)
+    : BaseBackgroundService<MainControlLoopBackgroundService>(
+        backgroundServiceOptions, 
+        ModuleNames.MainControlLoop, 
+        serviceProvider, 
+        logger)
 {
     protected override async Task<bool> ExecuteIteration(IServiceProvider services, CancellationToken stoppingToken)
     {
-        var stateService = services.GetRequiredService<IStateService>();
+        await ManageDeviceTypes(services);
 
-        try
-        {
-            await ManageDeviceTypes(services);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex);
-
-            stateService.UpdateModuleState(ModuleNames.DeviceManagerModule, (moduleState) =>
-            {
-                moduleState.Messages.Clear();
-                moduleState.Status = ModuleStatus.Error;
-                moduleState.Messages.Add(ex.Message);
-            });
-        }
         return true;
     }
 
@@ -78,7 +66,6 @@ internal class MainControlLoopBackgroundService(
 
             // Get all types defived from device factory
             var deviceFactoryType = typeof(IDeviceTypeFactory);
-
 
             List<Type> deviceFactories;
 
@@ -124,7 +111,6 @@ internal class MainControlLoopBackgroundService(
         // Update status to running
         stateService.UpdateModuleState(ModuleNames.MainControlLoop, (moduleState) =>
         {
-            moduleState.Messages.Clear();
             moduleState.Status = ModuleStatus.Running;
         });
 

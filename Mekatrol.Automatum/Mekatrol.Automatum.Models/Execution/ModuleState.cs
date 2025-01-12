@@ -18,6 +18,4 @@ public class ModuleState
     public string Description { get; set; } = string.Empty; 
     
     public ModuleStatus Status { get; set; }
-
-    public IList<string> Messages { get; set; } = [];
 }

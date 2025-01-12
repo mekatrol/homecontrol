@@ -1,5 +1,7 @@
-﻿using Mekatrol.Automatum.Common.Extensions;
+﻿using Mekatrol.Automatum.Common;
+using Mekatrol.Automatum.Common.Extensions;
 using Mekatrol.Automatum.Models.Configuration;
+using Mekatrol.Automatum.Models.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -8,9 +10,12 @@ namespace Mekatrol.Automatum.Services.Background;
 
 internal abstract class BaseBackgroundService<T>(
     BackgroundServiceOptions backgroundServiceOptions,
+    string moduleName,
     IServiceProvider serviceProvider,
     ILogger<T> logger) : BackgroundService()
 {
+    private Guid? _prevErrorId = null;
+
     protected ILogger Logger = logger;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -21,12 +26,13 @@ internal abstract class BaseBackgroundService<T>(
 
         while (!stoppingToken.IsCancellationRequested)
         {
+            using var scope = serviceProvider.CreateScope();
+            var services = scope.ServiceProvider;
+
+            var stateService = services.GetRequiredService<IStateService>();
+
             try
             {
-                using var scope = serviceProvider.CreateScope();
-
-                var services = scope.ServiceProvider;
-
                 if (!await ExecuteIteration(services, stoppingToken))
                 {
                     // Derived class asked for background service to exit
@@ -48,6 +54,26 @@ internal abstract class BaseBackgroundService<T>(
                     logger.LogError("{msg}", $"Stopping {nameof(T)} due to too many consecutive exceptions.");
                     return;
                 }
+
+                stateService.UpdateModuleState(moduleName, (moduleState) =>
+                {
+                    moduleState.Status = ModuleStatus.Error;
+                });
+
+                if (_prevErrorId != null)
+                {
+                    stateService.RemoveAlert(_prevErrorId.Value);
+                }
+
+                var alert = new StateAlert
+                {
+                    Title = $"{ModuleNames.MainControlLoop} Error",
+                    Message = ex.Message
+                };
+
+                _prevErrorId = alert.Id;
+
+                stateService.AddAlert(alert);
 
                 // Sleep for configured number seconds to try and let things settle (esp if exception keeps occuring)
                 await Task.Delay(backgroundServiceOptions.LoopExceptionSleep, stoppingToken);

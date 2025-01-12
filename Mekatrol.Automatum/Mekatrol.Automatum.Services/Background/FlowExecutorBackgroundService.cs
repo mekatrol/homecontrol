@@ -14,80 +14,74 @@ internal class FlowExecutorBackgroundService(
     BackgroundServiceOptions backgroundServiceOptions,
     IServiceProvider serviceProvider,
     ILogger<FlowExecutorBackgroundService> logger)
-    : BaseBackgroundService<FlowExecutorBackgroundService>(backgroundServiceOptions, serviceProvider, logger)
+    : BaseBackgroundService<FlowExecutorBackgroundService>(
+        backgroundServiceOptions,
+        ModuleNames.FlowExecutor,
+        serviceProvider,
+        logger)
 {
     protected override async Task<bool> ExecuteIteration(IServiceProvider services, CancellationToken stoppingToken)
     {
         var stateService = services.GetRequiredService<IStateService>();
 
-        try
+        var flowDbService = services.GetRequiredService<IFlowDbService>();
+        var flowStateService = services.GetRequiredService<IStateService>();
+
+        var flows = await flowDbService.GetList(stoppingToken);
+
+        // Iterate configured flows
+        foreach (var flow in flows)
         {
-            var flowDbService = services.GetRequiredService<IFlowDbService>();
-            var flowStateService = services.GetRequiredService<IStateService>();
-
-            var flows = await flowDbService.GetList(stoppingToken);
-
-            // Iterate configured flows
-            foreach (var flow in flows)
+            try
             {
-                try
+                // Stop processing further flows if cancellation flagged
+                if (stoppingToken.IsCancellationRequested)
                 {
-                    // Stop processing further flows if cancellation flagged
-                    if (stoppingToken.IsCancellationRequested)
-                    {
-                        return false;
-                    }
-
-                    // If the flow is not enabled then remove it (if it exists) and continue
-                    if (!flow.Enabled)
-                    {
-                        flowStateService.RemoveFlowState(flow.Id);
-                        continue;
-                    }
-
-                    // Get existing flow state, do not create if flow disabled
-                    var flowState = flowStateService.GetFlowState(flow);
-
-                    // Is the flow state flagged as failed?
-                    if (flowState.Failed)
-                    {
-                        // Do not re-execute the flow until any errors have been resolved
-                        continue;
-                    }
-
-                    // Execute the flow using the known state
-                    await ExecuteFlow(flow, flowState, services, stoppingToken);
+                    return false;
                 }
-                catch (FlowExecutionException ex)
+
+                // If the flow is not enabled then remove it (if it exists) and continue
+                if (!flow.Enabled)
                 {
-                    // TODO: Capture this to some error list that can be displayed to the user
+                    flowStateService.RemoveFlowState(flow.Id);
+                    continue;
+                }
 
-                    logger.LogError(ex);
-                }
-                catch (Exception ex)
+                // Get existing flow state, do not create if flow disabled
+                var flowState = flowStateService.GetFlowState(flow);
+
+                // Is the flow state flagged as failed?
+                if (flowState.Failed)
                 {
-                    logger.LogError(ex);
+                    // Do not re-execute the flow until any errors have been resolved
+                    continue;
                 }
+
+                // Execute the flow using the known state
+                await ExecuteFlow(flow, flowState, services, stoppingToken);
             }
-
-            // Update status to running
-            stateService.UpdateModuleState(ModuleNames.FlowExecutor, (moduleState) =>
+            catch (FlowExecutionException ex)
             {
-                moduleState.Messages.Clear();
-                moduleState.Status = ModuleStatus.Running;
-            });
+                Logger.LogError(ex);
+
+                stateService.AddAlert(new StateAlert
+                {
+                    Title = $"The flow with key '{flow.Key}' failed to execute",
+                    Message = ex.Message,
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
         }
-        catch (Exception ex)
+
+        // Update status to running
+        stateService.UpdateModuleState(ModuleNames.FlowExecutor, (moduleState) =>
         {
-            Logger.LogError(ex);
+            moduleState.Status = ModuleStatus.Running;
+        });
 
-            stateService.UpdateModuleState(ModuleNames.FlowExecutor, (moduleState) =>
-            {
-                moduleState.Messages.Clear();
-                moduleState.Status = ModuleStatus.Error;
-                moduleState.Messages.Add(ex.Message);
-            });
-        }
         return true;
     }
 

@@ -747,7 +747,6 @@
       "ModuleState": {
         "required": [
           "description",
-          "messages",
           "name",
           "status"
         ],
@@ -761,12 +760,6 @@
           },
           "status": {
             "$ref": "#/components/schemas/ModuleStatus"
-          },
-          "messages": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
           }
         },
         "additionalProperties": false
@@ -775,7 +768,7 @@
         "enum": [
           "Loading",
           "Running",
-          "Errored"
+          "Error"
         ],
         "type": "string"
       },
@@ -912,11 +905,16 @@
       },
       "StateAlert": {
         "required": [
+          "id",
           "message",
           "title"
         ],
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "title": {
             "type": "string"
           },

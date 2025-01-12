@@ -63,4 +63,14 @@ public interface IStateService
     /// Update the module state
     /// </summary>
     ModuleState UpdateModuleState(string name, Action<ModuleState> update);
+    
+    /// <summary>
+    /// Add an alert
+    /// </summary>
+    void AddAlert(StateAlert stateAlert);
+
+    /// <summary>
+    /// Remove an alert
+    /// </summary>
+    void RemoveAlert(Guid alertId);
 }
